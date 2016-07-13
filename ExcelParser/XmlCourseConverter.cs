@@ -12,7 +12,7 @@ namespace ExcelParser
 	{
 		private Dictionary<string, string> generatedQuestionIds;
 
-		public XmlDocument ConvertExcelToXml( Excel excel )
+		public XmlDocument ConvertExcelToXml( Excel mainStructureExcel, Excel questionExcel )
 		{
 			generatedQuestionIds = new Dictionary<string, string>();
 			XmlDocument xml = new XmlDocument();
@@ -39,13 +39,33 @@ namespace ExcelParser
 
 			bool skip = false;
 
-			foreach ( var row in excel.Rows ) {
+			foreach ( var row in mainStructureExcel.Rows ) {
 
 				//Band need to be legal value else skip this row
 				var bandColumn = row.FirstOrDefault( c => c.Type == ColumnType.Band );
 				if ( bandColumn == null || bandColumn.Value == null || bandColumn.Value[0].ToString().ToLower() != "b" ) {
 					continue;
 				}
+
+				var atomType = row.FirstOrDefault( c => c.Type == ColumnType.AtomType );
+				if ( atomType == null || !atomType.HaveValue() || !(atomType.Value == "IN" || atomType.Value == "Q") ) {
+					continue;
+				}
+
+				var atomIdColumn = row.FirstOrDefault( c => c.Type == ColumnType.AtomId );
+				List<ExcelColumn> questionRow = null;
+
+				if ( atomType.Value == "Q" ) {
+					if ( atomIdColumn == null || !atomIdColumn.HaveValue() ) {
+						continue;
+					}
+
+					questionRow = questionExcel.Rows.FirstOrDefault( r => r.Any( c => c.Type == ColumnType.QuestionId && c.Value == atomIdColumn.Value ) );
+					if ( questionRow == null ) {
+						continue;
+					}
+				}
+
 
 				var topicNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.TopicName );
 				skip = (chapterNode != null && chapterNode.GetAttribute( "display_name" ) != topicNameColumn.Value) ? false : skip;
@@ -96,94 +116,106 @@ namespace ExcelParser
 				}
 
 				//QUESTION
-				var questionDic = generateQuestionIds();
-				var problemBuilderNode = xml.CreateElement( "problem-builder-block" );
-				var questionIdColumn = row.FirstOrDefault( c => c.Type == ColumnType.QuestionId );
-				var questionColumn = row.FirstOrDefault( c => c.Type == ColumnType.Question );
-				string questionValue = questionColumn.HaveValue() ? questionColumn.Value : "Question Missing";
+				if ( atomType.Value == "IN" ) {
+					var itemIdCoclumn = row.FirstOrDefault( c => c.Type == ColumnType.ItemId );
+					var videoNode = xml.CreateElement( "brightcove-video" );
+					videoNode.SetAttribute( "url_name", getGuid() );
+					videoNode.SetAttribute( "xblock-family", "xblock.v1" );
+					videoNode.SetAttribute( "xml_string", "&#10;" );
+					videoNode.SetAttribute( "api_bctid", itemIdCoclumn.Value );
+					conceptNameContainerNode.AppendChild( videoNode );
+				}
+				else {
+					var questionDic = generateQuestionIds();
+					var problemBuilderNode = xml.CreateElement( "problem-builder-block" );
+					var questionIdColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.QuestionId );
+					var questionColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.Question );
+					string questionValue = questionColumn.HaveValue() ? questionColumn.Value : "Question Missing";
 
-				problemBuilderNode.SetAttribute( "display_name", questionValue.Replace( "/n", "" ) );
-				problemBuilderNode.SetAttribute( "url_name", getGuid() );
-				problemBuilderNode.SetAttribute( "xblock-family", "xblock.v1" );
-				conceptNameContainerNode.AppendChild( problemBuilderNode );
+					problemBuilderNode.SetAttribute( "display_name", questionValue.Replace( "/n", "" ) );
+					problemBuilderNode.SetAttribute( "url_name", getGuid() );
+					problemBuilderNode.SetAttribute( "xblock-family", "xblock.v1" );
+					conceptNameContainerNode.AppendChild( problemBuilderNode );
 
-				var pbMcqNode = xml.CreateElement( "pb-mcq-block" );
-				var correctColumn = row.FirstOrDefault( c => c.Type == ColumnType.Correct );
+					var pbMcqNode = xml.CreateElement( "pb-mcq-block" );
+					var correctColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.Correct );
 
-				var actualCorrectValues = new List<string>();
+					var actualCorrectValues = new List<string>();
 
-				if ( correctColumn != null && correctColumn.HaveValue() ) {
-					var correctValues = correctColumn.Value.Split( ' ' );
+					if ( correctColumn != null && correctColumn.HaveValue() ) {
+						var correctValues = correctColumn.Value.Split( ' ' );
 
-					foreach ( var correctValue in correctValues ) {
-						actualCorrectValues.Add( questionDic[correctValue] );
+						foreach ( var correctValue in correctValues ) {
+							actualCorrectValues.Add( questionDic[correctValue] );
+						}
 					}
-				}
 
-				pbMcqNode.SetAttribute( "url_name", getGuid() );
-				pbMcqNode.SetAttribute( "xblock-family", "xblock.v1" );
-				pbMcqNode.SetAttribute( "question", questionValue.Replace( "/n", "<br>" ) );
-				pbMcqNode.SetAttribute( "fitch_question_id", questionIdColumn.Value );
-				pbMcqNode.SetAttribute( "correct_choices", (correctColumn != null && correctColumn.Value != null) ? JsonConvert.SerializeObject( actualCorrectValues ) : "" );
+					pbMcqNode.SetAttribute( "url_name", getGuid() );
+					pbMcqNode.SetAttribute( "xblock-family", "xblock.v1" );
+					pbMcqNode.SetAttribute( "question", questionValue.Replace( "/n", "<br>" ) );
+					pbMcqNode.SetAttribute( "fitch_question_id", questionIdColumn.Value );
+					pbMcqNode.SetAttribute( "correct_choices", (correctColumn != null && correctColumn.Value != null) ? JsonConvert.SerializeObject( actualCorrectValues ) : "" );
 
-				var questionImageUrlColumn = row.FirstOrDefault( c => c.Type == ColumnType.QuestionImageUrl );
-				var answerImageUrlColumn = row.FirstOrDefault( c => c.Type == ColumnType.AnswerImageUrl );
+					var questionImageUrlColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.QuestionImageUrl );
+					var answerImageUrlColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.AnswerImageUrl );
 
-				if ( questionImageUrlColumn != null && questionImageUrlColumn.HaveValue() ) {
-					pbMcqNode.SetAttribute( "image", questionImageUrlColumn.Value );
-				}
+					if ( questionImageUrlColumn != null && questionImageUrlColumn.HaveValue() ) {
+						pbMcqNode.SetAttribute( "image", questionImageUrlColumn.Value );
+					}
 
-				if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
-					pbMcqNode.SetAttribute( "answer_image", answerImageUrlColumn.Value );
-				}
+					if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
+						pbMcqNode.SetAttribute( "answer_image", answerImageUrlColumn.Value );
+					}
 
-				problemBuilderNode.AppendChild( pbMcqNode );
+					problemBuilderNode.AppendChild( pbMcqNode );
 
-				var questionIds = new List<string>();
-				string guid = Guid.NewGuid().ToString();
+					var questionIds = new List<string>();
+					string guid = Guid.NewGuid().ToString();
 
-				var answer1Column = row.FirstOrDefault( c => c.Type == ColumnType.Answer1 );
-				var question1Id = questionDic["A"];
-				var answer1Node = GetAnswerNode( xml, answer1Column, question1Id, false );
-				if ( answer1Node != null ) {
-					pbMcqNode.AppendChild( answer1Node );
-					questionIds.Add( question1Id );
-				}
+					var answer1Column = questionRow.FirstOrDefault( c => c.Type == ColumnType.Answer1 );
+					var question1Id = questionDic["A"];
+					var answer1Node = GetAnswerNode( xml, answer1Column, question1Id, false );
+					if ( answer1Node != null ) {
+						pbMcqNode.AppendChild( answer1Node );
+						questionIds.Add( question1Id );
+					}
 
-				var answer2Column = row.FirstOrDefault( c => c.Type == ColumnType.Answer2 );
-				var question2Id = questionDic["B"];
-				var answer2Node = GetAnswerNode( xml, answer2Column, question2Id, true );
-				if ( answer2Node != null ) {
-					pbMcqNode.AppendChild( answer2Node );
-					questionIds.Add( question2Id );
-				}
+					var answer2Column = questionRow.FirstOrDefault( c => c.Type == ColumnType.Answer2 );
+					var question2Id = questionDic["B"];
+					var answer2Node = GetAnswerNode( xml, answer2Column, question2Id, true );
+					if ( answer2Node != null ) {
+						pbMcqNode.AppendChild( answer2Node );
+						questionIds.Add( question2Id );
+					}
 
-				var answer3Column = row.FirstOrDefault( c => c.Type == ColumnType.Answer3 );
-				var question3Id = questionDic["C"];
-				var answer3Node = GetAnswerNode( xml, answer3Column, question3Id, true );
-				if ( answer3Node != null ) {
-					pbMcqNode.AppendChild( answer3Node );
-					questionIds.Add( question3Id );
-				}
+					var answer3Column = questionRow.FirstOrDefault( c => c.Type == ColumnType.Answer3 );
+					var question3Id = questionDic["C"];
+					var answer3Node = GetAnswerNode( xml, answer3Column, question3Id, true );
+					if ( answer3Node != null ) {
+						pbMcqNode.AppendChild( answer3Node );
+						questionIds.Add( question3Id );
+					}
 
-				var answer4Column = row.FirstOrDefault( c => c.Type == ColumnType.Answer4 );
-				var question4Id = questionDic["D"];
-				var answer4Node = GetAnswerNode( xml, answer4Column, question4Id );
-				if ( answer4Node != null ) {
-					pbMcqNode.AppendChild( answer4Node );
-					questionIds.Add( question4Id );
-				}
+					var answer4Column = questionRow.FirstOrDefault( c => c.Type == ColumnType.Answer4 );
+					var question4Id = questionDic["D"];
+					var answer4Node = GetAnswerNode( xml, answer4Column, question4Id );
+					if ( answer4Node != null ) {
+						pbMcqNode.AppendChild( answer4Node );
+						questionIds.Add( question4Id );
+					}
 
 
-				//tip  block
-				var justificationCell = row.FirstOrDefault( c => c.Type == ColumnType.Justification );
-				if ( justificationCell != null && justificationCell.HaveValue() ) {
-					var questionTipNode = xml.CreateElement( "pb-tip-block" );
-					questionTipNode.SetAttribute( "url_name", getGuid() );
-					questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
-					questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
-					questionTipNode.InnerText = justificationCell.Value.Replace( "/n", "<br>" );
-					pbMcqNode.AppendChild( questionTipNode );
+					//tip  block
+					var justificationCell = questionRow.FirstOrDefault( c => c.Type == ColumnType.Justification );
+					if ( justificationCell != null && justificationCell.HaveValue() ) {
+						var questionTipNode = xml.CreateElement( "pb-tip-block" );
+						questionTipNode.SetAttribute( "url_name", getGuid() );
+						questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
+						questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
+						questionTipNode.InnerText = justificationCell.Value.Replace( "/n", "<br>" );
+						pbMcqNode.AppendChild( questionTipNode );
+					}
+
 				}
 
 				skip = true;
@@ -191,8 +223,8 @@ namespace ExcelParser
 			}
 
 			XmlElement wikiNode = xml.CreateElement( "wiki" );
-			wikiNode.SetAttribute("slug", "test.1.2015");
-			courseNode.AppendChild(wikiNode);
+			wikiNode.SetAttribute( "slug", "test.1.2015" );
+			courseNode.AppendChild( wikiNode );
 
 			return xml;
 		}

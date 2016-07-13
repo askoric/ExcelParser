@@ -10,7 +10,7 @@ namespace ExcelParser
 	public class ExcelColumn
 	{
 
-		public ExcelColumn(string value, ColumnType type, int index)
+		public ExcelColumn( string value, ColumnType type, int index )
 		{
 			Value = value;
 			Type = type;
@@ -30,17 +30,21 @@ namespace ExcelParser
 		{
 			switch ( columnName.ToLower().Trim() ) {
 				case "topicname":
-					return new ExcelColumn(columnName, ColumnType.TopicName, index);
+				case "topictitle":
+					return new ExcelColumn( columnName, ColumnType.TopicName, index );
 				case "sessionname":
+				case "sessiontitle":
 					return new ExcelColumn( columnName, ColumnType.SessionName, index );
 				case "readingname":
+				case "readingtitle":
 					return new ExcelColumn( columnName, ColumnType.ReadingName, index );
 				case "band":
 					return new ExcelColumn( columnName, ColumnType.Band, index );
 				case "conceptname":
+				case "concept":
 					return new ExcelColumn( columnName, ColumnType.ConceptName, index );
 				case "id (original & new place holders)":
-					return new ExcelColumn(columnName, ColumnType.QuestionId, index);
+					return new ExcelColumn( columnName, ColumnType.QuestionId, index );
 				case "question":
 					return new ExcelColumn( columnName, ColumnType.Question, index );
 				case "correct":
@@ -53,14 +57,20 @@ namespace ExcelParser
 					return new ExcelColumn( columnName, ColumnType.Answer3, index );
 				case "answer_4":
 					return new ExcelColumn( columnName, ColumnType.Answer4, index );
-                case "justification":
-                    return new ExcelColumn(columnName, ColumnType.Justification, index);
-                case "answer_image_url":
-                    return new ExcelColumn(columnName, ColumnType.AnswerImageUrl, index);
-                case "question_image_url":
-                    return new ExcelColumn(columnName, ColumnType.QuestionImageUrl, index);
-                default:
-					return  new ExcelColumn(columnName, ColumnType.Undefined, index);
+				case "justification":
+					return new ExcelColumn( columnName, ColumnType.Justification, index );
+				case "answer_image_url":
+					return new ExcelColumn( columnName, ColumnType.AnswerImageUrl, index );
+				case "question_image_url":
+					return new ExcelColumn( columnName, ColumnType.QuestionImageUrl, index );
+				case "item id":
+					return new ExcelColumn( columnName, ColumnType.ItemId, index );
+				case "atom type":
+					return new ExcelColumn( columnName, ColumnType.AtomType, index );
+				case "atom id":
+					return new ExcelColumn( columnName, ColumnType.AtomId, index );
+				default:
+					return new ExcelColumn( columnName, ColumnType.Undefined, index );
 			}
 		}
 
@@ -82,8 +92,11 @@ namespace ExcelParser
 		Answer2,
 		Answer3,
 		Answer4,
-        Justification,
-        AnswerImageUrl,
-        QuestionImageUrl,
+		Justification,
+		AnswerImageUrl,
+		QuestionImageUrl,
+		ItemId,
+		AtomType,
+		AtomId
 	}
 }

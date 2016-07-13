@@ -28,18 +28,25 @@ namespace ExcelParser
 		private void button1_Click( object sender, EventArgs e )
 		{
 			OpenFileDialog openFileDialog = new OpenFileDialog();
+			Excel mainStructureExcel = null;
+			Excel questionsExcel = null;
 			if ( openFileDialog.ShowDialog() == DialogResult.OK ) {
-				var fileName = openFileDialog.FileName;
-				var excel = Excel.ReadExcell( fileName );
-
-                var xmlCourseConverter = new XmlCourseConverter();
-                XmlDocument xml = xmlCourseConverter.ConvertExcelToXml( excel );
-				SaveFileDialog saveFileDialog = new SaveFileDialog();
-				saveFileDialog.FileName = "output.xml";
-				if ( saveFileDialog.ShowDialog() == DialogResult.OK ) {
-					xml.Save( saveFileDialog.FileName );
-				}
+				mainStructureExcel = Excel.ReadExcell( openFileDialog.FileName );
 			}
+
+			if ( openFileDialog.ShowDialog() == DialogResult.OK ) {
+				questionsExcel = Excel.ReadExcell( openFileDialog.FileName );
+			}
+
+
+			var xmlCourseConverter = new XmlCourseConverter();
+			XmlDocument xml = xmlCourseConverter.ConvertExcelToXml( mainStructureExcel, questionsExcel );
+			SaveFileDialog saveFileDialog = new SaveFileDialog();
+			saveFileDialog.FileName = "output.xml";
+			if ( saveFileDialog.ShowDialog() == DialogResult.OK ) {
+				xml.Save( saveFileDialog.FileName );
+			}
+
 
 		}
 	}
