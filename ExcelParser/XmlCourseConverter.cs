@@ -71,7 +71,7 @@ namespace ExcelParser
 				skip = (chapterNode != null && chapterNode.GetAttribute( "display_name" ) != topicNameColumn.Value) ? false : skip;
 				if ( !skip ) {
 					chapterNode = xml.CreateElement( "chapter" );
-					chapterNode.SetAttribute( "display_name", topicNameColumn != null && topicNameColumn.HaveValue() ? topicNameColumn.Value.Replace( "/n", "<br>" ) : "" );
+					chapterNode.SetAttribute( "display_name", topicNameColumn != null && topicNameColumn.HaveValue() ? topicNameColumn.Value : "" );
 					chapterNode.SetAttribute( "url_name", getGuid() );
 					courseNode.AppendChild( chapterNode );
 				}
@@ -80,7 +80,7 @@ namespace ExcelParser
 				skip = (sequentialNode != null && sequentialNode.GetAttribute( "display_name" ) != sessionNameColumn.Value) ? false : skip;
 				if ( !skip ) {
 					sequentialNode = xml.CreateElement( "sequential" );
-					sequentialNode.SetAttribute( "display_name", sessionNameColumn != null && sessionNameColumn.HaveValue() ? sessionNameColumn.Value.Replace( "/n", "<br>" ) : "" );
+					sequentialNode.SetAttribute( "display_name", sessionNameColumn != null && sessionNameColumn.HaveValue() ? sessionNameColumn.Value : "" );
 					sequentialNode.SetAttribute( "url_name", getGuid() );
 					chapterNode.AppendChild( sequentialNode );
 				}
@@ -89,7 +89,7 @@ namespace ExcelParser
 				skip = (verticalNode != null && verticalNode.GetAttribute( "display_name" ) != readingNameColumn.Value) ? false : skip;
 				if ( !skip ) {
 					verticalNode = xml.CreateElement( "vertical" );
-					verticalNode.SetAttribute( "display_name", readingNameColumn != null && readingNameColumn.HaveValue() ? readingNameColumn.Value.Replace( "/n", "<br>" ) : "" );
+					verticalNode.SetAttribute( "display_name", readingNameColumn != null && readingNameColumn.HaveValue() ? readingNameColumn.Value : "" );
 					verticalNode.SetAttribute( "url_name", getGuid() );
 					sequentialNode.AppendChild( verticalNode );
 				}
@@ -98,33 +98,45 @@ namespace ExcelParser
 				if ( !skip ) {
 					bandContainerNode = xml.CreateElement( "container" );
 					bandContainerNode.SetAttribute( "url_name", getGuid() );
-					bandContainerNode.SetAttribute( "display_name", bandColumn != null && bandColumn.HaveValue() ? bandColumn.Value.Replace( "/n", "<br>" ) : "" );
+					bandContainerNode.SetAttribute( "display_name", bandColumn != null && bandColumn.HaveValue() ? bandColumn.Value : "" );
 					bandContainerNode.SetAttribute( "xblock-family", "xblock.v1" );
 					bandContainerNode.SetAttribute( "container_description", "" );
+					bandContainerNode.SetAttribute( "learning_objective_id", "" );
 					verticalNode.AppendChild( bandContainerNode );
 				}
 
 				var conceptNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.ConceptName );
 				skip = (conceptNameContainerNode != null && conceptNameContainerNode.GetAttribute( "display_name" ) != conceptNameColumn.Value) ? false : skip;
-				if ( !skip ) {
+				if ( !skip )
+				{
+					var conceptIdColumn = row.FirstOrDefault(c => c.Type == ColumnType.ConceptId);
+
 					conceptNameContainerNode = xml.CreateElement( "container" );
 					conceptNameContainerNode.SetAttribute( "url_name", getGuid() );
-					conceptNameContainerNode.SetAttribute( "display_name", conceptNameColumn != null && conceptNameColumn.HaveValue() ? conceptNameColumn.Value.Replace( "/n", "<br>" ) : "" );
+					conceptNameContainerNode.SetAttribute( "display_name", conceptNameColumn != null && conceptNameColumn.HaveValue() ? conceptNameColumn.Value : "" );
 					conceptNameContainerNode.SetAttribute( "xblock-family", "xblock.v1" );
 					conceptNameContainerNode.SetAttribute( "container_description", "" );
+					conceptNameContainerNode.SetAttribute( "learning_objective_id", conceptIdColumn != null && conceptIdColumn.HaveValue() ? conceptIdColumn.Value : "" );
 					bandContainerNode.AppendChild( conceptNameContainerNode );
 				}
 
-				//QUESTION
+				//VIDEO
 				if ( atomType.Value == "IN" ) {
 					var itemIdCoclumn = row.FirstOrDefault( c => c.Type == ColumnType.ItemId );
 					var videoNode = xml.CreateElement( "brightcove-video" );
 					videoNode.SetAttribute( "url_name", getGuid() );
 					videoNode.SetAttribute( "xblock-family", "xblock.v1" );
 					videoNode.SetAttribute( "xml_string", "&#10;" );
+					videoNode.SetAttribute( "api_bckey", "AQ~~,AAAELMh4AWE~,vVFFDlX6sNOap1Tww7YwaMvqbQ8TtDoh" );
+					videoNode.SetAttribute( "display_name", "Brightcove Video" );
+					videoNode.SetAttribute( "api_key", "JqnRdhYvLWNtVJllXkMzGGGTh66uLLmz8JB8YlcZQlC8OX94H4ZXXw.." );
+					videoNode.SetAttribute( "text_values", "[]" );
 					videoNode.SetAttribute( "api_bctid", itemIdCoclumn.Value );
+					videoNode.SetAttribute( "begin_values", "[]" );
+					videoNode.SetAttribute( "api_bcpid", "4830051907001" );
 					conceptNameContainerNode.AppendChild( videoNode );
 				}
+				//QUESTION
 				else {
 					var questionDic = generateQuestionIds();
 					var problemBuilderNode = xml.CreateElement( "problem-builder-block" );
@@ -132,7 +144,7 @@ namespace ExcelParser
 					var questionColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.Question );
 					string questionValue = questionColumn.HaveValue() ? questionColumn.Value : "Question Missing";
 
-					problemBuilderNode.SetAttribute( "display_name", questionValue.Replace( "/n", "" ) );
+					problemBuilderNode.SetAttribute( "display_name", questionValue.Replace( "<br>", "" ) );
 					problemBuilderNode.SetAttribute( "url_name", getGuid() );
 					problemBuilderNode.SetAttribute( "xblock-family", "xblock.v1" );
 					conceptNameContainerNode.AppendChild( problemBuilderNode );
@@ -152,7 +164,7 @@ namespace ExcelParser
 
 					pbMcqNode.SetAttribute( "url_name", getGuid() );
 					pbMcqNode.SetAttribute( "xblock-family", "xblock.v1" );
-					pbMcqNode.SetAttribute( "question", questionValue.Replace( "/n", "<br>" ) );
+					pbMcqNode.SetAttribute( "question", questionValue );
 					pbMcqNode.SetAttribute( "fitch_question_id", questionIdColumn.Value );
 					pbMcqNode.SetAttribute( "correct_choices", (correctColumn != null && correctColumn.Value != null) ? JsonConvert.SerializeObject( actualCorrectValues ) : "" );
 
@@ -170,7 +182,6 @@ namespace ExcelParser
 					problemBuilderNode.AppendChild( pbMcqNode );
 
 					var questionIds = new List<string>();
-					string guid = Guid.NewGuid().ToString();
 
 					var answer1Column = questionRow.FirstOrDefault( c => c.Type == ColumnType.Answer1 );
 					var question1Id = questionDic["A"];
@@ -212,7 +223,7 @@ namespace ExcelParser
 						questionTipNode.SetAttribute( "url_name", getGuid() );
 						questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
 						questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
-						questionTipNode.InnerText = justificationCell.Value.Replace( "/n", "<br>" );
+						questionTipNode.InnerText = justificationCell.Value;
 						pbMcqNode.AppendChild( questionTipNode );
 					}
 

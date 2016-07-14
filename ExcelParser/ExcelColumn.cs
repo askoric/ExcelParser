@@ -43,6 +43,8 @@ namespace ExcelParser
 				case "conceptname":
 				case "concept":
 					return new ExcelColumn( columnName, ColumnType.ConceptName, index );
+				case "lo /concept id":
+					return new ExcelColumn( columnName, ColumnType.ConceptId, index );
 				case "id (original & new place holders)":
 					return new ExcelColumn( columnName, ColumnType.QuestionId, index );
 				case "question":
@@ -85,6 +87,7 @@ namespace ExcelParser
 		ReadingName,
 		Band,
 		ConceptName,
+		ConceptId,
 		QuestionId,
 		Question,
 		Correct,

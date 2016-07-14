@@ -31,11 +31,11 @@ namespace ExcelParser
 			Excel mainStructureExcel = null;
 			Excel questionsExcel = null;
 			if ( openFileDialog.ShowDialog() == DialogResult.OK ) {
-				mainStructureExcel = Excel.ReadExcell( openFileDialog.FileName );
+				mainStructureExcel = Excel.ReadExcell( openFileDialog.FileName, XmlValueParser.Instance );
 			}
 
 			if ( openFileDialog.ShowDialog() == DialogResult.OK ) {
-				questionsExcel = Excel.ReadExcell( openFileDialog.FileName );
+				questionsExcel = Excel.ReadExcell( openFileDialog.FileName, XmlValueParser.Instance );
 			}
 
 

@@ -21,7 +21,7 @@ namespace ExcelParser
 		public List<ExcelColumn> Header { get; set; }
 		public List<List<ExcelColumn>> Rows { get; set; }
 
-		public static Excel ReadExcell( string filePath )
+		public static Excel ReadExcell( string filePath, IValueParser valueParser )
 		{
 			var excel = new Excel();
 
@@ -58,7 +58,7 @@ namespace ExcelParser
 					var rowValues = new List<ExcelColumn>(); 
 					foreach (var headerColumn in excel.Header)
 					{
-						string rowValue = excelReader.GetString( headerColumn.ColumnIndex );
+						string rowValue = valueParser.ParseValue(excelReader.GetString( headerColumn.ColumnIndex ));
 						rowValues.Add(new ExcelColumn(rowValue, headerColumn.Type, headerColumn.ColumnIndex));
 					}
 
