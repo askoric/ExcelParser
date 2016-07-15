@@ -32,6 +32,8 @@ namespace ExcelParser
 				case "topicname":
 				case "topictitle":
 					return new ExcelColumn( columnName, ColumnType.TopicName, index );
+				case "topic":
+					return new ExcelColumn( columnName, ColumnType.TopicShortName, index );
 				case "sessionname":
 				case "sessiontitle":
 					return new ExcelColumn( columnName, ColumnType.SessionName, index );
@@ -41,7 +43,7 @@ namespace ExcelParser
 				case "band":
 					return new ExcelColumn( columnName, ColumnType.Band, index );
 				case "conceptname":
-				case "concept":
+				case "lo description":
 					return new ExcelColumn( columnName, ColumnType.ConceptName, index );
 				case "lo /concept id":
 					return new ExcelColumn( columnName, ColumnType.ConceptId, index );
@@ -71,6 +73,12 @@ namespace ExcelParser
 					return new ExcelColumn( columnName, ColumnType.AtomType, index );
 				case "atom id":
 					return new ExcelColumn( columnName, ColumnType.AtomId, index );
+				case "atom title":
+					return new ExcelColumn( columnName, ColumnType.AtomTitle, index );
+				case "studysession":
+					return new ExcelColumn( columnName, ColumnType.StudySession, index );
+				case "reading":
+					return new ExcelColumn( columnName, ColumnType.Reading, index );
 				default:
 					return new ExcelColumn( columnName, ColumnType.Undefined, index );
 			}
@@ -83,6 +91,7 @@ namespace ExcelParser
 	{
 		Undefined,
 		TopicName,
+		TopicShortName,
 		SessionName,
 		ReadingName,
 		Band,
@@ -100,6 +109,9 @@ namespace ExcelParser
 		QuestionImageUrl,
 		ItemId,
 		AtomType,
-		AtomId
+		AtomId,
+		AtomTitle,
+		StudySession,
+		Reading
 	}
 }
