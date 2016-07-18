@@ -92,22 +92,22 @@ namespace ExcelParser
 				var readingNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.ReadingName );
 				skip = (verticalNode != null && verticalNode.GetAttribute( "display_name" ) != readingNameColumn.Value) ? false : skip;
 				if ( !skip ) {
+					var readingColumn = row.FirstOrDefault( c => c.Type == ColumnType.Reading );
 					verticalNode = xml.CreateElement( "vertical" );
 					verticalNode.SetAttribute( "display_name", readingNameColumn != null && readingNameColumn.HaveValue() ? readingNameColumn.Value : "" );
 					verticalNode.SetAttribute( "url_name", getGuid() );
+					verticalNode.SetAttribute( "cfa_short_name", readingColumn != null && readingColumn.HaveValue() ? readingColumn.Value : "" );
 					sequentialNode.AppendChild( verticalNode );
 				}
 
 				skip = (bandContainerNode != null && bandContainerNode.GetAttribute( "display_name" ) != bandColumn.Value) ? false : skip;
 				if ( !skip ) {
-					var readingColumn = row.FirstOrDefault( c => c.Type == ColumnType.Reading );
 					bandContainerNode = xml.CreateElement( "container" );
 					bandContainerNode.SetAttribute( "url_name", getGuid() );
 					bandContainerNode.SetAttribute( "display_name", bandColumn != null && bandColumn.HaveValue() ? bandColumn.Value : "" );
 					bandContainerNode.SetAttribute( "xblock-family", "xblock.v1" );
 					bandContainerNode.SetAttribute( "container_description", "" );
 					bandContainerNode.SetAttribute( "learning_objective_id", "" );
-					bandContainerNode.SetAttribute( "cfa_short_name", readingColumn != null && readingColumn.HaveValue() ? readingColumn.Value : "" );
 					verticalNode.AppendChild( bandContainerNode );
 				}
 
@@ -140,6 +140,7 @@ namespace ExcelParser
 					videoNode.SetAttribute( "api_bctid", itemIdCoclumn.Value );
 					videoNode.SetAttribute( "begin_values", "[]" );
 					videoNode.SetAttribute( "api_bcpid", "4830051907001" );
+					videoNode.SetAttribute( "cfa_type", "video" );
 					conceptNameContainerNode.AppendChild( videoNode );
 				}
 				//QUESTION
@@ -154,6 +155,7 @@ namespace ExcelParser
 					problemBuilderNode.SetAttribute( "display_name", questionValue.Replace( "<br>", "" ) );
 					problemBuilderNode.SetAttribute( "url_name", getGuid() );
 					problemBuilderNode.SetAttribute( "xblock-family", "xblock.v1" );
+					problemBuilderNode.SetAttribute( "cfa_type", "question" );
 
 					if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
 						problemBuilderNode.SetAttribute( "answer_image", answerImageUrlColumn.Value );
