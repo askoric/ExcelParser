@@ -37,6 +37,10 @@ namespace ExcelParser
 			XmlElement bandContainerNode = null;
 			XmlElement conceptNameContainerNode = null;
 
+			int _topicNameCounter = 0;
+			int _sessionNameCounter = 0;
+			int _readingNameCounter = 0;
+
 			bool skip = false;
 
 			foreach ( var row in mainStructureExcel.Rows ) {
@@ -70,33 +74,36 @@ namespace ExcelParser
 				var topicNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.TopicName );
 				skip = (chapterNode != null && chapterNode.GetAttribute( "display_name" ) != topicNameColumn.Value) ? false : skip;
 				if ( !skip ) {
-					var topicShortName = row.FirstOrDefault( c => c.Type == ColumnType.TopicShortName );
+					//var topicShortName = row.FirstOrDefault( c => c.Type == ColumnType.TopicShortName );
 					chapterNode = xml.CreateElement( "chapter" );
 					chapterNode.SetAttribute( "display_name", topicNameColumn != null && topicNameColumn.HaveValue() ? topicNameColumn.Value : "" );
 					chapterNode.SetAttribute( "url_name", getGuid() );
-					chapterNode.SetAttribute( "cfa_short_name", topicShortName != null && topicShortName.HaveValue() ? topicShortName.Value : "" );
+					_topicNameCounter++;
+					chapterNode.SetAttribute( "cfa_short_name", String.Format("Topic_{0}", _topicNameCounter.ToString("D2")));
 					courseNode.AppendChild( chapterNode );
 				}
 
 				var sessionNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.SessionName );
 				skip = (sequentialNode != null && sequentialNode.GetAttribute( "display_name" ) != sessionNameColumn.Value) ? false : skip;
 				if ( !skip ) {
-					var studySession = row.FirstOrDefault( c => c.Type == ColumnType.StudySession );
+					//var studySession = row.FirstOrDefault( c => c.Type == ColumnType.StudySession );
 					sequentialNode = xml.CreateElement( "sequential" );
 					sequentialNode.SetAttribute( "display_name", sessionNameColumn != null && sessionNameColumn.HaveValue() ? sessionNameColumn.Value : "" );
 					sequentialNode.SetAttribute( "url_name", getGuid() );
-					sequentialNode.SetAttribute( "cfa_short_name", studySession != null && studySession.HaveValue() ? studySession.Value : "" );
+					_sessionNameCounter++;
+					sequentialNode.SetAttribute( "cfa_short_name", String.Format("SS{0}", _sessionNameCounter.ToString()) );
 					chapterNode.AppendChild( sequentialNode );
 				}
 
 				var readingNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.ReadingName );
 				skip = (verticalNode != null && verticalNode.GetAttribute( "display_name" ) != readingNameColumn.Value) ? false : skip;
 				if ( !skip ) {
-					var readingColumn = row.FirstOrDefault( c => c.Type == ColumnType.Reading );
+					//var readingColumn = row.FirstOrDefault( c => c.Type == ColumnType.Reading );
 					verticalNode = xml.CreateElement( "vertical" );
 					verticalNode.SetAttribute( "display_name", readingNameColumn != null && readingNameColumn.HaveValue() ? readingNameColumn.Value : "" );
 					verticalNode.SetAttribute( "url_name", getGuid() );
-					verticalNode.SetAttribute( "cfa_short_name", readingColumn != null && readingColumn.HaveValue() ? readingColumn.Value : "" );
+					_readingNameCounter++;
+					verticalNode.SetAttribute( "cfa_short_name", String.Format("R{0}", _readingNameCounter.ToString()));
 					sequentialNode.AppendChild( verticalNode );
 				}
 
@@ -256,6 +263,7 @@ namespace ExcelParser
 		{
 			return Guid.NewGuid().ToString().Replace( "-", "" );
 		}
+
 
 		private Dictionary<string, string> generateQuestionIds()
 		{
