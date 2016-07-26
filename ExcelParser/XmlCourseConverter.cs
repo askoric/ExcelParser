@@ -148,7 +148,6 @@ namespace ExcelParser
 					videoNode.SetAttribute( "begin_values", "[]" );
 					videoNode.SetAttribute( "api_bcpid", "4830051907001" );
 					videoNode.SetAttribute( "cfa_type", "video" );
-					videoNode.SetAttribute( "atom_id", atomIdColumn != null && atomIdColumn.HaveValue() ? atomIdColumn.Value : "");
 					conceptNameContainerNode.AppendChild( videoNode );
 				}
 				//QUESTION
@@ -164,8 +163,6 @@ namespace ExcelParser
 					problemBuilderNode.SetAttribute( "url_name", getGuid() );
 					problemBuilderNode.SetAttribute( "xblock-family", "xblock.v1" );
 					problemBuilderNode.SetAttribute( "cfa_type", "question" );
-					problemBuilderNode.SetAttribute( "atom_id", atomIdColumn != null && atomIdColumn.HaveValue() ? atomIdColumn.Value : "" );
-
 
 					if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
 						problemBuilderNode.SetAttribute( "answer_image", answerImageUrlColumn.Value );
