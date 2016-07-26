@@ -37,10 +37,6 @@ namespace ExcelParser
 			XmlElement bandContainerNode = null;
 			XmlElement conceptNameContainerNode = null;
 
-			int _topicNameCounter = 0;
-			int _sessionNameCounter = 0;
-			int _readingNameCounter = 0;
-
 			bool skip = false;
 
 			foreach ( var row in mainStructureExcel.Rows ) {
@@ -74,36 +70,33 @@ namespace ExcelParser
 				var topicNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.TopicName );
 				skip = (chapterNode != null && chapterNode.GetAttribute( "display_name" ) != topicNameColumn.Value) ? false : skip;
 				if ( !skip ) {
-					//var topicShortName = row.FirstOrDefault( c => c.Type == ColumnType.TopicShortName );
+					var topicShortName = row.FirstOrDefault( c => c.Type == ColumnType.TopicShortName );
 					chapterNode = xml.CreateElement( "chapter" );
 					chapterNode.SetAttribute( "display_name", topicNameColumn != null && topicNameColumn.HaveValue() ? topicNameColumn.Value : "" );
 					chapterNode.SetAttribute( "url_name", getGuid() );
-					_topicNameCounter++;
-					chapterNode.SetAttribute( "cfa_short_name", String.Format("Topic_{0}", _topicNameCounter.ToString("D2")));
+					chapterNode.SetAttribute( "cfa_short_name", topicShortName != null && topicShortName.HaveValue() ? topicShortName.Value : "" );
 					courseNode.AppendChild( chapterNode );
 				}
 
 				var sessionNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.SessionName );
 				skip = (sequentialNode != null && sequentialNode.GetAttribute( "display_name" ) != sessionNameColumn.Value) ? false : skip;
 				if ( !skip ) {
-					//var studySession = row.FirstOrDefault( c => c.Type == ColumnType.StudySession );
+					var studySession = row.FirstOrDefault( c => c.Type == ColumnType.StudySession );
 					sequentialNode = xml.CreateElement( "sequential" );
 					sequentialNode.SetAttribute( "display_name", sessionNameColumn != null && sessionNameColumn.HaveValue() ? sessionNameColumn.Value : "" );
 					sequentialNode.SetAttribute( "url_name", getGuid() );
-					_sessionNameCounter++;
-					sequentialNode.SetAttribute( "cfa_short_name", String.Format("SS{0}", _sessionNameCounter.ToString()) );
+					sequentialNode.SetAttribute( "cfa_short_name", studySession != null && studySession.HaveValue() ? studySession.Value : "" );
 					chapterNode.AppendChild( sequentialNode );
 				}
 
 				var readingNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.ReadingName );
 				skip = (verticalNode != null && verticalNode.GetAttribute( "display_name" ) != readingNameColumn.Value) ? false : skip;
 				if ( !skip ) {
-					//var readingColumn = row.FirstOrDefault( c => c.Type == ColumnType.Reading );
+					var readingColumn = row.FirstOrDefault( c => c.Type == ColumnType.Reading );
 					verticalNode = xml.CreateElement( "vertical" );
 					verticalNode.SetAttribute( "display_name", readingNameColumn != null && readingNameColumn.HaveValue() ? readingNameColumn.Value : "" );
 					verticalNode.SetAttribute( "url_name", getGuid() );
-					_readingNameCounter++;
-					verticalNode.SetAttribute( "cfa_short_name", String.Format("R{0}", _readingNameCounter.ToString()));
+					verticalNode.SetAttribute( "cfa_short_name", readingColumn != null && readingColumn.HaveValue() ? readingColumn.Value : "" );
 					sequentialNode.AppendChild( verticalNode );
 				}
 
@@ -148,6 +141,7 @@ namespace ExcelParser
 					videoNode.SetAttribute( "begin_values", "[]" );
 					videoNode.SetAttribute( "api_bcpid", "4830051907001" );
 					videoNode.SetAttribute( "cfa_type", "video" );
+					videoNode.SetAttribute( "atom_id", atomIdColumn != null && atomIdColumn.HaveValue() ? atomIdColumn.Value : "" );
 					conceptNameContainerNode.AppendChild( videoNode );
 				}
 				//QUESTION
@@ -156,6 +150,7 @@ namespace ExcelParser
 					var problemBuilderNode = xml.CreateElement( "problem-builder-block" );
 					var questionIdColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.QuestionId );
 					var questionColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.Question );
+					var kkEeColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.KKEE );
 					var answerImageUrlColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.AnswerImageUrl );
 					string questionValue = questionColumn.HaveValue() ? questionColumn.Value : "Question Missing";
 
@@ -163,6 +158,8 @@ namespace ExcelParser
 					problemBuilderNode.SetAttribute( "url_name", getGuid() );
 					problemBuilderNode.SetAttribute( "xblock-family", "xblock.v1" );
 					problemBuilderNode.SetAttribute( "cfa_type", "question" );
+					problemBuilderNode.SetAttribute( "atom_id", atomIdColumn != null && atomIdColumn.HaveValue() ? atomIdColumn.Value : "" );
+					problemBuilderNode.SetAttribute( "instruct_assessment", kkEeColumn != null && kkEeColumn.HaveValue() ? kkEeColumn.Value : "" );
 
 					if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
 						problemBuilderNode.SetAttribute( "answer_image", answerImageUrlColumn.Value );

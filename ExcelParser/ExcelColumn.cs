@@ -79,6 +79,8 @@ namespace ExcelParser
 					return new ExcelColumn( columnName, ColumnType.StudySession, index );
 				case "reading":
 					return new ExcelColumn( columnName, ColumnType.Reading, index );
+				case "(kk/ee) instruct (k/e) asseess":
+					return new ExcelColumn(columnName, ColumnType.KKEE, index);
 				default:
 					return new ExcelColumn( columnName, ColumnType.Undefined, index );
 			}
@@ -112,6 +114,7 @@ namespace ExcelParser
 		AtomId,
 		AtomTitle,
 		StudySession,
-		Reading
+		Reading,
+		KKEE
 	}
 }
