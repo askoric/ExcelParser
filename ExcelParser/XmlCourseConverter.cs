@@ -46,6 +46,7 @@ namespace ExcelParser
 		{
 			generatedQuestionIds = new Dictionary<string, string>();
 			XmlDocument xml = new XmlDocument();
+			var xmlTranscriptAccessor = new XmlTranscriptAccessor();
 
 			XmlElement rootNode = xml.CreateElement( "xbundle" );
 			xml.AppendChild( rootNode );
@@ -172,6 +173,21 @@ namespace ExcelParser
 					videoNode.SetAttribute( "api_bcpid", "4830051907001" );
 					videoNode.SetAttribute( "cfa_type", "video" );
 					videoNode.SetAttribute( "atom_id", atomIdColumn != null && atomIdColumn.HaveValue() ? atomIdColumn.Value : "" );
+
+					//
+					string xmlTranscriptString = "";
+					if (atomIdColumn != null && atomIdColumn.HaveValue())
+					{
+						XmlDocument xmlTranscript = xmlTranscriptAccessor.FindVideoTranscript(atomIdColumn.Value);
+						if (xmlTranscript != null)
+						{
+							xmlTranscriptString = xmlTranscript.InnerXml;
+						}
+
+					}
+
+					videoNode.SetAttribute( "transcript", xmlTranscriptString );
+
 					conceptNameContainerNode.AppendChild( videoNode );
 				}
 				//QUESTION
