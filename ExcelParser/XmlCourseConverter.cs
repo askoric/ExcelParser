@@ -4,15 +4,45 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Excel.Log;
 using Newtonsoft.Json;
 
 namespace ExcelParser
 {
-	public class XmlCourseConverter
+	public class ExcelParser
 	{
 		private Dictionary<string, string> generatedQuestionIds;
 
-		public XmlDocument ConvertExcelToXml( Excel mainStructureExcel, Excel questionExcel )
+		public List<string> GetVideoReferenceIds(Excel mainStructureExcel)
+		{
+			var referenceIds = new List<string>();
+			var rowIndex = 0;
+			foreach (var row in mainStructureExcel.Rows)
+			{
+				rowIndex++;
+				var atomType = row.FirstOrDefault( c => c.Type == ColumnType.AtomType );
+				if ( atomType == null || !atomType.HaveValue() ) {
+					Program.Log.Info( String.Format( "Missing atom type for row {0}", rowIndex ) );
+					continue;
+				}
+
+				if (atomType.Value == "IN")
+				{
+					var atomIdColumn = row.FirstOrDefault(c => c.Type == ColumnType.AtomId);
+					if (atomIdColumn != null && atomIdColumn.HaveValue())
+					{
+						referenceIds.Add(atomIdColumn.Value);
+					}
+					else
+					{
+						Program.Log.Info( String.Format( "Missing atom Id for row {0}", rowIndex ) );
+					}
+				}
+			}
+			return referenceIds;
+		}
+
+		public XmlDocument ConvertExcelToCourseXml( Excel mainStructureExcel, Excel questionExcel )
 		{
 			generatedQuestionIds = new Dictionary<string, string>();
 			XmlDocument xml = new XmlDocument();

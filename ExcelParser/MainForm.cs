@@ -39,8 +39,11 @@ namespace ExcelParser
 			}
 
 
-			var xmlCourseConverter = new XmlCourseConverter();
-			XmlDocument xml = xmlCourseConverter.ConvertExcelToXml( mainStructureExcel, questionsExcel );
+			var excelParser = new ExcelParser();
+			var videoReferenceIds = excelParser.GetVideoReferenceIds( mainStructureExcel );
+			var videoIds = BrightcoveService.GetVideoIdFromReferenceId( videoReferenceIds );
+
+			XmlDocument xml = excelParser.ConvertExcelToCourseXml( mainStructureExcel, questionsExcel );
 			SaveFileDialog saveFileDialog = new SaveFileDialog();
 			saveFileDialog.FileName = "output.xml";
 			if ( saveFileDialog.ShowDialog() == DialogResult.OK ) {
