@@ -43,17 +43,22 @@ namespace ExcelParser
 				questionsExcel = Excel.ReadExcell( openFileDialog.FileName, XmlValueParser.Instance );
 			}
 
-			StatusLabel.Text = "Getting video id's from Brightcove API";
-			var xmlTranscriptAccesor = new XmlTranscriptAccessor();
 			var excelParser = new ExcelParser();
-			var videoReferenceIds = excelParser.GetVideoReferenceIds( mainStructureExcel );
-			var videoReferencesWithoutTranscript = videoReferenceIds.Where(vr => !xmlTranscriptAccesor.TranscriptXmlExists(vr));
-			var brightcoveResponse = BrightcoveService.GetVideoIdFromReferenceId( videoReferencesWithoutTranscript );
 
-			StatusLabel.Text = "Getting video Transcript XML from 3PlayMedia API";
-			_3playmediaService.GetTranscriptsXmlForVideo( brightcoveResponse.items );
+			if (SetTranscript.Checked)
+			{
+				StatusLabel.Text = "Getting video id's from Brightcove API";
+				var xmlTranscriptAccesor = new XmlTranscriptAccessor();
+				var videoReferenceIds = excelParser.GetVideoReferenceIds( mainStructureExcel );
+				var videoReferencesWithoutTranscript = videoReferenceIds.Where(vr => !xmlTranscriptAccesor.TranscriptXmlExists(vr));
+				var brightcoveResponse = BrightcoveService.GetVideoIdFromReferenceId( videoReferencesWithoutTranscript );
+
+				StatusLabel.Text = "Getting video Transcript XML from 3PlayMedia API";
+				_3playmediaService.GetTranscriptsXmlForVideo( brightcoveResponse.items );
+			}
+
 			StatusLabel.Text = "Generating output XML";
-			XmlDocument xml = excelParser.ConvertExcelToCourseXml( mainStructureExcel, questionsExcel );
+			XmlDocument xml = excelParser.ConvertExcelToCourseXml( mainStructureExcel, questionsExcel, SetTranscript.Checked );
 			SaveFileDialog saveFileDialog = new SaveFileDialog();
 			saveFileDialog.FileName = "output.xml";
 			if ( saveFileDialog.ShowDialog() == DialogResult.OK ) {

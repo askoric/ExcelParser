@@ -13,12 +13,11 @@ namespace ExcelParser
 	{
 		private Dictionary<string, string> generatedQuestionIds;
 
-		public List<string> GetVideoReferenceIds(Excel mainStructureExcel)
+		public List<string> GetVideoReferenceIds( Excel mainStructureExcel )
 		{
 			var referenceIds = new List<string>();
 			var rowIndex = 0;
-			foreach (var row in mainStructureExcel.Rows)
-			{
+			foreach ( var row in mainStructureExcel.Rows ) {
 				rowIndex++;
 				var atomType = row.FirstOrDefault( c => c.Type == ColumnType.AtomType );
 				if ( atomType == null || !atomType.HaveValue() ) {
@@ -26,15 +25,12 @@ namespace ExcelParser
 					continue;
 				}
 
-				if (atomType.Value == "IN")
-				{
-					var atomIdColumn = row.FirstOrDefault(c => c.Type == ColumnType.AtomId);
-					if (atomIdColumn != null && atomIdColumn.HaveValue())
-					{
-						referenceIds.Add(atomIdColumn.Value);
+				if ( atomType.Value == "IN" ) {
+					var atomIdColumn = row.FirstOrDefault( c => c.Type == ColumnType.AtomId );
+					if ( atomIdColumn != null && atomIdColumn.HaveValue() ) {
+						referenceIds.Add( atomIdColumn.Value );
 					}
-					else
-					{
+					else {
 						Program.Log.Info( String.Format( "Missing atom Id for row {0}", rowIndex ) );
 					}
 				}
@@ -42,7 +38,7 @@ namespace ExcelParser
 			return referenceIds;
 		}
 
-		public XmlDocument ConvertExcelToCourseXml( Excel mainStructureExcel, Excel questionExcel )
+		public XmlDocument ConvertExcelToCourseXml( Excel mainStructureExcel, Excel questionExcel, bool setTranscripts )
 		{
 			generatedQuestionIds = new Dictionary<string, string>();
 			XmlDocument xml = new XmlDocument();
@@ -102,8 +98,8 @@ namespace ExcelParser
 				skip = (chapterNode != null && chapterNode.GetAttribute( "display_name" ) != topicNameColumn.Value) ? false : skip;
 				if ( !skip ) {
 					var topicShortName = row.FirstOrDefault( c => c.Type == ColumnType.TopicShortName );
-					var examPercantage = row.FirstOrDefault(c => c.Type == ColumnType.ExamPercentage);
-					var description = row.FirstOrDefault(c => c.Type == ColumnType.Description);
+					var examPercantage = row.FirstOrDefault( c => c.Type == ColumnType.ExamPercentage );
+					var description = row.FirstOrDefault( c => c.Type == ColumnType.Description );
 					chapterNode = xml.CreateElement( "chapter" );
 					chapterNode.SetAttribute( "display_name", topicNameColumn != null && topicNameColumn.HaveValue() ? topicNameColumn.Value : "" );
 					chapterNode.SetAttribute( "url_name", getGuid() );
@@ -167,7 +163,6 @@ namespace ExcelParser
 					var videoNode = xml.CreateElement( "brightcove-video" );
 					videoNode.SetAttribute( "url_name", getGuid() );
 					videoNode.SetAttribute( "xblock-family", "xblock.v1" );
-					videoNode.SetAttribute( "xml_string", "&#10;" );
 					videoNode.SetAttribute( "api_bckey", "AQ~~,AAAELMh4AWE~,vVFFDlX6sNOap1Tww7YwaMvqbQ8TtDoh" );
 					videoNode.SetAttribute( "display_name", atomTitleColumn != null && atomTitleColumn.HaveValue() ? atomTitleColumn.Value : "" );
 					videoNode.SetAttribute( "api_key", "JqnRdhYvLWNtVJllXkMzGGGTh66uLLmz8JB8YlcZQlC8OX94H4ZXXw.." );
@@ -178,19 +173,25 @@ namespace ExcelParser
 					videoNode.SetAttribute( "cfa_type", "video" );
 					videoNode.SetAttribute( "atom_id", atomIdColumn != null && atomIdColumn.HaveValue() ? atomIdColumn.Value : "" );
 
-					//
-					string xmlTranscriptString = "";
-					if (atomIdColumn != null && atomIdColumn.HaveValue())
+					if (setTranscripts)
 					{
-						XmlDocument xmlTranscript = xmlTranscriptAccessor.FindVideoTranscript(atomIdColumn.Value);
-						if (xmlTranscript != null)
+						string xmlTranscriptString = "";
+						if (atomIdColumn != null && atomIdColumn.HaveValue())
 						{
-							xmlTranscriptString = xmlTranscript.InnerXml;
+							XmlDocument xmlTranscript = xmlTranscriptAccessor.FindVideoTranscript(atomIdColumn.Value);
+							if (xmlTranscript != null)
+							{
+								xmlTranscriptString = xmlTranscript.InnerXml;
+							}
+
 						}
 
+						videoNode.SetAttribute("xml_string", xmlTranscriptString);
 					}
-
-					videoNode.SetAttribute( "xml_string", xmlTranscriptString );
+					else
+					{
+						videoNode.SetAttribute( "xml_string", "&#10;" );
+					}
 
 					conceptNameContainerNode.AppendChild( videoNode );
 				}

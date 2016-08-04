@@ -36,6 +36,7 @@
 			this.label6 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
 			this.StatusLabel = new System.Windows.Forms.Label();
+			this.SetTranscript = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -119,11 +120,24 @@
 			this.StatusLabel.Size = new System.Drawing.Size(0, 13);
 			this.StatusLabel.TabIndex = 8;
 			// 
+			// SetTranscript
+			// 
+			this.SetTranscript.AutoSize = true;
+			this.SetTranscript.Checked = true;
+			this.SetTranscript.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.SetTranscript.Location = new System.Drawing.Point(284, 32);
+			this.SetTranscript.Name = "SetTranscript";
+			this.SetTranscript.Size = new System.Drawing.Size(89, 17);
+			this.SetTranscript.TabIndex = 9;
+			this.SetTranscript.Text = "SetTranscript";
+			this.SetTranscript.UseVisualStyleBackColor = true;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(578, 256);
+			this.Controls.Add(this.SetTranscript);
 			this.Controls.Add(this.StatusLabel);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.label6);
@@ -152,5 +166,6 @@
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.Label StatusLabel;
+		private System.Windows.Forms.CheckBox SetTranscript;
 	}
 }
