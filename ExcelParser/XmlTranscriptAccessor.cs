@@ -39,7 +39,7 @@ namespace ExcelParser
 			return File.Exists( String.Format( "{0}/{1}.xml", TranscriptFolderPath, videoReferenceId ) );
 		}
 
-		public void SaveVideTranscript( XmlDocument transcriptXml, string videoReferenceId )
+		public void SaveVideoTranscript( XmlDocument transcriptXml, string videoReferenceId )
 		{
 			string xmlPath = String.Format( "{0}/{1}.xml", TranscriptFolderPath, videoReferenceId );
 			transcriptXml.Save( xmlPath );

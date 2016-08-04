@@ -36,8 +36,11 @@ namespace ExcelParser
 					{
 						XmlDocument xmlDoc = new XmlDocument();
 						xmlDoc.Load(url);
+						XmlElement ttNode = (XmlElement) xmlDoc.ChildNodes[0];
+						ttNode.SetAttribute("xmlns", "http://www.w3.org/2006/04/ttaf1");
+						ttNode.SetAttribute("xmlns:tts", "http://www.w3.org/2006/04/ttaf1#styling");
 
-						xmlTranscriptAccessor.SaveVideTranscript(xmlDoc, videoIndentification.referenceId);
+						xmlTranscriptAccessor.SaveVideoTranscript(xmlDoc, videoIndentification.referenceId);
 
 					}
 					catch (Exception exc)
