@@ -181,7 +181,7 @@ namespace ExcelParser
 							XmlDocument xmlTranscript = xmlTranscriptAccessor.FindVideoTranscript(atomIdColumn.Value);
 							if (xmlTranscript != null)
 							{
-								xmlTranscriptString = xmlTranscript.InnerXml;
+								xmlTranscriptString = xmlTranscript.InnerXml.Replace( "<br />", "" ).Replace( "<br/>", "" );
 							}
 
 						}
