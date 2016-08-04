@@ -102,10 +102,14 @@ namespace ExcelParser
 				skip = (chapterNode != null && chapterNode.GetAttribute( "display_name" ) != topicNameColumn.Value) ? false : skip;
 				if ( !skip ) {
 					var topicShortName = row.FirstOrDefault( c => c.Type == ColumnType.TopicShortName );
+					var examPercantage = row.FirstOrDefault(c => c.Type == ColumnType.ExamPercentage);
+					var description = row.FirstOrDefault(c => c.Type == ColumnType.Description);
 					chapterNode = xml.CreateElement( "chapter" );
 					chapterNode.SetAttribute( "display_name", topicNameColumn != null && topicNameColumn.HaveValue() ? topicNameColumn.Value : "" );
 					chapterNode.SetAttribute( "url_name", getGuid() );
 					chapterNode.SetAttribute( "cfa_short_name", topicShortName != null && topicShortName.HaveValue() ? topicShortName.Value : "" );
+					chapterNode.SetAttribute( "exam_percentage", examPercantage != null && examPercantage.HaveValue() ? examPercantage.Value : "" );
+					chapterNode.SetAttribute( "description", description != null && description.HaveValue() ? description.Value : "" );
 					courseNode.AppendChild( chapterNode );
 				}
 
@@ -186,7 +190,7 @@ namespace ExcelParser
 
 					}
 
-					videoNode.SetAttribute( "transcript", xmlTranscriptString );
+					videoNode.SetAttribute( "xml_string", xmlTranscriptString );
 
 					conceptNameContainerNode.AppendChild( videoNode );
 				}

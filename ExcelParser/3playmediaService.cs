@@ -29,11 +29,22 @@ namespace ExcelParser
 						continue;
 					}
 
-					string url = String.Format( "http://static.3playmedia.com/files/{0}/transcript.pptxml?apikey={1}&usevideoid=1", videoIndentification.id, _3PLAY_TOKEN );
-					XmlDocument xmlDoc = new XmlDocument();
-					xmlDoc.Load( url );
+					string url = String.Format("http://static.3playmedia.com/files/{0}/transcript.pptxml?apikey={1}&usevideoid=1",
+						videoIndentification.id, _3PLAY_TOKEN);
 
-					xmlTranscriptAccessor.SaveVideTranscript( xmlDoc, videoIndentification.referenceId );
+					try
+					{
+						XmlDocument xmlDoc = new XmlDocument();
+						xmlDoc.Load(url);
+
+						xmlTranscriptAccessor.SaveVideTranscript(xmlDoc, videoIndentification.referenceId);
+
+					}
+					catch (Exception exc)
+					{
+						Program.Log.Info(String.Format("Problem with fetching transcript from following link: {0}", url));
+						Program.Log.Error( exc );
+					}
 
 					Thread.Sleep( 50 );
 
