@@ -85,7 +85,11 @@ namespace ExcelParser
 					return new ExcelColumn( columnName, ColumnType.KKEE, index );
 				case "description":
 					return new ExcelColumn( columnName, ColumnType.Description, index );
-				default:
+                case "downloads":
+                    return new ExcelColumn(columnName, ColumnType.Downloads, index);
+                case "downloads2":
+                    return new ExcelColumn(columnName, ColumnType.Downloads2, index);
+                default:
 					return new ExcelColumn( columnName, ColumnType.Undefined, index );
 			}
 		}
@@ -121,6 +125,8 @@ namespace ExcelParser
 		Reading,
 		KKEE,
 		ExamPercentage,
-		Description
+		Description,
+        Downloads,
+        Downloads2
 	}
 }

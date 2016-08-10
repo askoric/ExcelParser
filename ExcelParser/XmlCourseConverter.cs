@@ -121,14 +121,23 @@ namespace ExcelParser
 				}
 
 				var readingNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.ReadingName );
-				skip = (verticalNode != null && verticalNode.GetAttribute( "display_name" ) != readingNameColumn.Value) ? false : skip;
+                var downloadsColumn = row.FirstOrDefault(c => c.Type == ColumnType.Downloads);
+                var downloads2Column = row.FirstOrDefault(c => c.Type == ColumnType.Downloads2);
+                skip = (verticalNode != null && verticalNode.GetAttribute( "display_name" ) != readingNameColumn.Value) ? false : skip;
 				if ( !skip ) {
 					var readingColumn = row.FirstOrDefault( c => c.Type == ColumnType.Reading );
 					verticalNode = xml.CreateElement( "vertical" );
 					verticalNode.SetAttribute( "display_name", readingNameColumn != null && readingNameColumn.HaveValue() ? readingNameColumn.Value : "" );
 					verticalNode.SetAttribute( "url_name", getGuid() );
 					verticalNode.SetAttribute( "cfa_short_name", readingColumn != null && readingColumn.HaveValue() ? readingColumn.Value : "" );
-					sequentialNode.AppendChild( verticalNode );
+                    verticalNode.SetAttribute( "downloads",
+                        "[&quot;"
+                        + (downloadsColumn != null && downloadsColumn.HaveValue() ? downloadsColumn.Value : "") 
+                        + "&quot;, &quot;"
+                        + (downloads2Column != null && downloads2Column.HaveValue() ? downloads2Column.Value : "")
+                        + "&quot;]"
+                        );
+                    sequentialNode.AppendChild( verticalNode );
 				}
 
 				skip = (bandContainerNode != null && bandContainerNode.GetAttribute( "display_name" ) != bandColumn.Value) ? false : skip;
