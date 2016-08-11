@@ -123,6 +123,12 @@ namespace ExcelParser
 				var readingNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.ReadingName );
                 var downloadsColumn = row.FirstOrDefault(c => c.Type == ColumnType.Downloads);
                 var downloads2Column = row.FirstOrDefault(c => c.Type == ColumnType.Downloads2);
+                var downloads = new List<string>();
+                if(downloadsColumn != null && downloadsColumn.HaveValue())
+                    downloads.Add(downloadsColumn.Value);
+                if (downloads2Column != null && downloads2Column.HaveValue())
+                    downloads.Add(downloads2Column.Value);
+
                 skip = (verticalNode != null && verticalNode.GetAttribute( "display_name" ) != readingNameColumn.Value) ? false : skip;
 				if ( !skip ) {
 					var readingColumn = row.FirstOrDefault( c => c.Type == ColumnType.Reading );
@@ -130,13 +136,7 @@ namespace ExcelParser
 					verticalNode.SetAttribute( "display_name", readingNameColumn != null && readingNameColumn.HaveValue() ? readingNameColumn.Value : "" );
 					verticalNode.SetAttribute( "url_name", getGuid() );
 					verticalNode.SetAttribute( "cfa_short_name", readingColumn != null && readingColumn.HaveValue() ? readingColumn.Value : "" );
-                    verticalNode.SetAttribute( "downloads",
-                        "[&quot;"
-                        + (downloadsColumn != null && downloadsColumn.HaveValue() ? downloadsColumn.Value : "") 
-                        + "&quot;, &quot;"
-                        + (downloads2Column != null && downloads2Column.HaveValue() ? downloads2Column.Value : "")
-                        + "&quot;]"
-                        );
+                    verticalNode.SetAttribute("downloads", JsonConvert.SerializeObject(downloads));                    
                     sequentialNode.AppendChild( verticalNode );
 				}
 
