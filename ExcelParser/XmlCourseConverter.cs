@@ -39,7 +39,7 @@ namespace ExcelParser
 			return referenceIds;
 		}
 
-		public XmlDocument ConvertExcelToCourseXml( Excel mainStructureExcel, Excel questionExcel, Excel losExcel, bool setTranscripts )
+		public XmlDocument ConvertExcelToCourseXml( Excel mainStructureExcel, Excel questionExcel, Excel losExcel, Excel acceptanceCriteriaExcel, bool setTranscripts )
 		{
 			generatedQuestionIds = new Dictionary<string, string>();
 			XmlDocument xml = new XmlDocument();
@@ -139,26 +139,23 @@ namespace ExcelParser
 					verticalNode.SetAttribute( "cfa_short_name", readingColumn != null && readingColumn.HaveValue() ? readingColumn.Value : "" );
 					verticalNode.SetAttribute( "downloads", JsonConvert.SerializeObject( downloads ) );
 
-					if (losExcel != null)
-					{
+					if ( losExcel != null ) {
 						var outcomes = new List<object>();
 
-						var losRows = losExcel.Rows.Where(r => 
-							r.Any(c=> c.Type == ColumnType.ReadingName && c.Value == readingNameColumn.Value) &&
-							r.Any(c => c.Type == ColumnType.TopicName && c.Value == topicNameColumn.Value) &&
-							r.Any(c=> c.Type == ColumnType.SessionName && c.Value == sessionNameColumn.Value)
+						var losRows = losExcel.Rows.Where( r =>
+							r.Any( c => c.Type == ColumnType.ReadingName && c.Value == readingNameColumn.Value ) &&
+							r.Any( c => c.Type == ColumnType.TopicName && c.Value == topicNameColumn.Value ) &&
+							r.Any( c => c.Type == ColumnType.SessionName && c.Value == sessionNameColumn.Value )
 							);
 
-						foreach (var losRow in losRows)
-						{
-							var cfaAlpfaColumn = losRow.Find(c => c.Type == ColumnType.CfaAlpha);
-							var losTextColumn = losRow.Find(c => c.Type == ColumnType.LosText);
+						foreach ( var losRow in losRows ) {
+							var cfaAlpfaColumn = losRow.Find( c => c.Type == ColumnType.CfaAlpha );
+							var losTextColumn = losRow.Find( c => c.Type == ColumnType.LosText );
 
-							outcomes.Add(new
-							{
+							outcomes.Add( new {
 								text = losTextColumn != null ? losTextColumn.Value : "",
 								letter = cfaAlpfaColumn != null ? cfaAlpfaColumn.Value : ""
-							});
+							} );
 						}
 
 						verticalNode.SetAttribute( "outcome_statements", JsonConvert.SerializeObject( outcomes ) );
@@ -168,6 +165,9 @@ namespace ExcelParser
 					sequentialNode.AppendChild( verticalNode );
 				}
 
+				var conceptNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.ConceptName );
+				var conceptIdColumn = row.FirstOrDefault( c => c.Type == ColumnType.ConceptId );
+
 				skip = (bandContainerNode != null && bandContainerNode.GetAttribute( "display_name" ) != bandColumn.Value) ? false : skip;
 				if ( !skip ) {
 					bandContainerNode = xml.CreateElement( "container" );
@@ -176,13 +176,28 @@ namespace ExcelParser
 					bandContainerNode.SetAttribute( "xblock-family", "xblock.v1" );
 					bandContainerNode.SetAttribute( "container_description", "" );
 					bandContainerNode.SetAttribute( "learning_objective_id", "" );
+
+					string targetScore = "";
+					if ( acceptanceCriteriaExcel != null ) {
+						var acceptanceCriteriaRow =
+							acceptanceCriteriaExcel.Rows.FirstOrDefault(
+								r => r.Any( c => c.Type == ColumnType.Lo1 && c.Value == conceptIdColumn.Value ) );
+
+						if ( acceptanceCriteriaRow != null ) {
+							var scoreColumn = acceptanceCriteriaRow.FirstOrDefault( c => c.Type == ColumnType.TargetScore );
+							if ( scoreColumn != null && scoreColumn.HaveValue() ) {
+								targetScore = scoreColumn.Value.Replace( "0.", "" );
+							}
+						}
+					}
+
+					bandContainerNode.SetAttribute( "acceptance_criteria", targetScore );
+
 					verticalNode.AppendChild( bandContainerNode );
 				}
 
-				var conceptNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.ConceptName );
 				skip = (conceptNameContainerNode != null && conceptNameContainerNode.GetAttribute( "display_name" ) != conceptNameColumn.Value) ? false : skip;
 				if ( !skip ) {
-					var conceptIdColumn = row.FirstOrDefault( c => c.Type == ColumnType.ConceptId );
 
 					conceptNameContainerNode = xml.CreateElement( "container" );
 					conceptNameContainerNode.SetAttribute( "url_name", getGuid() );

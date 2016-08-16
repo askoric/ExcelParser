@@ -93,6 +93,10 @@ namespace ExcelParser
 					return new ExcelColumn( columnName, ColumnType.CfaAlpha, index );
 				case "los text":
 					return new ExcelColumn( columnName, ColumnType.LosText, index );
+				case "lo1":
+					return new ExcelColumn( columnName, ColumnType.Lo1, index );
+				case "target score":
+					return new ExcelColumn( columnName, ColumnType.TargetScore, index );
 				default:
 					return new ExcelColumn( columnName, ColumnType.Undefined, index );
 			}
@@ -133,6 +137,8 @@ namespace ExcelParser
 		Downloads,
 		Downloads2,
 		CfaAlpha,
-		LosText
+		LosText,
+		Lo1,
+		TargetScore
 	}
 }
