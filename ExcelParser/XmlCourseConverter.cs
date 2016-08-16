@@ -186,7 +186,7 @@ namespace ExcelParser
 						if ( acceptanceCriteriaRow != null ) {
 							var scoreColumn = acceptanceCriteriaRow.FirstOrDefault( c => c.Type == ColumnType.TargetScore );
 							if ( scoreColumn != null && scoreColumn.HaveValue() ) {
-								targetScore = scoreColumn.Value.Replace( "0.", "" );
+								targetScore = scoreColumn.Value;
 							}
 						}
 					}
