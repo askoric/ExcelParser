@@ -80,16 +80,20 @@ namespace ExcelParser
 				case "reading":
 					return new ExcelColumn( columnName, ColumnType.Reading, index );
 				case "exam percentage":
-					return new ExcelColumn(columnName, ColumnType.ExamPercentage, index);
+					return new ExcelColumn( columnName, ColumnType.ExamPercentage, index );
 				case "(kk/ee) instruct (k/e) asseess":
 					return new ExcelColumn( columnName, ColumnType.KKEE, index );
 				case "description":
 					return new ExcelColumn( columnName, ColumnType.Description, index );
-                case "downloads":
-                    return new ExcelColumn(columnName, ColumnType.Downloads, index);
-                case "downloads2":
-                    return new ExcelColumn(columnName, ColumnType.Downloads2, index);
-                default:
+				case "downloads":
+					return new ExcelColumn( columnName, ColumnType.Downloads, index );
+				case "downloads2":
+					return new ExcelColumn( columnName, ColumnType.Downloads2, index );
+				case "cfa_alpha":
+					return new ExcelColumn( columnName, ColumnType.CfaAlpha, index );
+				case "los text":
+					return new ExcelColumn( columnName, ColumnType.LosText, index );
+				default:
 					return new ExcelColumn( columnName, ColumnType.Undefined, index );
 			}
 		}
@@ -126,7 +130,9 @@ namespace ExcelParser
 		KKEE,
 		ExamPercentage,
 		Description,
-        Downloads,
-        Downloads2
+		Downloads,
+		Downloads2,
+		CfaAlpha,
+		LosText
 	}
 }

@@ -37,6 +37,7 @@
 			this.label7 = new System.Windows.Forms.Label();
 			this.StatusLabel = new System.Windows.Forms.Label();
 			this.SetTranscript = new System.Windows.Forms.CheckBox();
+			this.label8 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -88,16 +89,16 @@
 			// label5
 			// 
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(50, 136);
+			this.label5.Location = new System.Drawing.Point(50, 141);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(231, 13);
+			this.label5.Size = new System.Drawing.Size(133, 13);
 			this.label5.TabIndex = 5;
-			this.label5.Text = "3) Save output result as xml. Viola you are done";
+			this.label5.Text = "3) Lastly upload LOS excel";
 			// 
 			// label6
 			// 
 			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(29, 159);
+			this.label6.Location = new System.Drawing.Point(32, 177);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(275, 13);
 			this.label6.TabIndex = 6;
@@ -132,11 +133,21 @@
 			this.SetTranscript.Text = "SetTranscript";
 			this.SetTranscript.UseVisualStyleBackColor = true;
 			// 
+			// label8
+			// 
+			this.label8.AutoSize = true;
+			this.label8.Location = new System.Drawing.Point(50, 164);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(231, 13);
+			this.label8.TabIndex = 10;
+			this.label8.Text = "3) Save output result as xml. Viola you are done";
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(578, 256);
+			this.Controls.Add(this.label8);
 			this.Controls.Add(this.SetTranscript);
 			this.Controls.Add(this.StatusLabel);
 			this.Controls.Add(this.label7);
@@ -149,7 +160,6 @@
 			this.Controls.Add(this.label1);
 			this.Name = "MainForm";
 			this.Text = "Excel => Xml";
-			this.Load += new System.EventHandler(this.MainForm_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -167,5 +177,6 @@
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.Label StatusLabel;
 		private System.Windows.Forms.CheckBox SetTranscript;
+		private System.Windows.Forms.Label label8;
 	}
 }

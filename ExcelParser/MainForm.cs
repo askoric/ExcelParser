@@ -33,6 +33,7 @@ namespace ExcelParser
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			Excel mainStructureExcel = null;
 			Excel questionsExcel = null;
+			Excel losExcel = null;
 			if ( openFileDialog.ShowDialog() == DialogResult.OK )
 			{
 				StatusLabel.Text = "reading excel";
@@ -41,6 +42,10 @@ namespace ExcelParser
 
 			if ( openFileDialog.ShowDialog() == DialogResult.OK ) {
 				questionsExcel = Excel.ReadExcell( openFileDialog.FileName, XmlValueParser.Instance );
+			}
+
+			if ( openFileDialog.ShowDialog() == DialogResult.OK ) {
+				losExcel = Excel.ReadExcell( openFileDialog.FileName, XmlValueParser.Instance );
 			}
 
 			var excelParser = new ExcelParser();
@@ -58,7 +63,7 @@ namespace ExcelParser
 			}
 
 			StatusLabel.Text = "Generating output XML";
-			XmlDocument xml = excelParser.ConvertExcelToCourseXml( mainStructureExcel, questionsExcel, SetTranscript.Checked );
+			XmlDocument xml = excelParser.ConvertExcelToCourseXml( mainStructureExcel, questionsExcel, losExcel, SetTranscript.Checked );
 			SaveFileDialog saveFileDialog = new SaveFileDialog();
 			saveFileDialog.FileName = "output.xml";
 			if ( saveFileDialog.ShowDialog() == DialogResult.OK ) {
@@ -69,9 +74,5 @@ namespace ExcelParser
 
 		}
 
-		private void MainForm_Load( object sender, EventArgs e )
-		{
-
-		}
 	}
 }

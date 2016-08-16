@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 
 namespace ExcelParser
 {
+
 	public class ExcelParser
 	{
 		private Dictionary<string, string> generatedQuestionIds;
@@ -38,7 +39,7 @@ namespace ExcelParser
 			return referenceIds;
 		}
 
-		public XmlDocument ConvertExcelToCourseXml( Excel mainStructureExcel, Excel questionExcel, bool setTranscripts )
+		public XmlDocument ConvertExcelToCourseXml( Excel mainStructureExcel, Excel questionExcel, Excel losExcel, bool setTranscripts )
 		{
 			generatedQuestionIds = new Dictionary<string, string>();
 			XmlDocument xml = new XmlDocument();
@@ -121,23 +122,50 @@ namespace ExcelParser
 				}
 
 				var readingNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.ReadingName );
-                var downloadsColumn = row.FirstOrDefault(c => c.Type == ColumnType.Downloads);
-                var downloads2Column = row.FirstOrDefault(c => c.Type == ColumnType.Downloads2);
-                var downloads = new List<string>();
-                if(downloadsColumn != null && downloadsColumn.HaveValue())
-                    downloads.Add(downloadsColumn.Value);
-                if (downloads2Column != null && downloads2Column.HaveValue())
-                    downloads.Add(downloads2Column.Value);
+				var downloadsColumn = row.FirstOrDefault( c => c.Type == ColumnType.Downloads );
+				var downloads2Column = row.FirstOrDefault( c => c.Type == ColumnType.Downloads2 );
+				var downloads = new List<string>();
+				if ( downloadsColumn != null && downloadsColumn.HaveValue() )
+					downloads.Add( downloadsColumn.Value );
+				if ( downloads2Column != null && downloads2Column.HaveValue() )
+					downloads.Add( downloads2Column.Value );
 
-                skip = (verticalNode != null && verticalNode.GetAttribute( "display_name" ) != readingNameColumn.Value) ? false : skip;
+				skip = (verticalNode != null && verticalNode.GetAttribute( "display_name" ) != readingNameColumn.Value) ? false : skip;
 				if ( !skip ) {
 					var readingColumn = row.FirstOrDefault( c => c.Type == ColumnType.Reading );
 					verticalNode = xml.CreateElement( "vertical" );
 					verticalNode.SetAttribute( "display_name", readingNameColumn != null && readingNameColumn.HaveValue() ? readingNameColumn.Value : "" );
 					verticalNode.SetAttribute( "url_name", getGuid() );
 					verticalNode.SetAttribute( "cfa_short_name", readingColumn != null && readingColumn.HaveValue() ? readingColumn.Value : "" );
-                    verticalNode.SetAttribute("downloads", JsonConvert.SerializeObject(downloads));                    
-                    sequentialNode.AppendChild( verticalNode );
+					verticalNode.SetAttribute( "downloads", JsonConvert.SerializeObject( downloads ) );
+
+					if (losExcel != null)
+					{
+						var outcomes = new List<object>();
+
+						var losRows = losExcel.Rows.Where(r => 
+							r.Any(c=> c.Type == ColumnType.ReadingName && c.Value == readingNameColumn.Value) &&
+							r.Any(c => c.Type == ColumnType.TopicName && c.Value == topicNameColumn.Value) &&
+							r.Any(c=> c.Type == ColumnType.SessionName && c.Value == sessionNameColumn.Value)
+							);
+
+						foreach (var losRow in losRows)
+						{
+							var cfaAlpfaColumn = losRow.Find(c => c.Type == ColumnType.CfaAlpha);
+							var losTextColumn = losRow.Find(c => c.Type == ColumnType.LosText);
+
+							outcomes.Add(new
+							{
+								text = losTextColumn != null ? losTextColumn.Value : "",
+								letter = cfaAlpfaColumn != null ? cfaAlpfaColumn.Value : ""
+							});
+						}
+
+						verticalNode.SetAttribute( "outcome_statements", JsonConvert.SerializeObject( outcomes ) );
+
+					}
+
+					sequentialNode.AppendChild( verticalNode );
 				}
 
 				skip = (bandContainerNode != null && bandContainerNode.GetAttribute( "display_name" ) != bandColumn.Value) ? false : skip;
@@ -182,23 +210,19 @@ namespace ExcelParser
 					videoNode.SetAttribute( "cfa_type", "video" );
 					videoNode.SetAttribute( "atom_id", atomIdColumn != null && atomIdColumn.HaveValue() ? atomIdColumn.Value : "" );
 
-					if (setTranscripts)
-					{
+					if ( setTranscripts ) {
 						string xmlTranscriptString = "";
-						if (atomIdColumn != null && atomIdColumn.HaveValue())
-						{
-							XmlDocument xmlTranscript = xmlTranscriptAccessor.FindVideoTranscript(atomIdColumn.Value);
-							if (xmlTranscript != null)
-							{
+						if ( atomIdColumn != null && atomIdColumn.HaveValue() ) {
+							XmlDocument xmlTranscript = xmlTranscriptAccessor.FindVideoTranscript( atomIdColumn.Value );
+							if ( xmlTranscript != null ) {
 								xmlTranscriptString = xmlTranscript.InnerXml.Replace( "<br />", "" ).Replace( "<br/>", "" );
 							}
 
 						}
 
-						videoNode.SetAttribute("xml_string", xmlTranscriptString);
+						videoNode.SetAttribute( "xml_string", xmlTranscriptString );
 					}
-					else
-					{
+					else {
 						videoNode.SetAttribute( "xml_string", "&#10;" );
 					}
 
