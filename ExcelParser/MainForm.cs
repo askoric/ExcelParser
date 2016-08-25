@@ -80,5 +80,23 @@ namespace ExcelParser
 
 		}
 
+		/// <summary>
+		/// Fill DB from existing course XMLS
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void FillDbFromExistingCourseXml_Click( object sender, EventArgs e )
+		{
+			OpenFileDialog openFileDialog = new OpenFileDialog();
+			XmlDocument courseXml = new XmlDocument();
+			if ( openFileDialog.ShowDialog() == DialogResult.OK ) {
+				courseXml.Load( openFileDialog.FileName );
+				StatusLabel.Text = "Importing DB from course XML";
+				XmlCourseParser.FillDbIdsFromCourseXml( courseXml );
+				StatusLabel.Text = "Done importing DB.";
+
+			}
+		}
+
 	}
 }

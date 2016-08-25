@@ -40,8 +40,12 @@ namespace ExcelParser
 				case "readingname":
 				case "readingtitle":
 					return new ExcelColumn( columnName, ColumnType.ReadingName, index );
+				case "reading abb":
+					return new ExcelColumn( columnName, ColumnType.ReadingId, index );
 				case "band":
 					return new ExcelColumn( columnName, ColumnType.Band, index );
+				case "bandid":
+					return new ExcelColumn( columnName, ColumnType.BandId, index );
 				case "conceptname":
 				case "lo description":
 					return new ExcelColumn( columnName, ColumnType.ConceptName, index );
@@ -112,7 +116,9 @@ namespace ExcelParser
 		TopicShortName,
 		SessionName,
 		ReadingName,
+		ReadingId,
 		Band,
+		BandId,
 		ConceptName,
 		ConceptId,
 		QuestionId,

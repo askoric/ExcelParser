@@ -39,6 +39,7 @@
 			this.SetTranscript = new System.Windows.Forms.CheckBox();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
+			this.FillDbFromExistingCourseXml = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -152,11 +153,22 @@
 			this.label9.TabIndex = 11;
 			this.label9.Text = "4) Save output result as xml. Viola you are done";
 			// 
+			// FillDbFromExistingCourseXml
+			// 
+			this.FillDbFromExistingCourseXml.Location = new System.Drawing.Point(35, 291);
+			this.FillDbFromExistingCourseXml.Name = "FillDbFromExistingCourseXml";
+			this.FillDbFromExistingCourseXml.Size = new System.Drawing.Size(168, 23);
+			this.FillDbFromExistingCourseXml.TabIndex = 12;
+			this.FillDbFromExistingCourseXml.Text = "Fill Db from Existing course XML";
+			this.FillDbFromExistingCourseXml.UseVisualStyleBackColor = true;
+			this.FillDbFromExistingCourseXml.Click += new System.EventHandler( this.FillDbFromExistingCourseXml_Click );
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(578, 256);
+			this.ClientSize = new System.Drawing.Size(721, 419);
+			this.Controls.Add(this.FillDbFromExistingCourseXml);
 			this.Controls.Add(this.label9);
 			this.Controls.Add(this.label8);
 			this.Controls.Add(this.SetTranscript);
@@ -190,5 +202,6 @@
 		private System.Windows.Forms.CheckBox SetTranscript;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.Button FillDbFromExistingCourseXml;
 	}
 }
