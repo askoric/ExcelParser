@@ -100,6 +100,10 @@ namespace ExcelParser
 				if ( !skip ) {
 					var topicShortName = row.FirstOrDefault( c => c.Type == ColumnType.TopicShortName );
 					var examPercantage = row.FirstOrDefault( c => c.Type == ColumnType.ExamPercentage );
+					var lockedColumn = row.FirstOrDefault( c => c.Type == ColumnType.Locked );
+					var colorColumn = row.FirstOrDefault( c => c.Type == ColumnType.Color );
+					var cfaTypeColumn = row.FirstOrDefault( c => c.Type == ColumnType.CfaType );
+
 					var description = row.FirstOrDefault( c => c.Type == ColumnType.Description );
 					chapterNode = xml.CreateElement( "chapter" );
 					chapterNode.SetAttribute( "display_name", topicNameColumn != null && topicNameColumn.HaveValue() ? topicNameColumn.Value : "" );
@@ -107,6 +111,9 @@ namespace ExcelParser
 					chapterNode.SetAttribute( "cfa_short_name", topicShortName != null && topicShortName.HaveValue() ? topicShortName.Value : "" );
 					chapterNode.SetAttribute( "exam_percentage", examPercantage != null && examPercantage.HaveValue() ? examPercantage.Value : "" );
 					chapterNode.SetAttribute( "description", description != null && description.HaveValue() ? description.Value : "" );
+					chapterNode.SetAttribute( "locked", lockedColumn != null && lockedColumn.HaveValue() ? lockedColumn.Value : "" );
+					chapterNode.SetAttribute( "topic_color", colorColumn != null && colorColumn.HaveValue() ? colorColumn.Value : "" );
+					chapterNode.SetAttribute( "cfa_type", cfaTypeColumn != null && cfaTypeColumn.HaveValue() ? cfaTypeColumn.Value : "" );
 					courseNode.AppendChild( chapterNode );
 				}
 
@@ -369,7 +376,7 @@ namespace ExcelParser
 
 		private string getNewGuid()
 		{
-			return Guid.NewGuid().ToString().Replace("-", "");
+			return Guid.NewGuid().ToString().Replace( "-", "" );
 		}
 
 

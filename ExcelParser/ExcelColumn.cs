@@ -103,6 +103,12 @@ namespace ExcelParser
 					return new ExcelColumn( columnName, ColumnType.Lo1, index );
 				case "target score":
 					return new ExcelColumn( columnName, ColumnType.TargetScore, index );
+				case "locked":
+					return new ExcelColumn( columnName, ColumnType.Locked, index );
+				case "color":
+					return new ExcelColumn( columnName, ColumnType.Color, index );
+				case "type":
+					return new ExcelColumn( columnName, ColumnType.CfaType, index );
 				default:
 					return new ExcelColumn( columnName, ColumnType.Undefined, index );
 			}
@@ -148,6 +154,9 @@ namespace ExcelParser
 		CfaAlpha,
 		LosText,
 		Lo1,
-		TargetScore
+		TargetScore,
+		Locked,
+		Color,
+		CfaType
 	}
 }
