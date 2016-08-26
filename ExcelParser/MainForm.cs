@@ -90,11 +90,10 @@ namespace ExcelParser
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			XmlDocument courseXml = new XmlDocument();
 			if ( openFileDialog.ShowDialog() == DialogResult.OK ) {
-				courseXml.Load( openFileDialog.FileName );
 				StatusLabel.Text = "Importing DB from course XML";
+				courseXml.Load( openFileDialog.FileName );
 				XmlCourseParser.FillDbIdsFromCourseXml( courseXml );
 				StatusLabel.Text = "Done importing DB.";
-
 			}
 		}
 

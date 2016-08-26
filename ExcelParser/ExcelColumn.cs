@@ -81,6 +81,8 @@ namespace ExcelParser
 					return new ExcelColumn( columnName, ColumnType.AtomTitle, index );
 				case "studysession":
 					return new ExcelColumn( columnName, ColumnType.StudySession, index );
+				case "studysession abb":
+					return new ExcelColumn( columnName, ColumnType.StudySessionId, index );
 				case "reading":
 					return new ExcelColumn( columnName, ColumnType.Reading, index );
 				case "exam percentage":
@@ -136,6 +138,7 @@ namespace ExcelParser
 		AtomId,
 		AtomTitle,
 		StudySession,
+		StudySessionId,
 		Reading,
 		KKEE,
 		ExamPercentage,

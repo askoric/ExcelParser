@@ -18,7 +18,7 @@ namespace ExcelParser
 			conn = new SQLiteConnection( "Data Source=Database.sqlite;Version=3;" );
 			conn.Open();
 
-			string sql = "CREATE TABLE IF NOT EXISTS GeneratedIds (element_id VARCHAR(150), type VARCHAR(20), generated_id VARCHAR(20))";
+			string sql = "CREATE TABLE IF NOT EXISTS GeneratedIds (element_id VARCHAR(50), type VARCHAR(20), generated_id VARCHAR(32))";
 
 			SQLiteCommand command = new SQLiteCommand( sql, conn );
 			command.ExecuteNonQuery();
