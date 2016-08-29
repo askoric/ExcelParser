@@ -17,10 +17,10 @@ namespace ExcelParser
 {
 	public partial class MainForm : Form
 	{
-		private Excel MainStructureExcel { get; set; }
-		private Excel QuestionsExcel { get; set; }
-		private Excel LosExcel { get; set; }
-		private Excel AcceptanceCriteriaExcel { get; set; }
+		private Excel<MainStructureExcelColumn, MainStructureColumnType> MainStructureExcel { get; set; }
+		private Excel<QuestionExcelColumn, QuestionExcelColumnType> QuestionsExcel { get; set; }
+		private Excel<LosExcelColumn, LosExcelColumnType> LosExcel { get; set; }
+		private Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> AcceptanceCriteriaExcel { get; set; }
 
 		private OpenFileDialog OpenFileDialog { get; set; }
 
@@ -34,7 +34,7 @@ namespace ExcelParser
 
 		private void openFileDialog1_FileOk( object sender, CancelEventArgs e )
 		{
-
+			var a = new LosExcelColumn();
 		}
 
 		private void button1_Click( object sender, EventArgs e )
@@ -62,23 +62,48 @@ namespace ExcelParser
 		private void UploadMainStructureExcelBtn_Click( object sender, EventArgs e )
 		{
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
-				MainStructureExcel = Excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-				MainStructureExcelCheckImg.Visible = true;
+				var excel = new Excel<MainStructureExcelColumn, MainStructureColumnType>();
+				MainStructureExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
+				if ( MainStructureExcel.Header.Count() == Enum.GetNames( typeof( MainStructureColumnType ) ).Length - 1 ) {
+					MainStructureExcelCheckImg.Visible = true;
+				}
+				else {
+					MainStructureExcelCheckImg.Visible = false;
+					MessageBox.Show( "Invalid excel. Excel does not have all required columns: TopicTitle, Topic, SessionTitle, ReadingTitle, Band, BandId, lo description, lo /concept id, item id, atom type, atom id, atom title, StudySession, StudySession abb, reading, exam percentage, description, downloads, downloads2, locked, color, type" );
+					MainStructureExcel = null;
+				}
 			}
 		}
 		private void UploadQuestionsExcelBtn_Click( object sender, EventArgs e )
 		{
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
-				QuestionsExcel = Excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-				QuestionExcelCheckImg.Visible = true;
+				var excel = new Excel<QuestionExcelColumn, QuestionExcelColumnType>();
+				QuestionsExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
+				if ( QuestionsExcel.Header.Count() == Enum.GetNames( typeof( QuestionExcelColumnType ) ).Length - 1 ) {
+					QuestionExcelCheckImg.Visible = true;
+				}
+				else {
+					QuestionExcelCheckImg.Visible = false;
+					MessageBox.Show( "Invalid excel. Excel does not have all required columns: id (original & new placeholder), Question, Question_Image_UR, Answer_Image_Url, Correct, Answer_1, Answer_2, Answer_3, Answer_4, Juristification, (kk/ee) instruct (k/e) asseess" );
+					QuestionsExcel = null;
+				}
 			}
 		}
 
 		private void UploadLOSExcelBtn_Click( object sender, EventArgs e )
 		{
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
-				LosExcel = Excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-				LosExcelCheckImg.Visible = true;
+				var excel = new Excel<LosExcelColumn, LosExcelColumnType>();
+				LosExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
+				if ( LosExcel.Header.Count() == Enum.GetNames( typeof( LosExcelColumnType ) ).Length - 1 ) {
+					LosExcelCheckImg.Visible = true;
+				}
+				else {
+					LosExcelCheckImg.Visible = false;
+					MessageBox.Show("Invalid excel. Excel does not have all required columns: TopicTitle, SessionTitle, ReadingTitle Cfa_Alpha, Los Text" );
+					LosExcel = null;
+				}
+
 			}
 		}
 
@@ -86,31 +111,36 @@ namespace ExcelParser
 		private void UploadAcceptanceCriteriaExcel_Click( object sender, EventArgs e )
 		{
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
-				AcceptanceCriteriaExcel = Excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-				AcceptanceCriteriaCheckImg.Visible = true;
+				var excel = new Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType>();
+				AcceptanceCriteriaExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
+				if ( AcceptanceCriteriaExcel.Header.Count() == Enum.GetNames( typeof( AcceptanceCriteriaColumnType ) ).Length - 1 ) {
+					AcceptanceCriteriaCheckImg.Visible = true;
+				}
+				else {
+					AcceptanceCriteriaCheckImg.Visible = false;
+					MessageBox.Show( "Invalid excel. Excel does not have all required columns: Lo1, Target Score" );
+					AcceptanceCriteriaExcel = null;
+				}
 			}
 		}
 
 		private void GenerateCourseXmlBtn_Click( object sender, EventArgs e )
 		{
-			string missingExcels = String.Format("{0} {1} {2} {3}", MainStructureExcel == null ? "Main Structure Excel ," : "",
+			string missingExcels = String.Format( "{0} {1} {2} {3}", MainStructureExcel == null ? "Main Structure Excel ," : "",
 				AcceptanceCriteriaExcel == null ? "Acceptance Criteria Excel ," : "", LosExcel == null ? "Los Excel ," : "", QuestionsExcel == null ? "Question Excel ," : "" );
 
-			if ( !String.IsNullOrWhiteSpace( missingExcels ) )
-			{
+			if ( !String.IsNullOrWhiteSpace( missingExcels ) ) {
 				MessageBox.Show( String.Format( "You need to upload {0} in order to generate course XML", missingExcels.Remove( missingExcels.Length - 2 ) ) );
 				return;
 			}
 
-				
 			var excelParser = new ExcelParser();
 
-			if (SetTranscript.Checked)
-			{
+			if ( SetTranscript.Checked ) {
 				StatusLabel.Text = "Getting video id's from Brightcove API";
 				var xmlTranscriptAccesor = new XmlTranscriptAccessor();
 				var videoReferenceIds = excelParser.GetVideoReferenceIds( MainStructureExcel );
-				var videoReferencesWithoutTranscript = videoReferenceIds.Where(vr => !xmlTranscriptAccesor.TranscriptXmlExists(vr));
+				var videoReferencesWithoutTranscript = videoReferenceIds.Where( vr => !xmlTranscriptAccesor.TranscriptXmlExists( vr ) );
 				var brightcoveResponse = BrightcoveService.GetVideoIdFromReferenceId( videoReferencesWithoutTranscript );
 
 				StatusLabel.Text = "Getting video Transcript XML from 3PlayMedia API";

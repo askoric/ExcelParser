@@ -108,7 +108,7 @@
 			// 
 			// UploadQuestionsExcelBtn
 			// 
-			this.UploadQuestionsExcelBtn.Location = new System.Drawing.Point(25, 70);
+			this.UploadQuestionsExcelBtn.Location = new System.Drawing.Point(25, 41);
 			this.UploadQuestionsExcelBtn.Name = "UploadQuestionsExcelBtn";
 			this.UploadQuestionsExcelBtn.Size = new System.Drawing.Size(152, 23);
 			this.UploadQuestionsExcelBtn.TabIndex = 2;
@@ -118,7 +118,7 @@
 			// 
 			// UploadLOSExcelBtn
 			// 
-			this.UploadLOSExcelBtn.Location = new System.Drawing.Point(25, 41);
+			this.UploadLOSExcelBtn.Location = new System.Drawing.Point(25, 70);
 			this.UploadLOSExcelBtn.Name = "UploadLOSExcelBtn";
 			this.UploadLOSExcelBtn.Size = new System.Drawing.Size(152, 23);
 			this.UploadLOSExcelBtn.TabIndex = 3;
@@ -160,7 +160,7 @@
 			// LosExcelCheckImg
 			// 
 			this.LosExcelCheckImg.Image = ((System.Drawing.Image)(resources.GetObject("LosExcelCheckImg.Image")));
-			this.LosExcelCheckImg.Location = new System.Drawing.Point(183, 41);
+			this.LosExcelCheckImg.Location = new System.Drawing.Point(183, 70);
 			this.LosExcelCheckImg.Name = "LosExcelCheckImg";
 			this.LosExcelCheckImg.Size = new System.Drawing.Size(16, 23);
 			this.LosExcelCheckImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -171,7 +171,7 @@
 			// QuestionExcelCheckImg
 			// 
 			this.QuestionExcelCheckImg.Image = ((System.Drawing.Image)(resources.GetObject("QuestionExcelCheckImg.Image")));
-			this.QuestionExcelCheckImg.Location = new System.Drawing.Point(183, 70);
+			this.QuestionExcelCheckImg.Location = new System.Drawing.Point(183, 41);
 			this.QuestionExcelCheckImg.Name = "QuestionExcelCheckImg";
 			this.QuestionExcelCheckImg.Size = new System.Drawing.Size(16, 23);
 			this.QuestionExcelCheckImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;

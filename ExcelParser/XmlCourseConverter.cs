@@ -14,20 +14,20 @@ namespace ExcelParser
 	{
 		private Dictionary<string, string> generatedQuestionIds;
 
-		public List<string> GetVideoReferenceIds( Excel mainStructureExcel )
+		public List<string> GetVideoReferenceIds( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel )
 		{
 			var referenceIds = new List<string>();
 			var rowIndex = 0;
 			foreach ( var row in mainStructureExcel.Rows ) {
 				rowIndex++;
-				var atomType = row.FirstOrDefault( c => c.Type == ColumnType.AtomType );
+				var atomType = row.FirstOrDefault( c => c.Type == MainStructureColumnType.AtomType );
 				if ( atomType == null || !atomType.HaveValue() ) {
 					Program.Log.Info( String.Format( "Missing atom type for row {0}", rowIndex ) );
 					continue;
 				}
 
 				if ( atomType.Value == "IN" ) {
-					var atomIdColumn = row.FirstOrDefault( c => c.Type == ColumnType.AtomId );
+					var atomIdColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.AtomId );
 					if ( atomIdColumn != null && atomIdColumn.HaveValue() ) {
 						referenceIds.Add( atomIdColumn.Value );
 					}
@@ -39,7 +39,7 @@ namespace ExcelParser
 			return referenceIds;
 		}
 
-		public XmlDocument ConvertExcelToCourseXml( Excel mainStructureExcel, Excel questionExcel, Excel losExcel, Excel acceptanceCriteriaExcel, bool setTranscripts )
+		public XmlDocument ConvertExcelToCourseXml( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel, Excel<QuestionExcelColumn, QuestionExcelColumnType> questionExcel, Excel<LosExcelColumn, LosExcelColumnType> losExcel, Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> acceptanceCriteriaExcel, bool setTranscripts )
 		{
 			generatedQuestionIds = new Dictionary<string, string>();
 			XmlDocument xml = new XmlDocument();
@@ -70,41 +70,41 @@ namespace ExcelParser
 			foreach ( var row in mainStructureExcel.Rows ) {
 
 				//Band need to be legal value else skip this row
-				var bandColumn = row.FirstOrDefault( c => c.Type == ColumnType.Band );
+				var bandColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Band );
 				if ( bandColumn == null || bandColumn.Value == null || bandColumn.Value[0].ToString().ToLower() != "b" ) {
 					continue;
 				}
 
-				var atomType = row.FirstOrDefault( c => c.Type == ColumnType.AtomType );
+				var atomType = row.FirstOrDefault( c => c.Type == MainStructureColumnType.AtomType );
 				if ( atomType == null || !atomType.HaveValue() || !(atomType.Value == "IN" || atomType.Value == "Q") ) {
 					continue;
 				}
 
-				var atomIdColumn = row.FirstOrDefault( c => c.Type == ColumnType.AtomId );
-				List<ExcelColumn> questionRow = null;
+				var atomIdColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.AtomId );
+				List<IExcelColumn<QuestionExcelColumnType>> questionRow = null;
 
 				if ( atomType.Value == "Q" ) {
 					if ( atomIdColumn == null || !atomIdColumn.HaveValue() ) {
 						continue;
 					}
 
-					questionRow = questionExcel.Rows.FirstOrDefault( r => r.Any( c => c.Type == ColumnType.QuestionId && c.Value == atomIdColumn.Value ) );
+					questionRow = questionExcel.Rows.FirstOrDefault( r => r.Any( c => c.Type == QuestionExcelColumnType.QuestionId && c.Value == atomIdColumn.Value ) );
 					if ( questionRow == null ) {
 						continue;
 					}
 				}
 
 
-				var topicNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.TopicName );
+				var topicNameColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.TopicName );
 				skip = (chapterNode != null && chapterNode.GetAttribute( "display_name" ) != topicNameColumn.Value) ? false : skip;
 				if ( !skip ) {
-					var topicShortName = row.FirstOrDefault( c => c.Type == ColumnType.TopicShortName );
-					var examPercantage = row.FirstOrDefault( c => c.Type == ColumnType.ExamPercentage );
-					var lockedColumn = row.FirstOrDefault( c => c.Type == ColumnType.Locked );
-					var colorColumn = row.FirstOrDefault( c => c.Type == ColumnType.Color );
-					var cfaTypeColumn = row.FirstOrDefault( c => c.Type == ColumnType.CfaType );
+					var topicShortName = row.FirstOrDefault( c => c.Type == MainStructureColumnType.TopicShortName );
+					var examPercantage = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ExamPercentage );
+					var lockedColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Locked );
+					var colorColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Color );
+					var cfaTypeColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.CfaType );
 
-					var description = row.FirstOrDefault( c => c.Type == ColumnType.Description );
+					var description = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Description );
 					chapterNode = xml.CreateElement( "chapter" );
 					chapterNode.SetAttribute( "display_name", topicNameColumn != null && topicNameColumn.HaveValue() ? topicNameColumn.Value : "" );
 					chapterNode.SetAttribute( "url_name", getGuid( topicShortName.Value, CourseTypes.Topic ) );
@@ -117,11 +117,11 @@ namespace ExcelParser
 					courseNode.AppendChild( chapterNode );
 				}
 
-				var sessionNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.SessionName );
+				var sessionNameColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.SessionName );
 				skip = (sequentialNode != null && sequentialNode.GetAttribute( "display_name" ) != sessionNameColumn.Value) ? false : skip;
 				if ( !skip ) {
-					var studySession = row.FirstOrDefault( c => c.Type == ColumnType.StudySession );
-					var studySessionId = row.FirstOrDefault( c => c.Type == ColumnType.StudySessionId );
+					var studySession = row.FirstOrDefault( c => c.Type == MainStructureColumnType.StudySession );
+					var studySessionId = row.FirstOrDefault( c => c.Type == MainStructureColumnType.StudySessionId );
 					sequentialNode = xml.CreateElement( "sequential" );
 					sequentialNode.SetAttribute( "display_name", sessionNameColumn != null && sessionNameColumn.HaveValue() ? sessionNameColumn.Value : "" );
 					sequentialNode.SetAttribute( "url_name", getGuid( studySessionId.Value, CourseTypes.StudySession ) );
@@ -129,9 +129,9 @@ namespace ExcelParser
 					chapterNode.AppendChild( sequentialNode );
 				}
 
-				var readingNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.ReadingName );
-				var downloadsColumn = row.FirstOrDefault( c => c.Type == ColumnType.Downloads );
-				var downloads2Column = row.FirstOrDefault( c => c.Type == ColumnType.Downloads2 );
+				var readingNameColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ReadingName );
+				var downloadsColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Downloads );
+				var downloads2Column = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Downloads2 );
 				var downloads = new List<string>();
 				if ( downloadsColumn != null && downloadsColumn.HaveValue() )
 					downloads.Add( downloadsColumn.Value );
@@ -140,8 +140,8 @@ namespace ExcelParser
 
 				skip = (verticalNode != null && verticalNode.GetAttribute( "display_name" ) != readingNameColumn.Value) ? false : skip;
 				if ( !skip ) {
-					var readingColumn = row.FirstOrDefault( c => c.Type == ColumnType.Reading );
-					var readingIdColumn = row.FirstOrDefault( c => c.Type == ColumnType.ReadingId );
+					var readingColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Reading );
+					var readingIdColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ReadingId );
 					verticalNode = xml.CreateElement( "vertical" );
 					verticalNode.SetAttribute( "display_name", readingNameColumn != null && readingNameColumn.HaveValue() ? readingNameColumn.Value : "" );
 					verticalNode.SetAttribute( "url_name", getGuid( readingIdColumn.Value, CourseTypes.Reading ) );
@@ -152,14 +152,14 @@ namespace ExcelParser
 						var outcomes = new List<object>();
 
 						var losRows = losExcel.Rows.Where( r =>
-							r.Any( c => c.Type == ColumnType.ReadingName && c.Value == readingNameColumn.Value ) &&
-							r.Any( c => c.Type == ColumnType.TopicName && c.Value == topicNameColumn.Value ) &&
-							r.Any( c => c.Type == ColumnType.SessionName && c.Value == sessionNameColumn.Value )
+							r.Any( c => c.Type == LosExcelColumnType.ReadingTitle && c.Value == readingNameColumn.Value ) &&
+							r.Any( c => c.Type == LosExcelColumnType.TopicTitle && c.Value == topicNameColumn.Value ) &&
+							r.Any( c => c.Type == LosExcelColumnType.SessionTitle && c.Value == sessionNameColumn.Value )
 							);
 
 						foreach ( var losRow in losRows ) {
-							var cfaAlpfaColumn = losRow.Find( c => c.Type == ColumnType.CfaAlpha );
-							var losTextColumn = losRow.Find( c => c.Type == ColumnType.LosText );
+							var cfaAlpfaColumn = losRow.Find( c => c.Type == LosExcelColumnType.CfaAlpha );
+							var losTextColumn = losRow.Find( c => c.Type == LosExcelColumnType.LosText );
 
 							outcomes.Add( new {
 								text = losTextColumn != null ? losTextColumn.Value : "",
@@ -174,12 +174,12 @@ namespace ExcelParser
 					sequentialNode.AppendChild( verticalNode );
 				}
 
-				var conceptNameColumn = row.FirstOrDefault( c => c.Type == ColumnType.ConceptName );
-				var conceptIdColumn = row.FirstOrDefault( c => c.Type == ColumnType.ConceptId );
+				var conceptNameColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ConceptName );
+				var conceptIdColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ConceptId );
 
 				skip = (bandContainerNode != null && bandContainerNode.GetAttribute( "display_name" ) != bandColumn.Value) ? false : skip;
 				if ( !skip ) {
-					var bandIdColumn = row.FirstOrDefault( c => c.Type == ColumnType.BandId );
+					var bandIdColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.BandId );
 					bandContainerNode = xml.CreateElement( "container" );
 					bandContainerNode.SetAttribute( "url_name", getGuid( bandIdColumn.Value, CourseTypes.Band ) );
 					bandContainerNode.SetAttribute( "display_name", bandColumn != null && bandColumn.HaveValue() ? bandColumn.Value : "" );
@@ -191,10 +191,10 @@ namespace ExcelParser
 					if ( acceptanceCriteriaExcel != null ) {
 						var acceptanceCriteriaRow =
 							acceptanceCriteriaExcel.Rows.FirstOrDefault(
-								r => r.Any( c => c.Type == ColumnType.Lo1 && c.Value == conceptIdColumn.Value ) );
+								r => r.Any( c => c.Type == AcceptanceCriteriaColumnType.Lo1 && c.Value == conceptIdColumn.Value ) );
 
 						if ( acceptanceCriteriaRow != null ) {
-							var scoreColumn = acceptanceCriteriaRow.FirstOrDefault( c => c.Type == ColumnType.TargetScore );
+							var scoreColumn = acceptanceCriteriaRow.FirstOrDefault( c => c.Type == AcceptanceCriteriaColumnType.TargetScore );
 							if ( scoreColumn != null && scoreColumn.HaveValue() ) {
 								targetScore = scoreColumn.Value;
 							}
@@ -219,8 +219,8 @@ namespace ExcelParser
 
 				//VIDEO
 				if ( atomType.Value == "IN" ) {
-					var atomTitleColumn = row.FirstOrDefault( c => c.Type == ColumnType.AtomTitle );
-					var itemIdCoclumn = row.FirstOrDefault( c => c.Type == ColumnType.ItemId );
+					var atomTitleColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.AtomTitle );
+					var itemIdCoclumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ItemId );
 					var videoNode = xml.CreateElement( "brightcove-video" );
 					videoNode.SetAttribute( "url_name", getGuid( atomIdColumn.Value, CourseTypes.Video ) );
 					videoNode.SetAttribute( "xblock-family", "xblock.v1" );
@@ -256,10 +256,10 @@ namespace ExcelParser
 				else {
 					var questionDic = generateQuestionIds();
 					var problemBuilderNode = xml.CreateElement( "problem-builder-block" );
-					var questionIdColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.QuestionId );
-					var questionColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.Question );
-					var kkEeColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.KKEE );
-					var answerImageUrlColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.AnswerImageUrl );
+					var questionIdColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.QuestionId );
+					var questionColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Question );
+					var kkEeColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.KKEE );
+					var answerImageUrlColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.AnswerImageUrl );
 					string questionValue = questionColumn.HaveValue() ? questionColumn.Value : "Question Missing";
 
 					problemBuilderNode.SetAttribute( "display_name", questionValue.Replace( "<br>", "" ) );
@@ -276,7 +276,7 @@ namespace ExcelParser
 					conceptNameContainerNode.AppendChild( problemBuilderNode );
 
 					var pbMcqNode = xml.CreateElement( "pb-mcq-block" );
-					var correctColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.Correct );
+					var correctColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Correct );
 
 					var actualCorrectValues = new List<string>();
 
@@ -294,7 +294,7 @@ namespace ExcelParser
 					pbMcqNode.SetAttribute( "fitch_question_id", questionIdColumn.Value );
 					pbMcqNode.SetAttribute( "correct_choices", (correctColumn != null && correctColumn.Value != null) ? JsonConvert.SerializeObject( actualCorrectValues ) : "" );
 
-					var questionImageUrlColumn = questionRow.FirstOrDefault( c => c.Type == ColumnType.QuestionImageUrl );
+					var questionImageUrlColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.QuestionImageUrl );
 
 					if ( questionImageUrlColumn != null && questionImageUrlColumn.HaveValue() ) {
 						pbMcqNode.SetAttribute( "image", questionImageUrlColumn.Value );
@@ -304,7 +304,7 @@ namespace ExcelParser
 
 					var questionIds = new List<string>();
 
-					var answer1Column = questionRow.FirstOrDefault( c => c.Type == ColumnType.Answer1 );
+					var answer1Column = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Answer1 );
 					var question1Id = questionDic["A"];
 					var answer1Node = GetAnswerNode( xml, answer1Column, question1Id, false );
 					if ( answer1Node != null ) {
@@ -312,7 +312,7 @@ namespace ExcelParser
 						questionIds.Add( question1Id );
 					}
 
-					var answer2Column = questionRow.FirstOrDefault( c => c.Type == ColumnType.Answer2 );
+					var answer2Column = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Answer2 );
 					var question2Id = questionDic["B"];
 					var answer2Node = GetAnswerNode( xml, answer2Column, question2Id, true );
 					if ( answer2Node != null ) {
@@ -320,7 +320,7 @@ namespace ExcelParser
 						questionIds.Add( question2Id );
 					}
 
-					var answer3Column = questionRow.FirstOrDefault( c => c.Type == ColumnType.Answer3 );
+					var answer3Column = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Answer3 );
 					var question3Id = questionDic["C"];
 					var answer3Node = GetAnswerNode( xml, answer3Column, question3Id, true );
 					if ( answer3Node != null ) {
@@ -328,7 +328,7 @@ namespace ExcelParser
 						questionIds.Add( question3Id );
 					}
 
-					var answer4Column = questionRow.FirstOrDefault( c => c.Type == ColumnType.Answer4 );
+					var answer4Column = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Answer4 );
 					var question4Id = questionDic["D"];
 					var answer4Node = GetAnswerNode( xml, answer4Column, question4Id );
 					if ( answer4Node != null ) {
@@ -338,7 +338,7 @@ namespace ExcelParser
 
 
 					//tip  block
-					var justificationCell = questionRow.FirstOrDefault( c => c.Type == ColumnType.Justification );
+					var justificationCell = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Justification );
 					if ( justificationCell != null && justificationCell.HaveValue() ) {
 						var questionTipNode = xml.CreateElement( "pb-tip-block" );
 						questionTipNode.SetAttribute( "url_name", getNewGuid() );
@@ -409,7 +409,7 @@ namespace ExcelParser
 
 		}
 
-		private XmlElement GetAnswerNode( XmlDocument xml, ExcelColumn answerColumn, string questionId, bool addMissingValue = false )
+		private XmlElement GetAnswerNode( XmlDocument xml, IExcelColumn<QuestionExcelColumnType> answerColumn, string questionId, bool addMissingValue = false )
 		{
 			if ( answerColumn.HaveValue() || addMissingValue ) {
 				var answerNode = xml.CreateElement( "pb-choice-block" );

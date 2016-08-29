@@ -9,21 +9,22 @@ using Excel;
 
 namespace ExcelParser
 {
-	public class Excel
+
+	public class Excel<T, TCtype> where T : IExcelColumn<TCtype>, new()
 	{
-		private Excel()
+		public Excel()
 		{
-			Header = new List<ExcelColumn>();
-			Rows = new List<List<ExcelColumn>>();
+			Header = new List<IExcelColumn<TCtype>>();
+			Rows = new List<List<IExcelColumn<TCtype>>>();
 		}
 
 		public int NoRows { get; set; }
-		public List<ExcelColumn> Header { get; set; }
-		public List<List<ExcelColumn>> Rows { get; set; }
+		public List<IExcelColumn<TCtype>> Header { get; set; }
+		public List<List<IExcelColumn<TCtype>>> Rows { get; set; }
 
-		public static Excel ReadExcell( string filePath, IValueParser valueParser )
+		public Excel<T, TCtype> ReadExcell( string filePath, IValueParser valueParser )
 		{
-			var excel = new Excel();
+			var excel = new Excel<T, TCtype>();
 
 			FileStream stream = File.Open( filePath, FileMode.Open, FileAccess.Read );
 
@@ -40,13 +41,15 @@ namespace ExcelParser
 					while ( haveColumns ) {
 						try {
 							string columnName = excelReader.GetString( columnIndex );
-							ExcelColumn column = ExcelColumn.GetColumn( columnName, columnIndex );
 
-							if ( column.Type != ColumnType.Undefined ) {
+							var column = new T().GetColumn( columnName, columnIndex );
+
+							if ( column.IsRecognizableColumn() ) {
 								excel.Header.Add( column );
 							}
 
 							columnIndex++;
+
 						}
 						catch ( IndexOutOfRangeException exc ) {
 							haveColumns = false;
@@ -55,11 +58,16 @@ namespace ExcelParser
 				}
 				else
 				{
-					var rowValues = new List<ExcelColumn>(); 
+					var rowValues = new List<IExcelColumn<TCtype>>(); 
 					foreach (var headerColumn in excel.Header)
 					{
 						string rowValue = valueParser.ParseValue(excelReader.GetString( headerColumn.ColumnIndex ));
-						rowValues.Add(new ExcelColumn(rowValue, headerColumn.Type, headerColumn.ColumnIndex));
+						rowValues.Add( new T
+						{
+							Value = rowValue,
+							Type = headerColumn.Type,
+							ColumnIndex = headerColumn.ColumnIndex
+						});
 					}
 
 					excel.Rows.Add(rowValues);
