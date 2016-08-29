@@ -27,89 +27,40 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.label1 = new System.Windows.Forms.Label();
-			this.button1 = new System.Windows.Forms.Button();
-			this.label2 = new System.Windows.Forms.Label();
-			this.label3 = new System.Windows.Forms.Label();
-			this.label4 = new System.Windows.Forms.Label();
-			this.label5 = new System.Windows.Forms.Label();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.label6 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
 			this.StatusLabel = new System.Windows.Forms.Label();
 			this.SetTranscript = new System.Windows.Forms.CheckBox();
-			this.label8 = new System.Windows.Forms.Label();
-			this.label9 = new System.Windows.Forms.Label();
 			this.FillDbFromExistingCourseXml = new System.Windows.Forms.Button();
+			this.UploadMainStructureExcelBtn = new System.Windows.Forms.Button();
+			this.UploadQuestionsExcelBtn = new System.Windows.Forms.Button();
+			this.UploadLOSExcelBtn = new System.Windows.Forms.Button();
+			this.UploadAcceptanceCriteriaExcel = new System.Windows.Forms.Button();
+			this.GenerateCourseXmlBtn = new System.Windows.Forms.Button();
+			this.MainStructureExcelCheckImg = new System.Windows.Forms.PictureBox();
+			this.LosExcelCheckImg = new System.Windows.Forms.PictureBox();
+			this.QuestionExcelCheckImg = new System.Windows.Forms.PictureBox();
+			this.AcceptanceCriteriaCheckImg = new System.Windows.Forms.PictureBox();
+			((System.ComponentModel.ISupportInitialize)(this.MainStructureExcelCheckImg)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.LosExcelCheckImg)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.QuestionExcelCheckImg)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.AcceptanceCriteriaCheckImg)).BeginInit();
 			this.SuspendLayout();
-			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(110, 33);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(58, 13);
-			this.label1.TabIndex = 0;
-			this.label1.Text = "Klikenzi =>";
-			// 
-			// button1
-			// 
-			this.button1.Location = new System.Drawing.Point(174, 28);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(75, 23);
-			this.button1.TabIndex = 1;
-			this.button1.Text = "I feel lucky";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
-			// 
-			// label2
-			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(32, 62);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(65, 13);
-			this.label2.TabIndex = 2;
-			this.label2.Text = "Instructione:";
-			// 
-			// label3
-			// 
-			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(50, 75);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(318, 13);
-			this.label3.TabIndex = 3;
-			this.label3.Text = "1) Click button above and first upload excel file with main structure";
-			// 
-			// label4
-			// 
-			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(50, 97);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(321, 13);
-			this.label4.TabIndex = 4;
-			this.label4.Text = "2) After uploading of first excel upload excel with question structure";
-			// 
-			// label5
-			// 
-			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(50, 121);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(105, 13);
-			this.label5.TabIndex = 5;
-			this.label5.Text = "3) Upload LOS excel";
 			// 
 			// label6
 			// 
 			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(32, 191);
+			this.label6.Location = new System.Drawing.Point(22, 141);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(275, 13);
+			this.label6.Size = new System.Drawing.Size(227, 13);
 			this.label6.TabIndex = 6;
-			this.label6.Text = "!important excel files need to be in 97-2003 excel format. ";
+			this.label6.Text = "Excel files need to be in 97-2003 excel format. ";
 			// 
 			// label7
 			// 
 			this.label7.AutoSize = true;
-			this.label7.Location = new System.Drawing.Point(32, 223);
+			this.label7.Location = new System.Drawing.Point(22, 239);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(43, 13);
 			this.label7.TabIndex = 7;
@@ -118,7 +69,7 @@
 			// StatusLabel
 			// 
 			this.StatusLabel.AutoSize = true;
-			this.StatusLabel.Location = new System.Drawing.Point(91, 214);
+			this.StatusLabel.Location = new System.Drawing.Point(71, 239);
 			this.StatusLabel.Name = "StatusLabel";
 			this.StatusLabel.Size = new System.Drawing.Size(0, 13);
 			this.StatusLabel.TabIndex = 8;
@@ -128,61 +79,142 @@
 			this.SetTranscript.AutoSize = true;
 			this.SetTranscript.Checked = true;
 			this.SetTranscript.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.SetTranscript.Location = new System.Drawing.Point(284, 32);
+			this.SetTranscript.Location = new System.Drawing.Point(352, 137);
 			this.SetTranscript.Name = "SetTranscript";
 			this.SetTranscript.Size = new System.Drawing.Size(89, 17);
 			this.SetTranscript.TabIndex = 9;
 			this.SetTranscript.Text = "SetTranscript";
 			this.SetTranscript.UseVisualStyleBackColor = true;
 			// 
-			// label8
-			// 
-			this.label8.AutoSize = true;
-			this.label8.Location = new System.Drawing.Point(50, 145);
-			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(177, 13);
-			this.label8.TabIndex = 10;
-			this.label8.Text = "3) Upload Acceptance criteria Excel";
-			// 
-			// label9
-			// 
-			this.label9.AutoSize = true;
-			this.label9.Location = new System.Drawing.Point(50, 169);
-			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(231, 13);
-			this.label9.TabIndex = 11;
-			this.label9.Text = "4) Save output result as xml. Viola you are done";
-			// 
 			// FillDbFromExistingCourseXml
 			// 
-			this.FillDbFromExistingCourseXml.Location = new System.Drawing.Point(35, 291);
+			this.FillDbFromExistingCourseXml.Location = new System.Drawing.Point(25, 178);
 			this.FillDbFromExistingCourseXml.Name = "FillDbFromExistingCourseXml";
-			this.FillDbFromExistingCourseXml.Size = new System.Drawing.Size(168, 23);
+			this.FillDbFromExistingCourseXml.Size = new System.Drawing.Size(195, 31);
 			this.FillDbFromExistingCourseXml.TabIndex = 12;
 			this.FillDbFromExistingCourseXml.Text = "Fill Db from Existing course XML";
 			this.FillDbFromExistingCourseXml.UseVisualStyleBackColor = true;
-			this.FillDbFromExistingCourseXml.Click += new System.EventHandler( this.FillDbFromExistingCourseXml_Click );
+			this.FillDbFromExistingCourseXml.Click += new System.EventHandler(this.FillDbFromExistingCourseXml_Click);
+			// 
+			// UploadMainStructureExcelBtn
+			// 
+			this.UploadMainStructureExcelBtn.Location = new System.Drawing.Point(25, 12);
+			this.UploadMainStructureExcelBtn.Name = "UploadMainStructureExcelBtn";
+			this.UploadMainStructureExcelBtn.Size = new System.Drawing.Size(152, 23);
+			this.UploadMainStructureExcelBtn.TabIndex = 1;
+			this.UploadMainStructureExcelBtn.Text = "Upload Main Structure Excel";
+			this.UploadMainStructureExcelBtn.UseVisualStyleBackColor = true;
+			this.UploadMainStructureExcelBtn.Click += new System.EventHandler(this.UploadMainStructureExcelBtn_Click);
+			// 
+			// UploadQuestionsExcelBtn
+			// 
+			this.UploadQuestionsExcelBtn.Location = new System.Drawing.Point(25, 70);
+			this.UploadQuestionsExcelBtn.Name = "UploadQuestionsExcelBtn";
+			this.UploadQuestionsExcelBtn.Size = new System.Drawing.Size(152, 23);
+			this.UploadQuestionsExcelBtn.TabIndex = 2;
+			this.UploadQuestionsExcelBtn.Text = "Upload Questions Excel";
+			this.UploadQuestionsExcelBtn.UseVisualStyleBackColor = true;
+			this.UploadQuestionsExcelBtn.Click += new System.EventHandler(this.UploadQuestionsExcelBtn_Click);
+			// 
+			// UploadLOSExcelBtn
+			// 
+			this.UploadLOSExcelBtn.Location = new System.Drawing.Point(25, 41);
+			this.UploadLOSExcelBtn.Name = "UploadLOSExcelBtn";
+			this.UploadLOSExcelBtn.Size = new System.Drawing.Size(152, 23);
+			this.UploadLOSExcelBtn.TabIndex = 3;
+			this.UploadLOSExcelBtn.Text = "Upload LOS Excel";
+			this.UploadLOSExcelBtn.UseVisualStyleBackColor = true;
+			this.UploadLOSExcelBtn.Click += new System.EventHandler(this.UploadLOSExcelBtn_Click);
+			// 
+			// UploadAcceptanceCriteriaExcel
+			// 
+			this.UploadAcceptanceCriteriaExcel.Location = new System.Drawing.Point(25, 99);
+			this.UploadAcceptanceCriteriaExcel.Name = "UploadAcceptanceCriteriaExcel";
+			this.UploadAcceptanceCriteriaExcel.Size = new System.Drawing.Size(152, 23);
+			this.UploadAcceptanceCriteriaExcel.TabIndex = 4;
+			this.UploadAcceptanceCriteriaExcel.Text = "Upload Acceptance Criteria Excel";
+			this.UploadAcceptanceCriteriaExcel.UseVisualStyleBackColor = true;
+			this.UploadAcceptanceCriteriaExcel.Click += new System.EventHandler(this.UploadAcceptanceCriteriaExcel_Click);
+			// 
+			// GenerateCourseXmlBtn
+			// 
+			this.GenerateCourseXmlBtn.Location = new System.Drawing.Point(217, 12);
+			this.GenerateCourseXmlBtn.Name = "GenerateCourseXmlBtn";
+			this.GenerateCourseXmlBtn.Size = new System.Drawing.Size(224, 110);
+			this.GenerateCourseXmlBtn.TabIndex = 5;
+			this.GenerateCourseXmlBtn.Text = "Generate Course XML";
+			this.GenerateCourseXmlBtn.UseVisualStyleBackColor = true;
+			this.GenerateCourseXmlBtn.Click += new System.EventHandler(this.GenerateCourseXmlBtn_Click);
+			// 
+			// MainStructureExcelCheckImg
+			// 
+			this.MainStructureExcelCheckImg.Image = ((System.Drawing.Image)(resources.GetObject("MainStructureExcelCheckImg.Image")));
+			this.MainStructureExcelCheckImg.Location = new System.Drawing.Point(183, 12);
+			this.MainStructureExcelCheckImg.Name = "MainStructureExcelCheckImg";
+			this.MainStructureExcelCheckImg.Size = new System.Drawing.Size(16, 23);
+			this.MainStructureExcelCheckImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+			this.MainStructureExcelCheckImg.TabIndex = 13;
+			this.MainStructureExcelCheckImg.TabStop = false;
+			this.MainStructureExcelCheckImg.Visible = false;
+			// 
+			// LosExcelCheckImg
+			// 
+			this.LosExcelCheckImg.Image = ((System.Drawing.Image)(resources.GetObject("LosExcelCheckImg.Image")));
+			this.LosExcelCheckImg.Location = new System.Drawing.Point(183, 41);
+			this.LosExcelCheckImg.Name = "LosExcelCheckImg";
+			this.LosExcelCheckImg.Size = new System.Drawing.Size(16, 23);
+			this.LosExcelCheckImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+			this.LosExcelCheckImg.TabIndex = 14;
+			this.LosExcelCheckImg.TabStop = false;
+			this.LosExcelCheckImg.Visible = false;
+			// 
+			// QuestionExcelCheckImg
+			// 
+			this.QuestionExcelCheckImg.Image = ((System.Drawing.Image)(resources.GetObject("QuestionExcelCheckImg.Image")));
+			this.QuestionExcelCheckImg.Location = new System.Drawing.Point(183, 70);
+			this.QuestionExcelCheckImg.Name = "QuestionExcelCheckImg";
+			this.QuestionExcelCheckImg.Size = new System.Drawing.Size(16, 23);
+			this.QuestionExcelCheckImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+			this.QuestionExcelCheckImg.TabIndex = 15;
+			this.QuestionExcelCheckImg.TabStop = false;
+			this.QuestionExcelCheckImg.Visible = false;
+			// 
+			// AcceptanceCriteriaCheckImg
+			// 
+			this.AcceptanceCriteriaCheckImg.Image = ((System.Drawing.Image)(resources.GetObject("AcceptanceCriteriaCheckImg.Image")));
+			this.AcceptanceCriteriaCheckImg.Location = new System.Drawing.Point(183, 99);
+			this.AcceptanceCriteriaCheckImg.Name = "AcceptanceCriteriaCheckImg";
+			this.AcceptanceCriteriaCheckImg.Size = new System.Drawing.Size(16, 23);
+			this.AcceptanceCriteriaCheckImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+			this.AcceptanceCriteriaCheckImg.TabIndex = 16;
+			this.AcceptanceCriteriaCheckImg.TabStop = false;
+			this.AcceptanceCriteriaCheckImg.Visible = false;
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(721, 419);
+			this.ClientSize = new System.Drawing.Size(469, 281);
+			this.Controls.Add(this.AcceptanceCriteriaCheckImg);
+			this.Controls.Add(this.QuestionExcelCheckImg);
+			this.Controls.Add(this.LosExcelCheckImg);
+			this.Controls.Add(this.MainStructureExcelCheckImg);
+			this.Controls.Add(this.GenerateCourseXmlBtn);
+			this.Controls.Add(this.UploadAcceptanceCriteriaExcel);
+			this.Controls.Add(this.UploadLOSExcelBtn);
+			this.Controls.Add(this.UploadQuestionsExcelBtn);
+			this.Controls.Add(this.UploadMainStructureExcelBtn);
 			this.Controls.Add(this.FillDbFromExistingCourseXml);
-			this.Controls.Add(this.label9);
-			this.Controls.Add(this.label8);
 			this.Controls.Add(this.SetTranscript);
 			this.Controls.Add(this.StatusLabel);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.label6);
-			this.Controls.Add(this.label5);
-			this.Controls.Add(this.label4);
-			this.Controls.Add(this.label3);
-			this.Controls.Add(this.label2);
-			this.Controls.Add(this.button1);
-			this.Controls.Add(this.label1);
 			this.Name = "MainForm";
 			this.Text = "Excel => Xml";
+			((System.ComponentModel.ISupportInitialize)(this.MainStructureExcelCheckImg)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.LosExcelCheckImg)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.QuestionExcelCheckImg)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.AcceptanceCriteriaCheckImg)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -190,18 +222,19 @@
 
 		#endregion
 
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button button1;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.Label StatusLabel;
 		private System.Windows.Forms.CheckBox SetTranscript;
-		private System.Windows.Forms.Label label8;
-		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.Button FillDbFromExistingCourseXml;
+		private System.Windows.Forms.Button UploadMainStructureExcelBtn;
+		private System.Windows.Forms.Button UploadQuestionsExcelBtn;
+		private System.Windows.Forms.Button UploadLOSExcelBtn;
+		private System.Windows.Forms.Button UploadAcceptanceCriteriaExcel;
+		private System.Windows.Forms.Button GenerateCourseXmlBtn;
+		private System.Windows.Forms.PictureBox MainStructureExcelCheckImg;
+		private System.Windows.Forms.PictureBox LosExcelCheckImg;
+		private System.Windows.Forms.PictureBox QuestionExcelCheckImg;
+		private System.Windows.Forms.PictureBox AcceptanceCriteriaCheckImg;
 	}
 }
