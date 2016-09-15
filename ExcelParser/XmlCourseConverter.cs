@@ -278,7 +278,8 @@ namespace ExcelParser
 					var questionColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Question );
 					var kkEeColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.KKEE );
 					var answerImageUrlColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.AnswerImageUrl );
-					string questionValue = questionColumn.HaveValue() ? questionColumn.Value : "Question Missing";
+					var questionImageUrlColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.QuestionImageUrl );
+					string questionValue = questionColumn.HaveValue() ? questionColumn.Value : questionImageUrlColumn.HaveValue() ? "" : "Question Missing";
 
 					problemBuilderNode.SetAttribute( "display_name", questionValue.Replace( "<br>", "" ) );
 					problemBuilderNode.SetAttribute( "url_name", getGuid( atomIdColumn.Value, CourseTypes.Question ) );
@@ -312,7 +313,6 @@ namespace ExcelParser
 					pbMcqNode.SetAttribute( "fitch_question_id", questionIdColumn.Value );
 					pbMcqNode.SetAttribute( "correct_choices", (correctColumn != null && correctColumn.Value != null) ? JsonConvert.SerializeObject( actualCorrectValues ) : "" );
 
-					var questionImageUrlColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.QuestionImageUrl );
 
 					if ( questionImageUrlColumn != null && questionImageUrlColumn.HaveValue() ) {
 						pbMcqNode.SetAttribute( "image", questionImageUrlColumn.Value );
@@ -475,7 +475,8 @@ namespace ExcelParser
 					var questionType = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.QuestionType );
 					var questionColumn = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.Question );
 					var questionIdColumn = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.QuestionId );
-					string questionValue = questionColumn.HaveValue() ? questionColumn.Value : "Question Missing";
+					var questionImageUrlColumn = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.QuestionImageUrl );
+					string questionValue = questionColumn.HaveValue() ? questionColumn.Value : questionImageUrlColumn.HaveValue() ? "" : "Question Missing";
 
 					problemBuilderNode.SetAttribute( "display_name", questionValue.Replace( "<br>", "" ) );
 					problemBuilderNode.SetAttribute( "url_name", getGuid( questionId, CourseTypes.Question ) );
@@ -508,7 +509,6 @@ namespace ExcelParser
 					pbMcqNode.SetAttribute( "fitch_question_id", questionIdColumn.Value );
 					pbMcqNode.SetAttribute( "correct_choices", (correctColumn != null && correctColumn.Value != null) ? JsonConvert.SerializeObject( actualCorrectValues ) : "" );
 
-					var questionImageUrlColumn = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.QuestionImageUrl );
 
 					if ( questionImageUrlColumn != null && questionImageUrlColumn.HaveValue() ) {
 						pbMcqNode.SetAttribute( "image", questionImageUrlColumn.Value );
