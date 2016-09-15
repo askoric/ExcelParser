@@ -198,6 +198,75 @@ namespace ExcelParser
 		TargetScore
 	}
 
+	public class SsTestExcelColumn : ExcelColumn<SsTestExcelColumnType>
+	{
+		public SsTestExcelColumn()
+		{
+		}
+
+		public SsTestExcelColumn( string value, SsTestExcelColumnType type, int index ) : base( value, type, index ) { }
+
+		public override bool IsRecognizableColumn()
+		{
+			return this.Type != SsTestExcelColumnType.Undefined;
+		}
+
+		public override IExcelColumn<SsTestExcelColumnType> GetColumn( string columnName, int index )
+		{
+			if ( columnName != null ) {
+				switch ( columnName.ToLower().Trim() ) {
+					case "session abbreviation":
+						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.StudySessionId, index );
+					case "k_structure":
+						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.KStructure, index );
+					case "q_id":
+						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.QuestionId, index );
+					case "q_type":
+						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.QuestionType, index );
+					case "question":
+						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Question, index );
+					case "answer_1":
+						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Answer1, index );
+					case "answer_2":
+						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Answer2, index );
+					case "answer_3":
+						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Answer3, index );
+					case "answer_4":
+						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Answer4, index );
+					case "answer_image_url":
+						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.AnswerImageUrl, index );
+					case "correct":
+						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Correct, index );
+					case "question_image_url":
+						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.QuestionImageUrl, index );
+					case "justification":
+						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Justification, index );
+				}
+			}
+
+			return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Undefined, index );
+		}
+	}
+
+
+	public enum SsTestExcelColumnType
+	{
+		Undefined,
+		StudySessionId,
+		KStructure,
+		QuestionId,
+		Question,
+		QuestionType,
+		Answer1,
+		Answer2,
+		Answer3,
+		Answer4,
+		AnswerImageUrl,
+		Correct,
+		QuestionImageUrl,
+		Justification
+	}
+
 
 	public class MainStructureExcelColumn : ExcelColumn<MainStructureColumnType>
 	{

@@ -42,16 +42,19 @@
 			this.LosExcelCheckImg = new System.Windows.Forms.PictureBox();
 			this.QuestionExcelCheckImg = new System.Windows.Forms.PictureBox();
 			this.AcceptanceCriteriaCheckImg = new System.Windows.Forms.PictureBox();
+			this.UploadSSTestsExcel = new System.Windows.Forms.Button();
+			this.UploadSsTestCheckImage = new System.Windows.Forms.PictureBox();
 			((System.ComponentModel.ISupportInitialize)(this.MainStructureExcelCheckImg)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.LosExcelCheckImg)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.QuestionExcelCheckImg)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.AcceptanceCriteriaCheckImg)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.UploadSsTestCheckImage)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// label6
 			// 
 			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(22, 141);
+			this.label6.Location = new System.Drawing.Point(22, 174);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(227, 13);
 			this.label6.TabIndex = 6;
@@ -60,7 +63,7 @@
 			// label7
 			// 
 			this.label7.AutoSize = true;
-			this.label7.Location = new System.Drawing.Point(22, 239);
+			this.label7.Location = new System.Drawing.Point(22, 257);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(43, 13);
 			this.label7.TabIndex = 7;
@@ -69,7 +72,7 @@
 			// StatusLabel
 			// 
 			this.StatusLabel.AutoSize = true;
-			this.StatusLabel.Location = new System.Drawing.Point(71, 239);
+			this.StatusLabel.Location = new System.Drawing.Point(71, 257);
 			this.StatusLabel.Name = "StatusLabel";
 			this.StatusLabel.Size = new System.Drawing.Size(0, 13);
 			this.StatusLabel.TabIndex = 8;
@@ -79,7 +82,7 @@
 			this.SetTranscript.AutoSize = true;
 			this.SetTranscript.Checked = true;
 			this.SetTranscript.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.SetTranscript.Location = new System.Drawing.Point(352, 137);
+			this.SetTranscript.Location = new System.Drawing.Point(352, 170);
 			this.SetTranscript.Name = "SetTranscript";
 			this.SetTranscript.Size = new System.Drawing.Size(89, 17);
 			this.SetTranscript.TabIndex = 9;
@@ -88,7 +91,7 @@
 			// 
 			// FillDbFromExistingCourseXml
 			// 
-			this.FillDbFromExistingCourseXml.Location = new System.Drawing.Point(25, 178);
+			this.FillDbFromExistingCourseXml.Location = new System.Drawing.Point(25, 208);
 			this.FillDbFromExistingCourseXml.Name = "FillDbFromExistingCourseXml";
 			this.FillDbFromExistingCourseXml.Size = new System.Drawing.Size(195, 31);
 			this.FillDbFromExistingCourseXml.TabIndex = 12;
@@ -190,11 +193,34 @@
 			this.AcceptanceCriteriaCheckImg.TabStop = false;
 			this.AcceptanceCriteriaCheckImg.Visible = false;
 			// 
+			// UploadSSTestsExcel
+			// 
+			this.UploadSSTestsExcel.Location = new System.Drawing.Point(25, 133);
+			this.UploadSSTestsExcel.Name = "UploadSSTestsExcel";
+			this.UploadSSTestsExcel.Size = new System.Drawing.Size(152, 23);
+			this.UploadSSTestsExcel.TabIndex = 17;
+			this.UploadSSTestsExcel.Text = "Upload SS tests Excel";
+			this.UploadSSTestsExcel.UseVisualStyleBackColor = true;
+			this.UploadSSTestsExcel.Click += new System.EventHandler(this.UploadSSTestsExcel_Click);
+			// 
+			// UploadSsTestCheckImage
+			// 
+			this.UploadSsTestCheckImage.Image = ((System.Drawing.Image)(resources.GetObject("UploadSsTestCheckImage.Image")));
+			this.UploadSsTestCheckImage.Location = new System.Drawing.Point(183, 133);
+			this.UploadSsTestCheckImage.Name = "UploadSsTestCheckImage";
+			this.UploadSsTestCheckImage.Size = new System.Drawing.Size(16, 23);
+			this.UploadSsTestCheckImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+			this.UploadSsTestCheckImage.TabIndex = 18;
+			this.UploadSsTestCheckImage.TabStop = false;
+			this.UploadSsTestCheckImage.Visible = false;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(469, 281);
+			this.Controls.Add(this.UploadSsTestCheckImage);
+			this.Controls.Add(this.UploadSSTestsExcel);
 			this.Controls.Add(this.AcceptanceCriteriaCheckImg);
 			this.Controls.Add(this.QuestionExcelCheckImg);
 			this.Controls.Add(this.LosExcelCheckImg);
@@ -210,11 +236,12 @@
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.label6);
 			this.Name = "MainForm";
-			this.Text = "Excel => Xml";
+			this.Text = "Course transformer";
 			((System.ComponentModel.ISupportInitialize)(this.MainStructureExcelCheckImg)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.LosExcelCheckImg)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.QuestionExcelCheckImg)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.AcceptanceCriteriaCheckImg)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.UploadSsTestCheckImage)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -236,5 +263,7 @@
 		private System.Windows.Forms.PictureBox LosExcelCheckImg;
 		private System.Windows.Forms.PictureBox QuestionExcelCheckImg;
 		private System.Windows.Forms.PictureBox AcceptanceCriteriaCheckImg;
+		private System.Windows.Forms.Button UploadSSTestsExcel;
+		private System.Windows.Forms.PictureBox UploadSsTestCheckImage;
 	}
 }
