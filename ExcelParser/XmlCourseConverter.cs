@@ -69,7 +69,7 @@ namespace ExcelParser
 
 
 			XmlElement PreviousSequentialNode = null;
-			IExcelColumn<MainStructureColumnType> studySessionId = null;
+			IExcelColumn<MainStructureColumnType> previousStudySessionId = null;
 
 			foreach ( var row in mainStructureExcel.Rows ) 
 			{
@@ -124,7 +124,7 @@ namespace ExcelParser
 
 				var sessionNameColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.SessionName );
 				skip = (sequentialNode != null && sequentialNode.GetAttribute( "display_name" ) != sessionNameColumn.Value) ? false : skip;
-				studySessionId = row.FirstOrDefault( c => c.Type == MainStructureColumnType.StudySessionId );
+				var studySessionId = row.FirstOrDefault( c => c.Type == MainStructureColumnType.StudySessionId );
 				if ( !skip ) {
 					var studySession = row.FirstOrDefault( c => c.Type == MainStructureColumnType.StudySession );
 					sequentialNode = xml.CreateElement( "sequential" );
@@ -136,12 +136,13 @@ namespace ExcelParser
 					chapterNode.AppendChild( sequentialNode );
 
 					//ADD TEST TO THE BOTTOM OF LAST SESSION NAME NODE
-					if (PreviousSequentialNode != null)
+					if ( PreviousSequentialNode != null && previousStudySessionId != null )
 					{
-						AppendStudySessionTestQuestions( xml, PreviousSequentialNode, studySessionId.Value, ssTestExcel );
+						AppendStudySessionTestQuestions( xml, PreviousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 					}
 
 					PreviousSequentialNode = sequentialNode;
+					previousStudySessionId = studySessionId;
 				}
 
 				var readingNameColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ReadingName );
@@ -268,6 +269,7 @@ namespace ExcelParser
 
 					conceptNameContainerNode.AppendChild( videoNode );
 				}
+
 				//QUESTION
 				else {
 					var questionDic = generateQuestionIds();
@@ -370,7 +372,7 @@ namespace ExcelParser
 
 			}
 
-			AppendStudySessionTestQuestions( xml, PreviousSequentialNode, studySessionId.Value, ssTestExcel );
+			AppendStudySessionTestQuestions( xml, PreviousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 
 			XmlElement wikiNode = xml.CreateElement( "wiki" );
 			wikiNode.SetAttribute( "slug", "test.1.2015" );
