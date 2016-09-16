@@ -463,7 +463,7 @@ namespace ExcelParser
 				string verticalTestId = ssRows.First().FirstOrDefault( c => c.Type == SsTestExcelColumnType.KStructure ).Value;
 
 				var verticalTestNode = xml.CreateElement( "vertical" );
-				verticalTestNode.SetAttribute( "display_name", "test" );
+				verticalTestNode.SetAttribute( "display_name", String.Format( "test - {0}", studySessionId ) );
 				verticalTestNode.SetAttribute( "cfa_type", "test" );
 				verticalTestNode.SetAttribute( "study_session_test_id", verticalTestId );
 				verticalTestNode.SetAttribute( "url_name", getGuid( verticalTestId, CourseTypes.Reading ) );
