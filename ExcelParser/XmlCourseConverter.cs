@@ -70,9 +70,9 @@ namespace ExcelParser
 
 			XmlElement PreviousSequentialNode = null;
 			IExcelColumn<MainStructureColumnType> previousStudySessionId = null;
+			string locked = "";
 
-			foreach ( var row in mainStructureExcel.Rows ) 
-			{
+			foreach ( var row in mainStructureExcel.Rows ) {
 
 				//Band need to be legal value else skip this row
 				var bandColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Band );
@@ -108,6 +108,7 @@ namespace ExcelParser
 					var lockedColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Locked );
 					var colorColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Color );
 					var cfaTypeColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.CfaType );
+					locked = lockedColumn != null && lockedColumn.HaveValue() ? lockedColumn.Value : "";
 
 					var description = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Description );
 					chapterNode = xml.CreateElement( "chapter" );
@@ -116,7 +117,7 @@ namespace ExcelParser
 					chapterNode.SetAttribute( "cfa_short_name", topicShortName != null && topicShortName.HaveValue() ? topicShortName.Value : "" );
 					chapterNode.SetAttribute( "exam_percentage", examPercantage != null && examPercantage.HaveValue() ? examPercantage.Value : "" );
 					chapterNode.SetAttribute( "description", description != null && description.HaveValue() ? description.Value : "" );
-					chapterNode.SetAttribute( "locked", lockedColumn != null && lockedColumn.HaveValue() ? lockedColumn.Value : "" );
+					chapterNode.SetAttribute( "locked", locked );
 					chapterNode.SetAttribute( "topic_color", colorColumn != null && colorColumn.HaveValue() ? colorColumn.Value : "" );
 					chapterNode.SetAttribute( "cfa_type", cfaTypeColumn != null && cfaTypeColumn.HaveValue() ? cfaTypeColumn.Value : "" );
 					courseNode.AppendChild( chapterNode );
@@ -136,8 +137,7 @@ namespace ExcelParser
 					chapterNode.AppendChild( sequentialNode );
 
 					//ADD TEST TO THE BOTTOM OF LAST SESSION NAME NODE
-					if ( PreviousSequentialNode != null && previousStudySessionId != null )
-					{
+					if ( PreviousSequentialNode != null && previousStudySessionId != null && locked != "yes" ) {
 						AppendStudySessionTestQuestions( xml, PreviousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 					}
 
@@ -372,7 +372,9 @@ namespace ExcelParser
 
 			}
 
-			AppendStudySessionTestQuestions( xml, PreviousSequentialNode, previousStudySessionId.Value, ssTestExcel );
+			if ( locked != "yes" ) {
+				AppendStudySessionTestQuestions( xml, PreviousSequentialNode, previousStudySessionId.Value, ssTestExcel );
+			}
 
 			XmlElement wikiNode = xml.CreateElement( "wiki" );
 			wikiNode.SetAttribute( "slug", "test.1.2015" );
@@ -463,8 +465,9 @@ namespace ExcelParser
 				string verticalTestId = ssRows.First().FirstOrDefault( c => c.Type == SsTestExcelColumnType.KStructure ).Value;
 
 				var verticalTestNode = xml.CreateElement( "vertical" );
-				verticalTestNode.SetAttribute( "display_name", String.Format( "test - {0}", studySessionId ) );
+				verticalTestNode.SetAttribute( "display_name", "Study Session Test" );
 				verticalTestNode.SetAttribute( "cfa_type", "test" );
+				verticalTestNode.SetAttribute( "cfa_short_name", "SST" );
 				verticalTestNode.SetAttribute( "study_session_test_id", verticalTestId );
 				verticalTestNode.SetAttribute( "url_name", getGuid( verticalTestId, CourseTypes.Reading ) );
 
