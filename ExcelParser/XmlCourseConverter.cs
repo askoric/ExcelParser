@@ -470,28 +470,20 @@ namespace ExcelParser
 				verticalTestNode.SetAttribute( "cfa_short_name", "SST" );
 				verticalTestNode.SetAttribute( "study_session_test_id", verticalTestId );
 				verticalTestNode.SetAttribute( "url_name", getGuid( verticalTestId, CourseTypes.Reading ) );
+				var problemBuilderNode = xml.CreateElement( "problem-builder-block" );
+
+				problemBuilderNode.SetAttribute( "display_name", "Study Session Test" );
+				problemBuilderNode.SetAttribute( "url_name", getGuid( verticalTestId, CourseTypes.Question ) );
+				problemBuilderNode.SetAttribute( "xblock-family", "xblock.v1" );
+				problemBuilderNode.SetAttribute( "cfa_type", "question" );
 
 				foreach ( var ssRow in ssRows ) {
 					var questionDic = generateQuestionIds();
-					var problemBuilderNode = xml.CreateElement( "problem-builder-block" );
-					string questionId = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.QuestionId ).Value;
-					var questionType = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.QuestionType );
 					var questionColumn = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.Question );
 					var questionIdColumn = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.QuestionId );
 					var questionImageUrlColumn = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.QuestionImageUrl );
 					string questionValue = questionColumn.HaveValue() ? questionColumn.Value : questionImageUrlColumn.HaveValue() ? "" : "Question Missing";
 
-					problemBuilderNode.SetAttribute( "display_name", questionValue.Replace( "<br>", "" ) );
-					problemBuilderNode.SetAttribute( "url_name", getGuid( questionId, CourseTypes.Question ) );
-					problemBuilderNode.SetAttribute( "xblock-family", "xblock.v1" );
-					problemBuilderNode.SetAttribute( "cfa_type", "question" );
-					problemBuilderNode.SetAttribute( "atom_id", questionId );
-					problemBuilderNode.SetAttribute( "instruct_assessment", questionType != null && questionType.HaveValue() ? questionType.Value : "" );
-
-					var answerImageUrlColumn = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.AnswerImageUrl );
-					if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
-						problemBuilderNode.SetAttribute( "answer_image", answerImageUrlColumn.Value );
-					}
 
 					var pbMcqNode = xml.CreateElement( "pb-mcq-block" );
 					var correctColumn = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.Correct );
@@ -506,7 +498,7 @@ namespace ExcelParser
 						}
 					}
 
-					pbMcqNode.SetAttribute( "url_name", getNewGuid() );
+					pbMcqNode.SetAttribute( "url_name", getGuid( questionIdColumn.Value, CourseTypes.Question ) );
 					pbMcqNode.SetAttribute( "xblock-family", "xblock.v1" );
 					pbMcqNode.SetAttribute( "question", questionValue );
 					pbMcqNode.SetAttribute( "fitch_question_id", questionIdColumn.Value );
@@ -565,9 +557,9 @@ namespace ExcelParser
 						pbMcqNode.AppendChild( questionTipNode );
 					}
 
-					verticalTestNode.AppendChild( problemBuilderNode );
 				}
 
+				verticalTestNode.AppendChild( problemBuilderNode );
 				sequentialNode.AppendChild( verticalTestNode );
 			}
 
