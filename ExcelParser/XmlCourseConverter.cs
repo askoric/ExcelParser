@@ -70,6 +70,7 @@ namespace ExcelParser
 
 			XmlElement PreviousSequentialNode = null;
 			IExcelColumn<MainStructureColumnType> previousStudySessionId = null;
+			string previousStudySessionLocked = "";
 			string locked = "";
 
 			foreach ( var row in mainStructureExcel.Rows ) {
@@ -137,12 +138,13 @@ namespace ExcelParser
 					chapterNode.AppendChild( sequentialNode );
 
 					//ADD TEST TO THE BOTTOM OF LAST SESSION NAME NODE
-					if ( PreviousSequentialNode != null && previousStudySessionId != null && locked != "yes" ) {
+					if ( PreviousSequentialNode != null && previousStudySessionId != null && previousStudySessionLocked != "yes" ) {
 						AppendStudySessionTestQuestions( xml, PreviousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 					}
 
 					PreviousSequentialNode = sequentialNode;
 					previousStudySessionId = studySessionId;
+					previousStudySessionLocked = locked;
 				}
 
 				var readingNameColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ReadingName );
@@ -372,7 +374,7 @@ namespace ExcelParser
 
 			}
 
-			if ( locked != "yes" ) {
+			if ( previousStudySessionLocked != "yes" ) {
 				AppendStudySessionTestQuestions( xml, PreviousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 			}
 
