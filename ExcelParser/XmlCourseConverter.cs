@@ -409,8 +409,8 @@ namespace ExcelParser
 			var dic = new Dictionary<string, string>();
 
 			while ( !dic.ContainsKey( "D" ) ) {
-				string guid = getNewGuid();
-				string questionId = guid.Substring( guid.Length - 7 );
+
+				var questionId = generateQuestionId();
 				if ( !generatedQuestionIds.ContainsKey( questionId ) ) {
 					generatedQuestionIds[questionId] = questionId;
 
@@ -431,6 +431,12 @@ namespace ExcelParser
 
 			return dic;
 
+		}
+
+		private string generateQuestionId()
+		{
+			string guid = getNewGuid();
+			return guid.Substring( guid.Length - 7 );
 		}
 
 		private XmlElement GetAnswerNode( XmlDocument xml, IExcelColumn<QuestionExcelColumnType> answerColumn, string questionId, bool addMissingValue = false )
@@ -547,6 +553,13 @@ namespace ExcelParser
 						questionIds.Add( question4Id );
 					}
 
+					//Harcoded answer node
+					var answerNode = xml.CreateElement( "pb-choice-block" );
+					answerNode.SetAttribute( "url_name", getNewGuid() );
+					answerNode.SetAttribute( "xblock-family", "xblock.v1" );
+					answerNode.SetAttribute("value", generateQuestionId());
+					pbMcqNode.AppendChild( answerNode );
+
 
 					//tip  block
 					var justificationCell = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.Justification );
@@ -555,7 +568,6 @@ namespace ExcelParser
 						questionTipNode.SetAttribute( "url_name", getNewGuid() );
 						questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
 						questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
-						questionTipNode.InnerText = justificationCell.Value;
 						pbMcqNode.AppendChild( questionTipNode );
 					}
 
