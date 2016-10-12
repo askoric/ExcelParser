@@ -471,6 +471,7 @@ namespace ExcelParser
 			if ( ssRows.Any() ) {
 
 				string verticalTestId = ssRows.First().FirstOrDefault( c => c.Type == SsTestExcelColumnType.KStructure ).Value;
+				verticalTestId = String.Join( "|", verticalTestId.Split( '|' ).Take( 3 ) );
 
 				var verticalTestNode = xml.CreateElement( "vertical" );
 				verticalTestNode.SetAttribute( "display_name", "Study Session Test" );
