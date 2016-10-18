@@ -9,13 +9,20 @@ using Newtonsoft.Json;
 
 namespace ExcelParser
 {
+	public class guidRequest
+	{
+		public string ElementId { get; set; }
+		public CourseTypes elementType { get; set; }
+	}
 
 	public class ExcelParser
 	{
 		private Dictionary<string, string> generatedQuestionIds;
+		Dictionary<string, guidRequest> _generatedGuids;
 
 		public List<string> GetVideoReferenceIds( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel )
 		{
+			Dictionary<string, guidRequest> _generatedGuids;
 			var referenceIds = new List<string>();
 			var rowIndex = 0;
 			foreach ( var row in mainStructureExcel.Rows ) {
@@ -42,6 +49,7 @@ namespace ExcelParser
 		public XmlDocument ConvertExcelToCourseXml( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel, Excel<QuestionExcelColumn, QuestionExcelColumnType> questionExcel, Excel<LosExcelColumn, LosExcelColumnType> losExcel, Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> acceptanceCriteriaExcel, Excel<SsTestExcelColumn, SsTestExcelColumnType> ssTestExcel, bool setTranscripts )
 		{
 			generatedQuestionIds = new Dictionary<string, string>();
+			_generatedGuids = new Dictionary<string, guidRequest>();
 			XmlDocument xml = new XmlDocument();
 			var xmlTranscriptAccessor = new XmlTranscriptAccessor();
 
@@ -388,13 +396,26 @@ namespace ExcelParser
 		private string getGuid( string elementId, CourseTypes elementType )
 		{
 			string key = Database.Instance.GetKey( elementId, elementType );
-			if ( !String.IsNullOrEmpty( key ) ) {
-				return key;
+			if ( String.IsNullOrEmpty( key ) ) {
+				key = getNewGuid();
+				Database.Instance.AddKey( elementId, key, elementType );
+				Program.Log.Info( String.Format( "New Key generated elementType: {0}; element_id: {1}; generatedKey: {2}", elementType.ToString(), elementId, key ) );
 			}
 
-			key = getNewGuid();
-			Database.Instance.AddKey( elementId, key, elementType );
-			Program.Log.Info( String.Format( "New Key generated elementType: {0}; element_id: {1}; generatedKey: {2}", elementType.ToString(), elementId, key ) );
+			if ( _generatedGuids.ContainsKey( key ) ) {
+				var existing = _generatedGuids[key];
+				Program.Log.Warn(
+					String.Format(
+						"DUPLICATE ID DETECTED >>GeneratedId = '{0}' ; existingReferenceId = {1}  existingType = {2}; newRefrenceId = {3} newType = {4} ",
+						key, existing.ElementId, existing.elementType, elementId, elementType ) );
+			}
+			else {
+				_generatedGuids[key] = new guidRequest {
+					ElementId = elementId,
+					elementType = elementType
+				};
+			}
+
 			return key;
 		}
 
@@ -558,7 +579,7 @@ namespace ExcelParser
 					var answerNode = xml.CreateElement( "pb-choice-block" );
 					answerNode.SetAttribute( "url_name", getNewGuid() );
 					answerNode.SetAttribute( "xblock-family", "xblock.v1" );
-					answerNode.SetAttribute("value", generateQuestionId());
+					answerNode.SetAttribute( "value", generateQuestionId() );
 					pbMcqNode.AppendChild( answerNode );
 
 
