@@ -233,7 +233,7 @@ namespace ExcelParser
 					verticalNode.AppendChild( bandContainerNode );
 				}
 
-				skip = (conceptNameContainerNode != null && conceptNameContainerNode.GetAttribute( "display_name" ) != conceptNameColumn.Value) ? false : skip;
+				skip = (conceptNameContainerNode != null && conceptNameContainerNode.GetAttribute( "learning_objective_id" ) != conceptIdColumn.Value) ? false : skip;
 				if ( !skip ) {
 					conceptNameContainerNode = xml.CreateElement( "container" );
 					conceptNameContainerNode.SetAttribute( "url_name", getGuid( conceptIdColumn.Value, CourseTypes.Concept ) );
