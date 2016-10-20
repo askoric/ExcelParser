@@ -143,9 +143,8 @@ namespace ExcelParser
 
 		private void GenerateCourseXmlBtn_Click( object sender, EventArgs e )
 		{
-			string missingExcels = String.Format( "{0} {1} {2} {3} {4}", MainStructureExcel == null ? "Main Structure Excel ," : "",
-				AcceptanceCriteriaExcel == null ? "Acceptance Criteria Excel ," : "", LosExcel == null ? "Los Excel ," : "", QuestionsExcel == null ? "Question Excel ," : ""
-				, SsTestExcel == null ? "SsTest Excel" : "" );
+			string missingExcels = String.Format( "{0} {1} {2} {3}", MainStructureExcel == null ? "Main Structure Excel ," : "",
+				AcceptanceCriteriaExcel == null ? "Acceptance Criteria Excel ," : "", LosExcel == null ? "Los Excel ," : "", QuestionsExcel == null ? "Question Excel ," : "" );
 
 			if ( !String.IsNullOrWhiteSpace( missingExcels ) ) {
 				MessageBox.Show( String.Format( "You need to upload {0} in order to generate course XML", missingExcels.Remove( missingExcels.Length - 2 ) ) );

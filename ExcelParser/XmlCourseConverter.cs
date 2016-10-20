@@ -146,7 +146,7 @@ namespace ExcelParser
 					chapterNode.AppendChild( sequentialNode );
 
 					//ADD TEST TO THE BOTTOM OF LAST SESSION NAME NODE
-					if ( PreviousSequentialNode != null && previousStudySessionId != null && previousStudySessionLocked != "yes" ) {
+					if ( ssTestExcel != null && PreviousSequentialNode != null && previousStudySessionId != null && previousStudySessionLocked != "yes" ) {
 						AppendStudySessionTestQuestions( xml, PreviousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 					}
 
@@ -382,7 +382,7 @@ namespace ExcelParser
 
 			}
 
-			if ( previousStudySessionLocked != "yes" ) {
+			if ( ssTestExcel != null && previousStudySessionLocked != "yes" ) {
 				AppendStudySessionTestQuestions( xml, PreviousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 			}
 
