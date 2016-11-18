@@ -567,20 +567,22 @@ namespace ExcelParser
 						questionIds.Add( question3Id );
 					}
 
-					var answer4Column = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.Answer4 );
-					var question4Id = questionDic["D"];
-					var answer4Node = GetAnswerNode( xml, answer4Column, question4Id );
-					if ( answer4Node != null ) {
-						pbMcqNode.AppendChild( answer4Node );
-						questionIds.Add( question4Id );
-					}
+					//var answer4Column = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.Answer4 );
+					//var question4Id = questionDic["D"];
+					//var answer4Node = GetAnswerNode( xml, answer4Column, question4Id );
+					//if ( answer4Node != null ) {
+					//	pbMcqNode.AppendChild( answer4Node );
+					//	questionIds.Add( question4Id );
+					//}
 
-					//Harcoded answer node
-					var answerNode = xml.CreateElement( "pb-choice-block" );
-					answerNode.SetAttribute( "url_name", getNewGuid() );
-					answerNode.SetAttribute( "xblock-family", "xblock.v1" );
-					answerNode.SetAttribute( "value", generateQuestionId() );
-					pbMcqNode.AppendChild( answerNode );
+					//Harcoded answer 4 node
+					var answer4Node = xml.CreateElement( "pb-choice-block" );
+					var question4Id = questionDic["D"];
+					questionIds.Add( question4Id );
+					answer4Node.SetAttribute( "url_name", getNewGuid() );
+					answer4Node.SetAttribute( "xblock-family", "xblock.v1" );
+					answer4Node.SetAttribute( "value", question4Id );
+					pbMcqNode.AppendChild( answer4Node );
 
 
 					//tip  block
@@ -590,6 +592,7 @@ namespace ExcelParser
 						questionTipNode.SetAttribute( "url_name", getNewGuid() );
 						questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
 						questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
+						questionTipNode.InnerText = justificationCell.Value;
 						pbMcqNode.AppendChild( questionTipNode );
 					}
 
