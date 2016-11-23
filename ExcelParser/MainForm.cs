@@ -21,7 +21,8 @@ namespace ExcelParser
 		private Excel<QuestionExcelColumn, QuestionExcelColumnType> QuestionsExcel { get; set; }
 		private Excel<LosExcelColumn, LosExcelColumnType> LosExcel { get; set; }
 		private Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> AcceptanceCriteriaExcel { get; set; }
-		private Excel<SsTestExcelColumn, SsTestExcelColumnType> SsTestExcel { get; set; }
+		private Excel<TestExcelColumn, TestExcelColumnType> SsTestExcel { get; set; }
+		private Excel<TestExcelColumn, TestExcelColumnType> ProgressTestExcel { get; set; }
 
 		private OpenFileDialog OpenFileDialog { get; set; }
 
@@ -128,9 +129,9 @@ namespace ExcelParser
 		private void UploadSSTestsExcel_Click( object sender, EventArgs e )
 		{
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
-				var excel = new Excel<SsTestExcelColumn, SsTestExcelColumnType>();
+				var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
 				SsTestExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-				if ( SsTestExcel.Header.Count() == Enum.GetNames( typeof( SsTestExcelColumnType ) ).Length - 1 ) {
+				if ( SsTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 1 ) {
 					UploadSsTestCheckImage.Visible = true;
 				}
 				else {
@@ -141,10 +142,31 @@ namespace ExcelParser
 			}
 		}
 
+		private void UploadProgressTestExcell_Click( object sender, EventArgs e )
+		{
+			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
+				var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
+				ProgressTestExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
+				//-2 because questiopn type is removed from this excel
+				if ( ProgressTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length -2 ) {
+					uploadProgressTestCheckIcon.Visible = true;
+				}
+				else {
+					uploadProgressTestCheckIcon.Visible = false;
+					MessageBox.Show( "Invalid excel. Excel does not have all required columns: StudySessionId, KStructure, QuestionId, Question, Answer1, Answer2, Answer3, Answer4, AnswerImageUrl, Correct, QuestionImageUrl, Justification" );
+					ProgressTestExcel = null;
+				}
+			}
+		}
+
 		private void GenerateCourseXmlBtn_Click( object sender, EventArgs e )
 		{
-			string missingExcels = String.Format( "{0} {1} {2} {3}", MainStructureExcel == null ? "Main Structure Excel ," : "",
-				AcceptanceCriteriaExcel == null ? "Acceptance Criteria Excel ," : "", LosExcel == null ? "Los Excel ," : "", QuestionsExcel == null ? "Question Excel ," : "" );
+			string missingExcels = String.Format( "{0} {1} {2} {3} {4}",
+				MainStructureExcel == null ? "Main Structure Excel ," : "",
+				AcceptanceCriteriaExcel == null ? "Acceptance Criteria Excel ," : "",
+				LosExcel == null ? "Los Excel ," : "",
+				QuestionsExcel == null ? "Question Excel ," : "",
+				ProgressTestExcel == null ? "Progress Excel, " : "" );
 
 			if ( !String.IsNullOrWhiteSpace( missingExcels ) ) {
 				MessageBox.Show( String.Format( "You need to upload {0} in order to generate course XML", missingExcels.Remove( missingExcels.Length - 2 ) ) );
@@ -165,7 +187,7 @@ namespace ExcelParser
 			}
 
 			StatusLabel.Text = "Generating output XML";
-			XmlDocument xml = excelParser.ConvertExcelToCourseXml( MainStructureExcel, QuestionsExcel, LosExcel, AcceptanceCriteriaExcel, SsTestExcel, SetTranscript.Checked );
+			XmlDocument xml = excelParser.ConvertExcelToCourseXml( MainStructureExcel, QuestionsExcel, LosExcel, AcceptanceCriteriaExcel, SsTestExcel, ProgressTestExcel, SetTranscript.Checked );
 			SaveFileDialog saveFileDialog = new SaveFileDialog();
 			saveFileDialog.FileName = "output.xml";
 			if ( saveFileDialog.ShowDialog() == DialogResult.OK ) {
@@ -174,6 +196,8 @@ namespace ExcelParser
 
 			StatusLabel.Text = "All Done";
 		}
+
+
 
 
 	}

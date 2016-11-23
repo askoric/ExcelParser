@@ -198,72 +198,76 @@ namespace ExcelParser
 		TargetScore
 	}
 
-	public class SsTestExcelColumn : ExcelColumn<SsTestExcelColumnType>
+	public class TestExcelColumn : ExcelColumn<TestExcelColumnType>
 	{
-		public SsTestExcelColumn()
+		public TestExcelColumn()
 		{
 		}
 
-		public SsTestExcelColumn( string value, SsTestExcelColumnType type, int index ) : base( value, type, index ) { }
+		public TestExcelColumn( string value, TestExcelColumnType type, int index ) : base( value, type, index ) { }
 
 		public override bool IsRecognizableColumn()
 		{
-			return this.Type != SsTestExcelColumnType.Undefined;
+			return this.Type != TestExcelColumnType.Undefined;
 		}
 
-		public override IExcelColumn<SsTestExcelColumnType> GetColumn( string columnName, int index )
+		public override IExcelColumn<TestExcelColumnType> GetColumn( string columnName, int index )
 		{
 			if ( columnName != null ) {
 				switch ( columnName.ToLower().Trim() ) {
 					case "session abbreviation":
-						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.StudySessionId, index );
+						return new TestExcelColumn( columnName, TestExcelColumnType.SessionAbbrevation, index );
+					case "topic abbreviation":
+						return new TestExcelColumn( columnName, TestExcelColumnType.TopicAbbrevation, index );
 					case "k_structure":
-						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.KStructure, index );
+						return new TestExcelColumn( columnName, TestExcelColumnType.KStructure, index );
 					case "q_id":
-						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.QuestionId, index );
+					case "id (original & new place holders)":
+						return new TestExcelColumn( columnName, TestExcelColumnType.QuestionId, index );
 					case "q_type":
-						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.QuestionType, index );
+						return new TestExcelColumn( columnName, TestExcelColumnType.QuestionType, index );
 					case "question":
-						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Question, index );
+						return new TestExcelColumn( columnName, TestExcelColumnType.Question, index );
 					case "answer_1":
-						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Answer1, index );
+						return new TestExcelColumn( columnName, TestExcelColumnType.Answer1, index );
 					case "answer_2":
-						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Answer2, index );
+						return new TestExcelColumn( columnName, TestExcelColumnType.Answer2, index );
 					case "answer_3":
-						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Answer3, index );
+						return new TestExcelColumn( columnName, TestExcelColumnType.Answer3, index );
 					case "answer_4":
-						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Answer4, index );
+						return new TestExcelColumn( columnName, TestExcelColumnType.Answer4, index );
 					case "answer_image_url":
-						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.AnswerImageUrl, index );
+						return new TestExcelColumn( columnName, TestExcelColumnType.AnswerImageUrl, index );
 					case "correct":
-						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Correct, index );
+						return new TestExcelColumn( columnName, TestExcelColumnType.Correct, index );
 					case "question_image_url":
-						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.QuestionImageUrl, index );
+						return new TestExcelColumn( columnName, TestExcelColumnType.QuestionImageUrl, index );
 					case "justification":
-						return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Justification, index );
+						return new TestExcelColumn( columnName, TestExcelColumnType.Justification, index );
 				}
 			}
 
-			return new SsTestExcelColumn( columnName, SsTestExcelColumnType.Undefined, index );
+			return new TestExcelColumn( columnName, TestExcelColumnType.Undefined, index );
 		}
 	}
 
 
-	public enum SsTestExcelColumnType
+	public enum TestExcelColumnType
 	{
 		Undefined,
-		StudySessionId,
+		SessionAbbrevation,
+		TopicAbbrevation,
 		KStructure,
 		QuestionId,
 		Question,
 		QuestionType,
-		Answer1,
-		Answer2,
+		Answer1, 
+		Answer2, 
 		Answer3,
 		Answer4,
-		AnswerImageUrl,
+		AnswerImageUrl, 
 		Correct,
-		QuestionImageUrl,
+		QuestionImageUrl, 
 		Justification
 	}
 

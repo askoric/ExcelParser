@@ -44,17 +44,20 @@
 			this.AcceptanceCriteriaCheckImg = new System.Windows.Forms.PictureBox();
 			this.UploadSSTestsExcel = new System.Windows.Forms.Button();
 			this.UploadSsTestCheckImage = new System.Windows.Forms.PictureBox();
+			this.uploadProgressTestCheckIcon = new System.Windows.Forms.PictureBox();
+			this.UploadProgressTestExcell = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.MainStructureExcelCheckImg)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.LosExcelCheckImg)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.QuestionExcelCheckImg)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.AcceptanceCriteriaCheckImg)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.UploadSsTestCheckImage)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.uploadProgressTestCheckIcon)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// label6
 			// 
 			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(22, 174);
+			this.label6.Location = new System.Drawing.Point(223, 206);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(227, 13);
 			this.label6.TabIndex = 6;
@@ -63,7 +66,7 @@
 			// label7
 			// 
 			this.label7.AutoSize = true;
-			this.label7.Location = new System.Drawing.Point(22, 257);
+			this.label7.Location = new System.Drawing.Point(22, 243);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(43, 13);
 			this.label7.TabIndex = 7;
@@ -72,7 +75,7 @@
 			// StatusLabel
 			// 
 			this.StatusLabel.AutoSize = true;
-			this.StatusLabel.Location = new System.Drawing.Point(71, 257);
+			this.StatusLabel.Location = new System.Drawing.Point(71, 243);
 			this.StatusLabel.Name = "StatusLabel";
 			this.StatusLabel.Size = new System.Drawing.Size(0, 13);
 			this.StatusLabel.TabIndex = 8;
@@ -82,7 +85,7 @@
 			this.SetTranscript.AutoSize = true;
 			this.SetTranscript.Checked = true;
 			this.SetTranscript.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.SetTranscript.Location = new System.Drawing.Point(352, 170);
+			this.SetTranscript.Location = new System.Drawing.Point(25, 206);
 			this.SetTranscript.Name = "SetTranscript";
 			this.SetTranscript.Size = new System.Drawing.Size(89, 17);
 			this.SetTranscript.TabIndex = 9;
@@ -91,9 +94,9 @@
 			// 
 			// FillDbFromExistingCourseXml
 			// 
-			this.FillDbFromExistingCourseXml.Location = new System.Drawing.Point(25, 208);
+			this.FillDbFromExistingCourseXml.Location = new System.Drawing.Point(205, 158);
 			this.FillDbFromExistingCourseXml.Name = "FillDbFromExistingCourseXml";
-			this.FillDbFromExistingCourseXml.Size = new System.Drawing.Size(195, 31);
+			this.FillDbFromExistingCourseXml.Size = new System.Drawing.Size(245, 27);
 			this.FillDbFromExistingCourseXml.TabIndex = 12;
 			this.FillDbFromExistingCourseXml.Text = "Fill Db from Existing course XML";
 			this.FillDbFromExistingCourseXml.UseVisualStyleBackColor = true;
@@ -141,9 +144,9 @@
 			// 
 			// GenerateCourseXmlBtn
 			// 
-			this.GenerateCourseXmlBtn.Location = new System.Drawing.Point(217, 12);
+			this.GenerateCourseXmlBtn.Location = new System.Drawing.Point(205, 12);
 			this.GenerateCourseXmlBtn.Name = "GenerateCourseXmlBtn";
-			this.GenerateCourseXmlBtn.Size = new System.Drawing.Size(224, 110);
+			this.GenerateCourseXmlBtn.Size = new System.Drawing.Size(245, 139);
 			this.GenerateCourseXmlBtn.TabIndex = 5;
 			this.GenerateCourseXmlBtn.Text = "Generate Course XML";
 			this.GenerateCourseXmlBtn.UseVisualStyleBackColor = true;
@@ -195,7 +198,7 @@
 			// 
 			// UploadSSTestsExcel
 			// 
-			this.UploadSSTestsExcel.Location = new System.Drawing.Point(25, 133);
+			this.UploadSSTestsExcel.Location = new System.Drawing.Point(25, 128);
 			this.UploadSSTestsExcel.Name = "UploadSSTestsExcel";
 			this.UploadSSTestsExcel.Size = new System.Drawing.Size(152, 23);
 			this.UploadSSTestsExcel.TabIndex = 17;
@@ -206,7 +209,7 @@
 			// UploadSsTestCheckImage
 			// 
 			this.UploadSsTestCheckImage.Image = ((System.Drawing.Image)(resources.GetObject("UploadSsTestCheckImage.Image")));
-			this.UploadSsTestCheckImage.Location = new System.Drawing.Point(183, 133);
+			this.UploadSsTestCheckImage.Location = new System.Drawing.Point(183, 128);
 			this.UploadSsTestCheckImage.Name = "UploadSsTestCheckImage";
 			this.UploadSsTestCheckImage.Size = new System.Drawing.Size(16, 23);
 			this.UploadSsTestCheckImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -214,11 +217,34 @@
 			this.UploadSsTestCheckImage.TabStop = false;
 			this.UploadSsTestCheckImage.Visible = false;
 			// 
+			// uploadProgressTestCheckIcon
+			// 
+			this.uploadProgressTestCheckIcon.Image = ((System.Drawing.Image)(resources.GetObject("uploadProgressTestCheckIcon.Image")));
+			this.uploadProgressTestCheckIcon.Location = new System.Drawing.Point(183, 162);
+			this.uploadProgressTestCheckIcon.Name = "uploadProgressTestCheckIcon";
+			this.uploadProgressTestCheckIcon.Size = new System.Drawing.Size(16, 23);
+			this.uploadProgressTestCheckIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+			this.uploadProgressTestCheckIcon.TabIndex = 20;
+			this.uploadProgressTestCheckIcon.TabStop = false;
+			this.uploadProgressTestCheckIcon.Visible = false;
+			// 
+			// UploadProgressTestExcell
+			// 
+			this.UploadProgressTestExcell.Location = new System.Drawing.Point(25, 162);
+			this.UploadProgressTestExcell.Name = "UploadProgressTestExcell";
+			this.UploadProgressTestExcell.Size = new System.Drawing.Size(152, 23);
+			this.UploadProgressTestExcell.TabIndex = 19;
+			this.UploadProgressTestExcell.Text = "Upload Progress tests Excel";
+			this.UploadProgressTestExcell.UseVisualStyleBackColor = true;
+			this.UploadProgressTestExcell.Click += new System.EventHandler(this.UploadProgressTestExcell_Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(469, 281);
+			this.ClientSize = new System.Drawing.Size(462, 277);
+			this.Controls.Add(this.uploadProgressTestCheckIcon);
+			this.Controls.Add(this.UploadProgressTestExcell);
 			this.Controls.Add(this.UploadSsTestCheckImage);
 			this.Controls.Add(this.UploadSSTestsExcel);
 			this.Controls.Add(this.AcceptanceCriteriaCheckImg);
@@ -242,6 +268,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.QuestionExcelCheckImg)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.AcceptanceCriteriaCheckImg)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.UploadSsTestCheckImage)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.uploadProgressTestCheckIcon)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -265,5 +292,7 @@
 		private System.Windows.Forms.PictureBox AcceptanceCriteriaCheckImg;
 		private System.Windows.Forms.Button UploadSSTestsExcel;
 		private System.Windows.Forms.PictureBox UploadSsTestCheckImage;
+		private System.Windows.Forms.PictureBox uploadProgressTestCheckIcon;
+		private System.Windows.Forms.Button UploadProgressTestExcell;
 	}
 }
