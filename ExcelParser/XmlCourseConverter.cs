@@ -440,15 +440,16 @@ namespace ExcelParser
 		{
 			var excelRows = progressTestExcel.Rows.Where( r => r.Any( c => c.Type == TestExcelColumnType.TopicAbbrevation && c.Value == chapterId ) );
 
-			if ( excelRows.Any() ) {
+			if ( excelRows.Any() )
+			{
 
-				string verticalTestId = excelRows.First().FirstOrDefault( c => c.Type == TestExcelColumnType.KStructure ).Value;
-				verticalTestId = String.Join( "|", verticalTestId.Split( '|' ).Take( 3 ) );
+				string verticalTestId = String.Format( "{0}-r-progressTest", chapterId );
+				string sequentialId = String.Format("{0}-ss-progressTest", chapterId);
 
 				var sequentialNode = xml.CreateElement( "sequential" );
 				sequentialNode.SetAttribute( "display_name", "Progress test - SS" );
-				sequentialNode.SetAttribute( "url_name", getNewGuid() );
-				sequentialNode.SetAttribute( "cfa_short_name", "" );
+				sequentialNode.SetAttribute( "url_name", getGuid(sequentialId, CourseTypes.StudySession ) );
+				sequentialNode.SetAttribute( "cfa_short_name", sequentialId );
 
 				var verticalNode = xml.CreateElement( "vertical" );
 				verticalNode.SetAttribute( "display_name", "Progress test - R" );
