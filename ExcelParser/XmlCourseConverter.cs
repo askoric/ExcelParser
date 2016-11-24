@@ -454,7 +454,7 @@ namespace ExcelParser
 				var verticalNode = xml.CreateElement( "vertical" );
 				verticalNode.SetAttribute( "display_name", "Progress test - R" );
 				verticalNode.SetAttribute( "cfa_type", "progress_test" );
-				verticalNode.SetAttribute( "cfa_short_name", "QM1-r-progressTest" );
+				verticalNode.SetAttribute( "cfa_short_name", verticalTestId );
 				verticalNode.SetAttribute( "study_session_test_id", "" );
 				verticalNode.SetAttribute( "url_name", getGuid( verticalTestId, CourseTypes.Reading ) );
 
