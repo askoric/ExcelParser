@@ -448,6 +448,7 @@ namespace ExcelParser
 
 				var sequentialNode = xml.CreateElement( "sequential" );
 				sequentialNode.SetAttribute( "display_name", "Progress test - SS" );
+				sequentialNode.SetAttribute( "cfa_type", "progress_test" );
 				sequentialNode.SetAttribute( "url_name", getGuid(sequentialId, CourseTypes.StudySession ) );
 				sequentialNode.SetAttribute( "cfa_short_name", sequentialId );
 
