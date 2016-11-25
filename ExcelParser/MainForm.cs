@@ -161,7 +161,7 @@ namespace ExcelParser
 
 		private void GenerateCourseXmlBtn_Click( object sender, EventArgs e )
 		{
-			string missingExcels = String.Format( "{0} {1} {2} {3} {4}",
+			string missingExcels = String.Format( "{0} {1} {2} {3}",
 				MainStructureExcel == null ? "Main Structure Excel ," : "",
 				AcceptanceCriteriaExcel == null ? "Acceptance Criteria Excel ," : "",
 				LosExcel == null ? "Los Excel ," : "",
