@@ -165,8 +165,7 @@ namespace ExcelParser
 				MainStructureExcel == null ? "Main Structure Excel ," : "",
 				AcceptanceCriteriaExcel == null ? "Acceptance Criteria Excel ," : "",
 				LosExcel == null ? "Los Excel ," : "",
-				QuestionsExcel == null ? "Question Excel ," : "",
-				ProgressTestExcel == null ? "Progress Excel, " : "" );
+				QuestionsExcel == null ? "Question Excel ," : "" );
 
 			if ( !String.IsNullOrWhiteSpace( missingExcels ) ) {
 				MessageBox.Show( String.Format( "You need to upload {0} in order to generate course XML", missingExcels.Remove( missingExcels.Length - 2 ) ) );

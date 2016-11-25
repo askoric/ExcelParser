@@ -307,9 +307,7 @@ namespace ExcelParser
 					problemBuilderNode.SetAttribute( "atom_id", atomIdColumn != null && atomIdColumn.HaveValue() ? atomIdColumn.Value : "" );
 					problemBuilderNode.SetAttribute( "instruct_assessment", kkEeColumn != null && kkEeColumn.HaveValue() ? kkEeColumn.Value : "" );
 
-					if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
-						problemBuilderNode.SetAttribute( "answer_image", answerImageUrlColumn.Value );
-					}
+
 
 					conceptNameContainerNode.AppendChild( problemBuilderNode );
 
@@ -377,11 +375,16 @@ namespace ExcelParser
 					//tip  block
 					var justificationCell = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Justification );
 					if ( justificationCell != null && justificationCell.HaveValue() ) {
+						string justificationInnerText = "";
+						if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
+							justificationInnerText = String.Format( "<div class='answer-image'><img src='{0}'></div>", answerImageUrlColumn.Value );
+						}
+
 						var questionTipNode = xml.CreateElement( "pb-tip-block" );
 						questionTipNode.SetAttribute( "url_name", getNewGuid() );
 						questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
 						questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
-						questionTipNode.InnerText = justificationCell.Value;
+						questionTipNode.InnerText = String.Format( "{0}{1}", justificationCell.Value, justificationInnerText );
 						pbMcqNode.AppendChild( questionTipNode );
 					}
 
@@ -395,8 +398,7 @@ namespace ExcelParser
 				AppendStudySessionTestQuestions( xml, previousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 			}
 
-			if (progressTestExcel != null && previousChapterNode != null)
-			{
+			if ( progressTestExcel != null && previousChapterNode != null ) {
 
 			}
 
@@ -440,16 +442,15 @@ namespace ExcelParser
 		{
 			var excelRows = progressTestExcel.Rows.Where( r => r.Any( c => c.Type == TestExcelColumnType.TopicAbbrevation && c.Value == chapterId ) );
 
-			if ( excelRows.Any() )
-			{
+			if ( excelRows.Any() ) {
 
 				string verticalTestId = String.Format( "{0}-r-progressTest", chapterId );
-				string sequentialId = String.Format("{0}-ss-progressTest", chapterId);
+				string sequentialId = String.Format( "{0}-ss-progressTest", chapterId );
 
 				var sequentialNode = xml.CreateElement( "sequential" );
 				sequentialNode.SetAttribute( "display_name", "Progress test - SS" );
 				sequentialNode.SetAttribute( "cfa_type", "progress_test" );
-				sequentialNode.SetAttribute( "url_name", getGuid(sequentialId, CourseTypes.StudySession ) );
+				sequentialNode.SetAttribute( "url_name", getGuid( sequentialId, CourseTypes.StudySession ) );
 				sequentialNode.SetAttribute( "cfa_short_name", sequentialId );
 
 				var verticalNode = xml.CreateElement( "vertical" );
@@ -484,6 +485,7 @@ namespace ExcelParser
 				var questionColumn = row.FirstOrDefault( c => c.Type == TestExcelColumnType.Question );
 				var questionIdColumn = row.FirstOrDefault( c => c.Type == TestExcelColumnType.QuestionId );
 				var questionImageUrlColumn = row.FirstOrDefault( c => c.Type == TestExcelColumnType.QuestionImageUrl );
+				var answerImageUrlColumn = row.FirstOrDefault( c => c.Type == TestExcelColumnType.AnswerImageUrl );
 				string questionValue = questionColumn.HaveValue() ? questionColumn.Value : questionImageUrlColumn.HaveValue() ? "" : "Question Missing";
 
 
@@ -560,11 +562,16 @@ namespace ExcelParser
 				//tip  block
 				var justificationCell = row.FirstOrDefault( c => c.Type == TestExcelColumnType.Justification );
 				if ( justificationCell != null && justificationCell.HaveValue() ) {
+					string justificationInnerText = "";
+					if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
+						justificationInnerText = String.Format( "<div class='answer-image'><img src='{0}'></div>", answerImageUrlColumn.Value );
+					}
+
 					var questionTipNode = xml.CreateElement( "pb-tip-block" );
 					questionTipNode.SetAttribute( "url_name", getNewGuid() );
 					questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
 					questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
-					questionTipNode.InnerText = justificationCell.Value;
+					questionTipNode.InnerText = String.Format( "{0}{1}", justificationCell.Value, justificationInnerText);
 					pbMcqNode.AppendChild( questionTipNode );
 				}
 
