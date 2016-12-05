@@ -459,7 +459,7 @@ namespace ExcelParser
 
 					var sequentialNode = xml.CreateElement( "sequential" );
 					sequentialNode.SetAttribute( "display_name", previousTopicName );
-					sequentialNode.SetAttribute( "url_name", getGuid( topicId, CourseTypes.StudySession ) );
+					sequentialNode.SetAttribute( "url_name", getGuid( previousTopicId, CourseTypes.StudySession ) );
 
 					var verticalNode = xml.CreateElement( "vertical" );
 					verticalNode.SetAttribute( "display_name", "Progress test - R" );
