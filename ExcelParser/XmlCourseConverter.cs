@@ -392,8 +392,11 @@ namespace ExcelParser
 				AppendStudySessionTestQuestions( xml, previousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 			}
 
-			var progressTestChapetNode = GetProgressTestQuestionsChapetNode( xml, progressTestExcel );
-			courseNode.AppendChild( progressTestChapetNode );
+
+			if ( progressTestExcel != null ) {
+				var progressTestChapetNode = GetProgressTestQuestionsChapetNode( xml, progressTestExcel );
+				courseNode.AppendChild( progressTestChapetNode );
+			}
 
 
 			XmlElement wikiNode = xml.CreateElement( "wiki" );
