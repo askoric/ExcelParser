@@ -67,7 +67,6 @@ namespace ExcelParser
 			rootNode.AppendChild( courseNode );
 
 			XmlElement chapterNode = null;
-			XmlElement previousChapterNode = null;
 			XmlElement sequentialNode = null;
 			XmlElement previousSequentialNode = null;
 			XmlElement verticalNode = null;
@@ -77,7 +76,6 @@ namespace ExcelParser
 			bool skip = false;
 
 			IExcelColumn<MainStructureColumnType> previousStudySessionId = null;
-			IExcelColumn<MainStructureColumnType> previousChapterId = null;
 			string previousStudySessionLocked = "";
 			string locked = "";
 
@@ -131,13 +129,6 @@ namespace ExcelParser
 					chapterNode.SetAttribute( "cfa_type", cfaTypeColumn != null && cfaTypeColumn.HaveValue() ? cfaTypeColumn.Value : "" );
 					courseNode.AppendChild( chapterNode );
 
-					//ADD TEST TO THE BOTTOM OF LAST SESSION NAME NODE
-					if ( progressTestExcel != null && previousChapterNode != null ) {
-						AppendProgressTestQuestions( xml, previousChapterNode, previousChapterId.Value, progressTestExcel );
-					}
-
-					previousChapterNode = chapterNode;
-					previousChapterId = topicShortName;
 				}
 
 
@@ -374,19 +365,22 @@ namespace ExcelParser
 
 					//tip  block
 					var justificationCell = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Justification );
-					if ( justificationCell != null && justificationCell.HaveValue() ) {
-						string justificationInnerText = "";
-						if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
-							justificationInnerText = String.Format( "<div class='answer-image'><img src='{0}'></div>", answerImageUrlColumn.Value );
-						}
-
-						var questionTipNode = xml.CreateElement( "pb-tip-block" );
-						questionTipNode.SetAttribute( "url_name", getNewGuid() );
-						questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
-						questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
-						questionTipNode.InnerText = String.Format( "{0}{1}", justificationCell.Value, justificationInnerText );
-						pbMcqNode.AppendChild( questionTipNode );
+					string justificationInnerText = "";
+					if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
+						justificationInnerText = String.Format( "<div class='answer-image'><img src='{0}'></div>", answerImageUrlColumn.Value );
 					}
+
+
+					string justificationValue = (justificationCell != null && justificationCell.HaveValue())
+						? justificationCell.Value
+						: "";
+
+					var questionTipNode = xml.CreateElement( "pb-tip-block" );
+					questionTipNode.SetAttribute( "url_name", getNewGuid() );
+					questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
+					questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
+					questionTipNode.InnerText = String.Format( "{0}{1}", justificationValue, justificationInnerText );
+					pbMcqNode.AppendChild( questionTipNode );
 
 				}
 
@@ -398,9 +392,9 @@ namespace ExcelParser
 				AppendStudySessionTestQuestions( xml, previousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 			}
 
-			if ( progressTestExcel != null && previousChapterNode != null ) {
+			var progressTestChapetNode = GetProgressTestQuestionsChapetNode( xml, progressTestExcel );
+			courseNode.AppendChild( progressTestChapetNode );
 
-			}
 
 			XmlElement wikiNode = xml.CreateElement( "wiki" );
 			wikiNode.SetAttribute( "slug", "test.1.2015" );
@@ -438,35 +432,57 @@ namespace ExcelParser
 		}
 
 
-		private void AppendProgressTestQuestions( XmlDocument xml, XmlElement chapetrNode, string chapterId, Excel<TestExcelColumn, TestExcelColumnType> progressTestExcel )
+		private XmlElement GetProgressTestQuestionsChapetNode( XmlDocument xml, Excel<TestExcelColumn, TestExcelColumnType> progressTestExcel )
 		{
-			var excelRows = progressTestExcel.Rows.Where( r => r.Any( c => c.Type == TestExcelColumnType.TopicAbbrevation && c.Value == chapterId ) );
 
-			if ( excelRows.Any() ) {
+			var chapterNode = xml.CreateElement( "chapter" );
+			chapterNode.SetAttribute( "display_name", "Progress Test" );
+			chapterNode.SetAttribute( "url_name", getGuid( "ProgressTestChapeterNode", CourseTypes.Topic ) );
+			chapterNode.SetAttribute( "cfa_type", "progress_test" );
+			chapterNode.SetAttribute( "cfa_short_name", "Progress Test" );
 
-				string verticalTestId = String.Format( "{0}-r-progressTest", chapterId );
-				string sequentialId = String.Format( "{0}-ss-progressTest", chapterId );
 
-				var sequentialNode = xml.CreateElement( "sequential" );
-				sequentialNode.SetAttribute( "display_name", "Progress test - SS" );
-				sequentialNode.SetAttribute( "cfa_type", "progress_test" );
-				sequentialNode.SetAttribute( "url_name", getGuid( sequentialId, CourseTypes.StudySession ) );
-				sequentialNode.SetAttribute( "cfa_short_name", sequentialId );
+			var topicGroup = new List<List<IExcelColumn<TestExcelColumnType>>>();
+			string previousTopicName = null;
+			var lastRow = progressTestExcel.Rows.Last();
 
-				var verticalNode = xml.CreateElement( "vertical" );
-				verticalNode.SetAttribute( "display_name", "Progress test - R" );
-				verticalNode.SetAttribute( "cfa_type", "progress_test" );
-				verticalNode.SetAttribute( "cfa_short_name", verticalTestId );
-				verticalNode.SetAttribute( "study_session_test_id", "" );
-				verticalNode.SetAttribute( "url_name", getGuid( verticalTestId, CourseTypes.Reading ) );
+			foreach ( var row in progressTestExcel.Rows ) {
 
-				sequentialNode.AppendChild( verticalNode );
+				var topicName = row.First( tn => tn.Type == TestExcelColumnType.TopicName ).Value;
+				var topicAbbrevation = row.First( c => c.Type == TestExcelColumnType.TopicAbbrevation ).Value;
+				string topicId = String.Format( "{0}-r-progressTest", topicAbbrevation );
 
-				var problemBuilderNode = GetProblemBuilderNode( xml, excelRows, "Progress test", getGuid( verticalTestId, CourseTypes.Question ) );
 
-				verticalNode.AppendChild( problemBuilderNode );
-				chapetrNode.AppendChild( sequentialNode );
+				if ( (previousTopicName != null && previousTopicName != topicName)
+						|| row == lastRow ) {
+
+					var sequentialNode = xml.CreateElement( "sequential" );
+					sequentialNode.SetAttribute( "display_name", topicName );
+					sequentialNode.SetAttribute( "url_name", getGuid( topicId, CourseTypes.StudySession ) );
+
+					var verticalNode = xml.CreateElement( "vertical" );
+					verticalNode.SetAttribute( "display_name", "Progress test - R" );
+					verticalNode.SetAttribute( "study_session_test_id", "" );
+					verticalNode.SetAttribute( "url_name", getGuid( topicId, CourseTypes.Reading ) );
+
+					sequentialNode.AppendChild( verticalNode );
+
+					var problemBuilderNode = GetProblemBuilderNode( xml, topicGroup, "Progress test", getGuid( topicId, CourseTypes.Question ) );
+					verticalNode.AppendChild( problemBuilderNode );
+					chapterNode.AppendChild( sequentialNode );
+
+					topicGroup = new List<List<IExcelColumn<TestExcelColumnType>>>();
+
+				}
+
+				topicGroup.Add( row );
+				previousTopicName = topicName;
+
+
 			}
+
+
+			return chapterNode;
 
 
 		}
@@ -561,19 +577,21 @@ namespace ExcelParser
 
 				//tip  block
 				var justificationCell = row.FirstOrDefault( c => c.Type == TestExcelColumnType.Justification );
-				if ( justificationCell != null && justificationCell.HaveValue() ) {
-					string justificationInnerText = "";
-					if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
-						justificationInnerText = String.Format( "<div class='answer-image'><img src='{0}'></div>", answerImageUrlColumn.Value );
-					}
-
-					var questionTipNode = xml.CreateElement( "pb-tip-block" );
-					questionTipNode.SetAttribute( "url_name", getNewGuid() );
-					questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
-					questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
-					questionTipNode.InnerText = String.Format( "{0}{1}", justificationCell.Value, justificationInnerText);
-					pbMcqNode.AppendChild( questionTipNode );
+				string justificationInnerText = "";
+				if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
+					justificationInnerText = String.Format( "<div class='answer-image'><img src='{0}'></div>", answerImageUrlColumn.Value );
 				}
+
+				string justificationValue = (justificationCell != null && justificationCell.HaveValue())
+						? justificationCell.Value
+						: "";
+
+				var questionTipNode = xml.CreateElement( "pb-tip-block" );
+				questionTipNode.SetAttribute( "url_name", getNewGuid() );
+				questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
+				questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
+				questionTipNode.InnerText = String.Format( "{0}{1}", justificationValue, justificationInnerText );
+				pbMcqNode.AppendChild( questionTipNode );
 
 			}
 

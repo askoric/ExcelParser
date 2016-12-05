@@ -219,6 +219,8 @@ namespace ExcelParser
 						return new TestExcelColumn( columnName, TestExcelColumnType.SessionAbbrevation, index );
 					case "topic abbreviation":
 						return new TestExcelColumn( columnName, TestExcelColumnType.TopicAbbrevation, index );
+					case "topicname":
+						return new TestExcelColumn( columnName, TestExcelColumnType.TopicName, index );
 					case "k_structure":
 						return new TestExcelColumn( columnName, TestExcelColumnType.KStructure, index );
 					case "q_id":
@@ -257,6 +259,7 @@ namespace ExcelParser
 		Undefined,
 		SessionAbbrevation,
 		TopicAbbrevation,
+		TopicName,
 		KStructure,
 		QuestionId,
 		Question,
