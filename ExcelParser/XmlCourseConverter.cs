@@ -444,6 +444,7 @@ namespace ExcelParser
 
 			var topicGroup = new List<List<IExcelColumn<TestExcelColumnType>>>();
 			string previousTopicName = null;
+			string previousTopicId = null;
 			var lastRow = progressTestExcel.Rows.Last();
 
 			foreach ( var row in progressTestExcel.Rows ) {
@@ -457,17 +458,17 @@ namespace ExcelParser
 						|| row == lastRow ) {
 
 					var sequentialNode = xml.CreateElement( "sequential" );
-					sequentialNode.SetAttribute( "display_name", topicName );
+					sequentialNode.SetAttribute( "display_name", previousTopicName );
 					sequentialNode.SetAttribute( "url_name", getGuid( topicId, CourseTypes.StudySession ) );
 
 					var verticalNode = xml.CreateElement( "vertical" );
 					verticalNode.SetAttribute( "display_name", "Progress test - R" );
 					verticalNode.SetAttribute( "study_session_test_id", "" );
-					verticalNode.SetAttribute( "url_name", getGuid( topicId, CourseTypes.Reading ) );
+					verticalNode.SetAttribute( "url_name", getGuid( previousTopicId, CourseTypes.Reading ) );
 
 					sequentialNode.AppendChild( verticalNode );
 
-					var problemBuilderNode = GetProblemBuilderNode( xml, topicGroup, "Progress test", getGuid( topicId, CourseTypes.Question ) );
+					var problemBuilderNode = GetProblemBuilderNode( xml, topicGroup, "Progress test", getGuid( previousTopicId, CourseTypes.Question ) );
 					verticalNode.AppendChild( problemBuilderNode );
 					chapterNode.AppendChild( sequentialNode );
 
@@ -477,6 +478,7 @@ namespace ExcelParser
 
 				topicGroup.Add( row );
 				previousTopicName = topicName;
+				previousTopicId = topicId;
 
 
 			}
