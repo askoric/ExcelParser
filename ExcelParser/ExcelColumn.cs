@@ -323,6 +323,8 @@ namespace ExcelParser
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.StudySession, index );
 					case "studysession abb":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.StudySessionId, index );
+					case "structure":
+						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Structure, index );
 					case "reading":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Reading, index );
 					case "exam percentage":
@@ -367,6 +369,7 @@ namespace ExcelParser
 		AtomTitle, 
 		StudySession,
 		StudySessionId, 
+		Structure,
 		Reading, 
 		ExamPercentage, 
 		Description, 

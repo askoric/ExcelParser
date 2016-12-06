@@ -81,6 +81,8 @@ namespace ExcelParser
 
 			foreach ( var row in mainStructureExcel.Rows ) {
 
+				var structureTokens = row.First( c => c.Type == MainStructureColumnType.Structure ).Value.Split( '|' );
+
 				//Band need to be legal value else skip this row
 				var bandColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Band );
 				if ( bandColumn == null || bandColumn.Value == null || bandColumn.Value[0].ToString().ToLower() != "b" ) {
@@ -127,6 +129,7 @@ namespace ExcelParser
 					chapterNode.SetAttribute( "locked", locked );
 					chapterNode.SetAttribute( "topic_color", colorColumn != null && colorColumn.HaveValue() ? colorColumn.Value : "" );
 					chapterNode.SetAttribute( "cfa_type", cfaTypeColumn != null && cfaTypeColumn.HaveValue() ? cfaTypeColumn.Value : "" );
+					chapterNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 2 ) ) );
 					courseNode.AppendChild( chapterNode );
 
 				}
@@ -143,6 +146,7 @@ namespace ExcelParser
 					sequentialNode.SetAttribute( "url_name", getGuid( studySessionId.Value, CourseTypes.StudySession ) );
 					sequentialNode.SetAttribute( "cfa_short_name",
 						studySession != null && studySession.HaveValue() ? studySession.Value : "" );
+					sequentialNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 3 ) ) );
 					chapterNode.AppendChild( sequentialNode );
 
 					//ADD TEST TO THE BOTTOM OF LAST SESSION NAME NODE
@@ -173,6 +177,7 @@ namespace ExcelParser
 					verticalNode.SetAttribute( "url_name", getGuid( readingIdColumn.Value, CourseTypes.Reading ) );
 					verticalNode.SetAttribute( "cfa_short_name", readingColumn != null && readingColumn.HaveValue() ? readingColumn.Value : "" );
 					verticalNode.SetAttribute( "downloads", JsonConvert.SerializeObject( downloads ) );
+					verticalNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 4 ) ) );
 
 					if ( losExcel != null ) {
 						var outcomes = new List<object>();
@@ -213,6 +218,7 @@ namespace ExcelParser
 					bandContainerNode.SetAttribute( "xblock-family", "xblock.v1" );
 					bandContainerNode.SetAttribute( "container_description", "" );
 					bandContainerNode.SetAttribute( "learning_objective_id", "" );
+					bandContainerNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 5 ) ) );
 
 					string targetScore = "";
 					if ( acceptanceCriteriaExcel != null ) {
@@ -241,8 +247,11 @@ namespace ExcelParser
 					conceptNameContainerNode.SetAttribute( "xblock-family", "xblock.v1" );
 					conceptNameContainerNode.SetAttribute( "container_description", "" );
 					conceptNameContainerNode.SetAttribute( "learning_objective_id", conceptIdColumn != null && conceptIdColumn.HaveValue() ? conceptIdColumn.Value : "" );
+					conceptNameContainerNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 6 ) ) );
 					bandContainerNode.AppendChild( conceptNameContainerNode );
 				}
+
+				string atomTaxonId = String.Format( "{0}|{1}", String.Join( "|", structureTokens.Take( 6 ) ), atomIdColumn.Value );
 
 				//VIDEO
 				if ( atomType.Value == "IN" ) {
@@ -259,7 +268,8 @@ namespace ExcelParser
 					videoNode.SetAttribute( "begin_values", "[]" );
 					videoNode.SetAttribute( "api_bcpid", "4830051907001" );
 					videoNode.SetAttribute( "cfa_type", "video" );
-					videoNode.SetAttribute( "atom_id", atomIdColumn != null && atomIdColumn.HaveValue() ? atomIdColumn.Value : "" );
+					videoNode.SetAttribute( "atom_id", atomIdColumn.Value );
+					videoNode.SetAttribute( "taxon_id", atomTaxonId );
 
 					if ( setTranscripts ) {
 						string xmlTranscriptString = "";
@@ -297,7 +307,7 @@ namespace ExcelParser
 					problemBuilderNode.SetAttribute( "cfa_type", "question" );
 					problemBuilderNode.SetAttribute( "atom_id", atomIdColumn != null && atomIdColumn.HaveValue() ? atomIdColumn.Value : "" );
 					problemBuilderNode.SetAttribute( "instruct_assessment", kkEeColumn != null && kkEeColumn.HaveValue() ? kkEeColumn.Value : "" );
-
+					problemBuilderNode.SetAttribute( "taxon_id", atomTaxonId );
 
 
 					conceptNameContainerNode.AppendChild( problemBuilderNode );
@@ -448,12 +458,14 @@ namespace ExcelParser
 			var topicGroup = new List<List<IExcelColumn<TestExcelColumnType>>>();
 			string previousTopicName = null;
 			string previousTopicId = null;
+			string kStructure = null;
 			var lastRow = progressTestExcel.Rows.Last();
 
 			foreach ( var row in progressTestExcel.Rows ) {
 
 				var topicName = row.First( tn => tn.Type == TestExcelColumnType.TopicName ).Value;
 				var topicAbbrevation = row.First( c => c.Type == TestExcelColumnType.TopicAbbrevation ).Value;
+
 				string topicId = String.Format( "{0}-r-progressTest", topicAbbrevation );
 
 
@@ -463,6 +475,7 @@ namespace ExcelParser
 					var sequentialNode = xml.CreateElement( "sequential" );
 					sequentialNode.SetAttribute( "display_name", previousTopicName );
 					sequentialNode.SetAttribute( "url_name", getGuid( previousTopicId, CourseTypes.StudySession ) );
+					sequentialNode.SetAttribute( "taxon_id", kStructure );
 
 					var verticalNode = xml.CreateElement( "vertical" );
 					verticalNode.SetAttribute( "display_name", "Progress test - R" );
@@ -482,7 +495,7 @@ namespace ExcelParser
 				topicGroup.Add( row );
 				previousTopicName = topicName;
 				previousTopicId = topicId;
-
+				kStructure = String.Join( "|", row.First( c => c.Type == TestExcelColumnType.KStructure ).Value.Split( '|' ).Take( 2 ) );
 
 			}
 
