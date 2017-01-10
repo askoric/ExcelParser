@@ -147,6 +147,8 @@ namespace ExcelParser
 					sequentialNode.SetAttribute( "cfa_short_name",
 						studySession != null && studySession.HaveValue() ? studySession.Value : "" );
 					sequentialNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 3 ) ) );
+					sequentialNode.SetAttribute( "proficiency_target", "70" );
+
 					chapterNode.AppendChild( sequentialNode );
 
 					//ADD TEST TO THE BOTTOM OF LAST SESSION NAME NODE
@@ -178,6 +180,7 @@ namespace ExcelParser
 					verticalNode.SetAttribute( "cfa_short_name", readingColumn != null && readingColumn.HaveValue() ? readingColumn.Value : "" );
 					verticalNode.SetAttribute( "downloads", JsonConvert.SerializeObject( downloads ) );
 					verticalNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 4 ) ) );
+					verticalNode.SetAttribute( "proficiency_target", "70" );
 
 					if ( losExcel != null ) {
 						var outcomes = new List<object>();
@@ -459,6 +462,7 @@ namespace ExcelParser
 			string previousTopicName = null;
 			string previousTopicId = null;
 			string kStructure = null;
+			XmlNode sequentialNode = null;
 			var lastRow = progressTestExcel.Rows.Last();
 
 			foreach ( var row in progressTestExcel.Rows ) {
@@ -469,25 +473,10 @@ namespace ExcelParser
 				string topicId = String.Format( "{0}-r-progressTest", topicAbbrevation );
 
 
-				if ( (previousTopicName != null && previousTopicName != topicName)
-						|| row == lastRow ) {
+				if ( previousTopicName != null && previousTopicName != topicName) {
 
-					var sequentialNode = xml.CreateElement( "sequential" );
-					sequentialNode.SetAttribute( "display_name", previousTopicName );
-					sequentialNode.SetAttribute( "url_name", getGuid( previousTopicId, CourseTypes.StudySession ) );
-					sequentialNode.SetAttribute( "taxon_id", kStructure );
-
-					var verticalNode = xml.CreateElement( "vertical" );
-					verticalNode.SetAttribute( "display_name", "Progress test - R" );
-					verticalNode.SetAttribute( "study_session_test_id", "" );
-					verticalNode.SetAttribute( "url_name", getGuid( previousTopicId, CourseTypes.Reading ) );
-
-					sequentialNode.AppendChild( verticalNode );
-
-					var problemBuilderNode = GetProblemBuilderNode( xml, topicGroup, "Progress test", getGuid( previousTopicId, CourseTypes.Question ) );
-					verticalNode.AppendChild( problemBuilderNode );
+					sequentialNode = GetProgressTestSequantialNode( xml, previousTopicName, previousTopicId, kStructure, topicGroup );
 					chapterNode.AppendChild( sequentialNode );
-
 					topicGroup = new List<List<IExcelColumn<TestExcelColumnType>>>();
 
 				}
@@ -499,10 +488,35 @@ namespace ExcelParser
 
 			}
 
+			//Append last question group
+			sequentialNode = GetProgressTestSequantialNode( xml, previousTopicName, previousTopicId, kStructure, topicGroup );
+			chapterNode.AppendChild( sequentialNode );
+
 
 			return chapterNode;
 
 
+		}
+
+
+		private XmlNode GetProgressTestSequantialNode( XmlDocument xml, string topicName, string topicId, string kStructure, List<List<IExcelColumn<TestExcelColumnType>>> topicGroup )
+		{
+			var sequentialNode = xml.CreateElement( "sequential" );
+			sequentialNode.SetAttribute( "display_name", topicName );
+			sequentialNode.SetAttribute( "url_name", getGuid( topicId, CourseTypes.StudySession ) );
+			sequentialNode.SetAttribute( "taxon_id", kStructure );
+
+			var verticalNode = xml.CreateElement( "vertical" );
+			verticalNode.SetAttribute( "display_name", "Progress test - R" );
+			verticalNode.SetAttribute( "study_session_test_id", "" );
+			verticalNode.SetAttribute( "url_name", getGuid( topicId, CourseTypes.Reading ) );
+
+			sequentialNode.AppendChild( verticalNode );
+
+			var problemBuilderNode = GetProblemBuilderNode( xml, topicGroup, "Progress test", getGuid( topicId, CourseTypes.Question ) );
+			verticalNode.AppendChild( problemBuilderNode );
+
+			return sequentialNode;
 		}
 
 
