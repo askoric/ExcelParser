@@ -12,13 +12,17 @@ namespace ExcelParser
     {
         public string DisplayName { get; set; }
         public string UrlName { get; set; }
+        public string ProblemBuilderNodeElement { get; set; }
+        public string PbMcqNodeElement { get; set; }
+        public string PbChoiceBlockElement { get; set; }
+        public string PbTipBlockElement { get; set; }
     }
 
     class ProblemBuilderNodeGenerator
     {
         public static XmlElement Generate(XmlDocument xml, IEnumerable<List<IExcelColumn<TestExcelColumnType>>> excelRows, ProblemBuilderNodeSettings settings)
         {
-            var problemBuilderNode = xml.CreateElement("problem-builder-block");
+            var problemBuilderNode = xml.CreateElement(settings.ProblemBuilderNodeElement);
             problemBuilderNode.SetAttribute("display_name", settings.DisplayName);
             problemBuilderNode.SetAttribute("url_name", settings.UrlName);
             problemBuilderNode.SetAttribute("xblock-family", "xblock.v1");
@@ -34,7 +38,7 @@ namespace ExcelParser
                 string questionValue = questionColumn.HaveValue() ? questionColumn.Value : questionImageUrlColumn.HaveValue() ? "" : "Question Missing";
 
 
-                var pbMcqNode = xml.CreateElement("pb-mcq-block");
+                var pbMcqNode = xml.CreateElement(settings.PbMcqNodeElement);
                 var correctColumn = row.FirstOrDefault(c => c.Type == TestExcelColumnType.Correct);
 
                 var actualCorrectValues = new List<string>();
@@ -101,7 +105,7 @@ namespace ExcelParser
                 //}
 
                 //Harcoded answer 4 node
-                var answer4Node = xml.CreateElement("pb-choice-block");
+                var answer4Node = xml.CreateElement(settings.PbMcqNodeElement);
                 var question4Id = questionDic["D"];
                 questionIds.Add(question4Id);
                 answer4Node.SetAttribute("url_name", CourseConverterHelper.getNewGuid());
@@ -122,7 +126,7 @@ namespace ExcelParser
                         ? justificationCell.Value
                         : "";
 
-                var questionTipNode = xml.CreateElement("pb-tip-block");
+                var questionTipNode = xml.CreateElement(settings.PbTipBlockElement);
                 questionTipNode.SetAttribute("url_name", CourseConverterHelper.getNewGuid());
                 questionTipNode.SetAttribute("xblock-family", "xblock.v1");
                 questionTipNode.SetAttribute("values", JsonConvert.SerializeObject(questionIds));

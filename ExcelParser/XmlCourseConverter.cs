@@ -436,7 +436,11 @@ namespace ExcelParser
                 var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, excelRows, new ProblemBuilderNodeSettings
                 {
                     DisplayName = "Study Session Test",
-                    UrlName = CourseConverterHelper.getGuid(verticalTestId, CourseTypes.Question)
+                    UrlName = CourseConverterHelper.getGuid(verticalTestId, CourseTypes.Question),
+                    ProblemBuilderNodeElement = "problem-builder-block",
+                    PbMcqNodeElement = "pb-mcq-block",
+                    PbChoiceBlockElement = "pb-choice-block",
+                    PbTipBlockElement = "pb-tip-block"
                 });
 
 				verticalNode.AppendChild( problemBuilderNode );
@@ -509,7 +513,11 @@ namespace ExcelParser
 
 			var problemBuilderNode = ProblemBuilderNodeGenerator.Generate( xml, topicGroup, new ProblemBuilderNodeSettings {
                 DisplayName = "Progress test",
-                UrlName = CourseConverterHelper.getGuid(topicId, CourseTypes.Question)
+                UrlName = CourseConverterHelper.getGuid(topicId, CourseTypes.Question),
+                ProblemBuilderNodeElement = "problem-builder-progress-test",
+                PbMcqNodeElement = "pb-mcq-progress-test",
+                PbChoiceBlockElement = "pb-choice-progress-test",
+                PbTipBlockElement = "pb-tip-progress-test"
             });
 			verticalNode.AppendChild( problemBuilderNode );
 
