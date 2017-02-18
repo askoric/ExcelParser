@@ -17,32 +17,7 @@ namespace ExcelParser
 
 	public class ExcelParser
 	{
-		public List<string> GetVideoReferenceIds( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel )
-		{
-			var referenceIds = new List<string>();
-			var rowIndex = 0;
-			foreach ( var row in mainStructureExcel.Rows ) {
-				rowIndex++;
-				var atomType = row.FirstOrDefault( c => c.Type == MainStructureColumnType.AtomType );
-				if ( atomType == null || !atomType.HaveValue() ) {
-					Program.Log.Info( String.Format( "Missing atom type for row {0}", rowIndex ) );
-					continue;
-				}
-
-				if ( atomType.Value == "IN" ) {
-					var atomIdColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.AtomId );
-					if ( atomIdColumn != null && atomIdColumn.HaveValue() ) {
-						referenceIds.Add( atomIdColumn.Value );
-					}
-					else {
-						Program.Log.Info( String.Format( "Missing atom Id for row {0}", rowIndex ) );
-					}
-				}
-			}
-			return referenceIds;
-		}
-
-		public XmlDocument ConvertExcelToCourseXml( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel, Excel<QuestionExcelColumn, QuestionExcelColumnType> questionExcel, Excel<LosExcelColumn, LosExcelColumnType> losExcel, Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> acceptanceCriteriaExcel, Excel<TestExcelColumn, TestExcelColumnType> ssTestExcel, Excel<TestExcelColumn, TestExcelColumnType> progressTestExcel, bool setTranscripts )
+		public XmlDocument ConvertExcelToCourseXml( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel, Excel<QuestionExcelColumn, QuestionExcelColumnType> questionExcel, Excel<LosExcelColumn, LosExcelColumnType> losExcel, Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> acceptanceCriteriaExcel, Excel<TestExcelColumn, TestExcelColumnType> ssTestExcel, Excel<TestExcelColumn, TestExcelColumnType> progressTestExcel, Excel<TestExcelColumn, TestExcelColumnType> MockExamExcel,  bool setTranscripts )
 		{
             CourseConverterHelper.generatedQuestionIds = new Dictionary<string, string>();
             CourseConverterHelper._generatedGuids = new Dictionary<string, guidRequest>();
@@ -310,7 +285,6 @@ namespace ExcelParser
 					problemBuilderNode.SetAttribute( "instruct_assessment", kkEeColumn != null && kkEeColumn.HaveValue() ? kkEeColumn.Value : "" );
 					problemBuilderNode.SetAttribute( "taxon_id", atomTaxonId );
 
-
 					conceptNameContainerNode.AppendChild( problemBuilderNode );
 
 					var pbMcqNode = xml.CreateElement( "pb-mcq-block" );
@@ -373,14 +347,12 @@ namespace ExcelParser
 						questionIds.Add( question4Id );
 					}
 
-
 					//tip  block
 					var justificationCell = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Justification );
 					string justificationInnerText = "";
 					if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
 						justificationInnerText = String.Format( "<div class='answer-image'><img src='{0}'></div>", answerImageUrlColumn.Value );
 					}
-
 
 					string justificationValue = (justificationCell != null && justificationCell.HaveValue())
 						? justificationCell.Value
@@ -392,11 +364,9 @@ namespace ExcelParser
 					questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
 					questionTipNode.InnerText = String.Format( "{0}{1}", justificationValue, justificationInnerText );
 					pbMcqNode.AppendChild( questionTipNode );
-
 				}
 
 				skip = true;
-
 			}
 
 			if ( ssTestExcel != null && previousStudySessionLocked != "yes" ) {
@@ -404,11 +374,16 @@ namespace ExcelParser
 			}
 
             if ( progressTestExcel != null ) {
-				var progressTestChapetNode = GetProgressTestQuestionsChapetNode( xml, progressTestExcel );
-				courseNode.AppendChild( progressTestChapetNode );
+				var progressTestChapterNode = ProgressTestExcelConverter.Convert( xml, progressTestExcel );
+				courseNode.AppendChild( progressTestChapterNode );
 			}
-            
-			XmlElement wikiNode = xml.CreateElement( "wiki" );
+
+            if (MockExamExcel != null) {
+                var mockExamChapterNode = MockExamExcelConverter.Convert( xml, MockExamExcel );
+                courseNode.AppendChild(mockExamChapterNode);
+            }
+
+            XmlElement wikiNode = xml.CreateElement( "wiki" );
 			wikiNode.SetAttribute( "slug", "test.1.2015" );
 			courseNode.AppendChild( wikiNode );
 
@@ -446,83 +421,35 @@ namespace ExcelParser
 				verticalNode.AppendChild( problemBuilderNode );
 				sequentialNode.AppendChild( verticalNode );
 			}
-
-
 		}
 
+        public List<string> GetVideoReferenceIds(Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel)
+        {
+            var referenceIds = new List<string>();
+            var rowIndex = 0;
+            foreach (var row in mainStructureExcel.Rows)
+            {
+                rowIndex++;
+                var atomType = row.FirstOrDefault(c => c.Type == MainStructureColumnType.AtomType);
+                if (atomType == null || !atomType.HaveValue())
+                {
+                    Program.Log.Info(String.Format("Missing atom type for row {0}", rowIndex));
+                    continue;
+                }
 
-		private XmlElement GetProgressTestQuestionsChapetNode( XmlDocument xml, Excel<TestExcelColumn, TestExcelColumnType> progressTestExcel )
-		{
-			var chapterNode = xml.CreateElement( "chapter" );
-			chapterNode.SetAttribute( "display_name", "Progress Test" );
-			chapterNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( "ProgressTestChapeterNode", CourseTypes.Topic ) );
-			chapterNode.SetAttribute( "cfa_type", "progress_test" );
-			chapterNode.SetAttribute( "cfa_short_name", "Progress Test" );
-
-			var topicGroup = new List<List<IExcelColumn<TestExcelColumnType>>>();
-			string previousTopicName = null;
-			string previousTopicId = null;
-			string kStructure = null;
-			XmlNode sequentialNode = null;
-			var lastRow = progressTestExcel.Rows.Last();
-
-			foreach ( var row in progressTestExcel.Rows ) {
-
-				var topicName = row.First( tn => tn.Type == TestExcelColumnType.TopicName ).Value;
-				var topicAbbrevation = row.First( c => c.Type == TestExcelColumnType.TopicAbbrevation ).Value;
-
-				string topicId = String.Format( "{0}-r-progressTest", topicAbbrevation );
-
-				if ( previousTopicName != null && previousTopicName != topicName) {
-
-					sequentialNode = GetProgressTestSequantialNode( xml, previousTopicName, previousTopicId, kStructure, topicGroup );
-					chapterNode.AppendChild( sequentialNode );
-					topicGroup = new List<List<IExcelColumn<TestExcelColumnType>>>();
-
-				}
-
-				topicGroup.Add( row );
-				previousTopicName = topicName;
-				previousTopicId = topicId;
-				kStructure = String.Join( "|", row.First( c => c.Type == TestExcelColumnType.KStructure ).Value.Split( '|' ).Take( 2 ) );
-
-			}
-
-			//Append last question group
-			sequentialNode = GetProgressTestSequantialNode( xml, previousTopicName, previousTopicId, kStructure, topicGroup );
-			chapterNode.AppendChild( sequentialNode );
-
-
-			return chapterNode;
-		}
-
-
-		private XmlNode GetProgressTestSequantialNode( XmlDocument xml, string topicName, string topicId, string kStructure, List<List<IExcelColumn<TestExcelColumnType>>> topicGroup )
-		{
-			var sequentialNode = xml.CreateElement( "sequential" );
-			sequentialNode.SetAttribute( "display_name", topicName );
-			sequentialNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( topicId, CourseTypes.StudySession ) );
-			sequentialNode.SetAttribute( "taxon_id", kStructure );
-
-			var verticalNode = xml.CreateElement( "vertical" );
-			verticalNode.SetAttribute( "display_name", "Progress test - R" );
-			verticalNode.SetAttribute( "study_session_test_id", "" );
-			verticalNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( topicId, CourseTypes.Reading ) );
-
-			sequentialNode.AppendChild( verticalNode );
-
-			var problemBuilderNode = ProblemBuilderNodeGenerator.Generate( xml, topicGroup, new ProblemBuilderNodeSettings {
-                DisplayName = "Progress test",
-                UrlName = CourseConverterHelper.getGuid(topicId, CourseTypes.Question),
-                ProblemBuilderNodeElement = "problem-builder-progress-test",
-                PbMcqNodeElement = "pb-mcq-progress-test",
-                PbChoiceBlockElement = "pb-choice-progress-test",
-                PbTipBlockElement = "pb-tip-progress-test"
-            });
-			verticalNode.AppendChild( problemBuilderNode );
-
-			return sequentialNode;
-		}
-
-	}
+                if (atomType.Value == "IN")
+                {
+                    var atomIdColumn = row.FirstOrDefault(c => c.Type == MainStructureColumnType.AtomId);
+                    if (atomIdColumn != null && atomIdColumn.HaveValue())
+                    {
+                        referenceIds.Add(atomIdColumn.Value);
+                    }
+                    else {
+                        Program.Log.Info(String.Format("Missing atom Id for row {0}", rowIndex));
+                    }
+                }
+            }
+            return referenceIds;
+        }
+    }
 }

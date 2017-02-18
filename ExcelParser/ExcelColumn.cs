@@ -246,7 +246,9 @@ namespace ExcelParser
 						return new TestExcelColumn( columnName, TestExcelColumnType.QuestionImageUrl, index );
 					case "justification":
 						return new TestExcelColumn( columnName, TestExcelColumnType.Justification, index );
-				}
+                    case "fcm_number":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.FcmNumber, index);
+                }
 			}
 
 			return new TestExcelColumn( columnName, TestExcelColumnType.Undefined, index );
@@ -271,7 +273,8 @@ namespace ExcelParser
 		AnswerImageUrl, 
 		Correct,
 		QuestionImageUrl, 
-		Justification
+		Justification,
+        FcmNumber //MOckTestExcelOnly
 	}
 
 

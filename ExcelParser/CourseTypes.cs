@@ -14,6 +14,7 @@ namespace ExcelParser
 		Band,
 		Concept,
 		Question,
-		Video
+		Video,
+        Mock
 	}
 }

@@ -46,12 +46,15 @@
             this.UploadSsTestCheckImage = new System.Windows.Forms.PictureBox();
             this.uploadProgressTestCheckIcon = new System.Windows.Forms.PictureBox();
             this.UploadProgressTestExcell = new System.Windows.Forms.Button();
+            this.MockExamBtn = new System.Windows.Forms.Button();
+            this.uploadMockExamCheckIcon = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.MainStructureExcelCheckImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LosExcelCheckImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.QuestionExcelCheckImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AcceptanceCriteriaCheckImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.UploadSsTestCheckImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.uploadProgressTestCheckIcon)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.uploadMockExamCheckIcon)).BeginInit();
             this.SuspendLayout();
             // 
             // label6
@@ -84,7 +87,7 @@
             // 
             this.SetTranscript.AutoSize = true;
             this.SetTranscript.Enabled = false;
-            this.SetTranscript.Location = new System.Drawing.Point(25, 206);
+            this.SetTranscript.Location = new System.Drawing.Point(226, 239);
             this.SetTranscript.Name = "SetTranscript";
             this.SetTranscript.Size = new System.Drawing.Size(89, 17);
             this.SetTranscript.TabIndex = 9;
@@ -237,11 +240,34 @@
             this.UploadProgressTestExcell.UseVisualStyleBackColor = true;
             this.UploadProgressTestExcell.Click += new System.EventHandler(this.UploadProgressTestExcell_Click);
             // 
+            // MockExamBtn
+            // 
+            this.MockExamBtn.Location = new System.Drawing.Point(25, 191);
+            this.MockExamBtn.Name = "MockExamBtn";
+            this.MockExamBtn.Size = new System.Drawing.Size(152, 23);
+            this.MockExamBtn.TabIndex = 21;
+            this.MockExamBtn.Text = "Upload Mock Exam";
+            this.MockExamBtn.UseVisualStyleBackColor = true;
+            this.MockExamBtn.Click += new System.EventHandler(this.MockExamBtn_Click);
+            // 
+            // uploadMockExamCheckIcon
+            // 
+            this.uploadMockExamCheckIcon.Image = ((System.Drawing.Image)(resources.GetObject("uploadMockExamCheckIcon.Image")));
+            this.uploadMockExamCheckIcon.Location = new System.Drawing.Point(183, 191);
+            this.uploadMockExamCheckIcon.Name = "uploadMockExamCheckIcon";
+            this.uploadMockExamCheckIcon.Size = new System.Drawing.Size(16, 23);
+            this.uploadMockExamCheckIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.uploadMockExamCheckIcon.TabIndex = 22;
+            this.uploadMockExamCheckIcon.TabStop = false;
+            this.uploadMockExamCheckIcon.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(462, 277);
+            this.Controls.Add(this.uploadMockExamCheckIcon);
+            this.Controls.Add(this.MockExamBtn);
             this.Controls.Add(this.uploadProgressTestCheckIcon);
             this.Controls.Add(this.UploadProgressTestExcell);
             this.Controls.Add(this.UploadSsTestCheckImage);
@@ -268,6 +294,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.AcceptanceCriteriaCheckImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.UploadSsTestCheckImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.uploadProgressTestCheckIcon)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.uploadMockExamCheckIcon)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -293,5 +320,7 @@
 		private System.Windows.Forms.PictureBox UploadSsTestCheckImage;
 		private System.Windows.Forms.PictureBox uploadProgressTestCheckIcon;
 		private System.Windows.Forms.Button UploadProgressTestExcell;
-	}
+        private System.Windows.Forms.Button MockExamBtn;
+        private System.Windows.Forms.PictureBox uploadMockExamCheckIcon;
+    }
 }
