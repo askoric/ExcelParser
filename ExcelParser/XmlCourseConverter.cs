@@ -17,9 +17,6 @@ namespace ExcelParser
 
 	public class ExcelParser
 	{
-		private Dictionary<string, string> generatedQuestionIds;
-		Dictionary<string, guidRequest> _generatedGuids;
-
 		public List<string> GetVideoReferenceIds( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel )
 		{
 			var referenceIds = new List<string>();
@@ -47,8 +44,9 @@ namespace ExcelParser
 
 		public XmlDocument ConvertExcelToCourseXml( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel, Excel<QuestionExcelColumn, QuestionExcelColumnType> questionExcel, Excel<LosExcelColumn, LosExcelColumnType> losExcel, Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> acceptanceCriteriaExcel, Excel<TestExcelColumn, TestExcelColumnType> ssTestExcel, Excel<TestExcelColumn, TestExcelColumnType> progressTestExcel, bool setTranscripts )
 		{
-			generatedQuestionIds = new Dictionary<string, string>();
-			_generatedGuids = new Dictionary<string, guidRequest>();
+            CourseConverterHelper.generatedQuestionIds = new Dictionary<string, string>();
+            CourseConverterHelper._generatedGuids = new Dictionary<string, guidRequest>();
+
 			XmlDocument xml = new XmlDocument();
 			var xmlTranscriptAccessor = new XmlTranscriptAccessor();
 
@@ -122,7 +120,7 @@ namespace ExcelParser
 					var description = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Description );
 					chapterNode = xml.CreateElement( "chapter" );
 					chapterNode.SetAttribute( "display_name", topicNameColumn != null && topicNameColumn.HaveValue() ? topicNameColumn.Value : "" );
-					chapterNode.SetAttribute( "url_name", getGuid( topicShortName.Value, CourseTypes.Topic ) );
+					chapterNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( topicShortName.Value, CourseTypes.Topic ) );
 					chapterNode.SetAttribute( "cfa_short_name", topicShortName != null && topicShortName.HaveValue() ? topicShortName.Value : "" );
 					chapterNode.SetAttribute( "exam_percentage", examPercantage != null && examPercantage.HaveValue() ? examPercantage.Value : "" );
 					chapterNode.SetAttribute( "description", description != null && description.HaveValue() ? description.Value : "" );
@@ -131,7 +129,6 @@ namespace ExcelParser
 					chapterNode.SetAttribute( "cfa_type", cfaTypeColumn != null && cfaTypeColumn.HaveValue() ? cfaTypeColumn.Value : "" );
 					chapterNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 2 ) ) );
 					courseNode.AppendChild( chapterNode );
-
 				}
 
 
@@ -143,7 +140,7 @@ namespace ExcelParser
 					sequentialNode = xml.CreateElement( "sequential" );
 					sequentialNode.SetAttribute( "display_name",
 						sessionNameColumn != null && sessionNameColumn.HaveValue() ? sessionNameColumn.Value : "" );
-					sequentialNode.SetAttribute( "url_name", getGuid( studySessionId.Value, CourseTypes.StudySession ) );
+					sequentialNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( studySessionId.Value, CourseTypes.StudySession ) );
 					sequentialNode.SetAttribute( "cfa_short_name",
 						studySession != null && studySession.HaveValue() ? studySession.Value : "" );
 					sequentialNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 3 ) ) );
@@ -176,7 +173,7 @@ namespace ExcelParser
 					var readingIdColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ReadingId );
 					verticalNode = xml.CreateElement( "vertical" );
 					verticalNode.SetAttribute( "display_name", readingNameColumn != null && readingNameColumn.HaveValue() ? readingNameColumn.Value : "" );
-					verticalNode.SetAttribute( "url_name", getGuid( readingIdColumn.Value, CourseTypes.Reading ) );
+					verticalNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( readingIdColumn.Value, CourseTypes.Reading ) );
 					verticalNode.SetAttribute( "cfa_short_name", readingColumn != null && readingColumn.HaveValue() ? readingColumn.Value : "" );
 					verticalNode.SetAttribute( "downloads", JsonConvert.SerializeObject( downloads ) );
 					verticalNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 4 ) ) );
@@ -216,7 +213,7 @@ namespace ExcelParser
 				if ( !skip ) {
 					var bandIdColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.BandId );
 					bandContainerNode = xml.CreateElement( "container" );
-					bandContainerNode.SetAttribute( "url_name", getGuid( bandIdColumn.Value, CourseTypes.Band ) );
+					bandContainerNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( bandIdColumn.Value, CourseTypes.Band ) );
 					bandContainerNode.SetAttribute( "display_name", bandColumn != null && bandColumn.HaveValue() ? bandColumn.Value : "" );
 					bandContainerNode.SetAttribute( "xblock-family", "xblock.v1" );
 					bandContainerNode.SetAttribute( "container_description", "" );
@@ -245,7 +242,7 @@ namespace ExcelParser
 				skip = (conceptNameContainerNode != null && conceptNameContainerNode.GetAttribute( "learning_objective_id" ) != conceptIdColumn.Value) ? false : skip;
 				if ( !skip ) {
 					conceptNameContainerNode = xml.CreateElement( "container" );
-					conceptNameContainerNode.SetAttribute( "url_name", getGuid( conceptIdColumn.Value, CourseTypes.Concept ) );
+					conceptNameContainerNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( conceptIdColumn.Value, CourseTypes.Concept ) );
 					conceptNameContainerNode.SetAttribute( "display_name", conceptNameColumn != null && conceptNameColumn.HaveValue() ? conceptNameColumn.Value : "" );
 					conceptNameContainerNode.SetAttribute( "xblock-family", "xblock.v1" );
 					conceptNameContainerNode.SetAttribute( "container_description", "" );
@@ -261,7 +258,8 @@ namespace ExcelParser
 					var atomTitleColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.AtomTitle );
 					var itemIdCoclumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ItemId );
 					var videoNode = xml.CreateElement( "brightcove-video" );
-					videoNode.SetAttribute( "url_name", getGuid( atomIdColumn.Value, CourseTypes.Video ) );
+
+					videoNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( atomIdColumn.Value, CourseTypes.Video ) );
 					videoNode.SetAttribute( "xblock-family", "xblock.v1" );
 					videoNode.SetAttribute( "api_bckey", "AQ~~,AAAELMh4AWE~,vVFFDlX6sNOap1Tww7YwaMvqbQ8TtDoh" );
 					videoNode.SetAttribute( "display_name", atomTitleColumn != null && atomTitleColumn.HaveValue() ? atomTitleColumn.Value : "" );
@@ -295,7 +293,7 @@ namespace ExcelParser
 
 				//QUESTION
 				else {
-					var questionDic = generateQuestionIds();
+					var questionDic = CourseConverterHelper.generateQuestionIds();
 					var problemBuilderNode = xml.CreateElement( "problem-builder-block" );
 					var questionIdColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.QuestionId );
 					var questionColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Question );
@@ -305,7 +303,7 @@ namespace ExcelParser
 					string questionValue = questionColumn.HaveValue() ? questionColumn.Value : questionImageUrlColumn.HaveValue() ? "" : "Question Missing";
 
 					problemBuilderNode.SetAttribute( "display_name", questionValue.Replace( "<br>", "" ) );
-					problemBuilderNode.SetAttribute( "url_name", getGuid( atomIdColumn.Value, CourseTypes.Question ) );
+					problemBuilderNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( atomIdColumn.Value, CourseTypes.Question ) );
 					problemBuilderNode.SetAttribute( "xblock-family", "xblock.v1" );
 					problemBuilderNode.SetAttribute( "cfa_type", "question" );
 					problemBuilderNode.SetAttribute( "atom_id", atomIdColumn != null && atomIdColumn.HaveValue() ? atomIdColumn.Value : "" );
@@ -328,7 +326,7 @@ namespace ExcelParser
 						}
 					}
 
-					pbMcqNode.SetAttribute( "url_name", getNewGuid() );
+					pbMcqNode.SetAttribute( "url_name", CourseConverterHelper.getNewGuid() );
 					pbMcqNode.SetAttribute( "xblock-family", "xblock.v1" );
 					pbMcqNode.SetAttribute( "question", questionValue );
 					pbMcqNode.SetAttribute( "fitch_question_id", questionIdColumn.Value );
@@ -345,7 +343,7 @@ namespace ExcelParser
 
 					var answer1Column = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Answer1 );
 					var question1Id = questionDic["A"];
-					var answer1Node = GetAnswerNode( xml, answer1Column, question1Id, false );
+					var answer1Node = CourseConverterHelper.GetAnswerNode( xml, answer1Column, question1Id, false );
 					if ( answer1Node != null ) {
 						pbMcqNode.AppendChild( answer1Node );
 						questionIds.Add( question1Id );
@@ -353,7 +351,7 @@ namespace ExcelParser
 
 					var answer2Column = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Answer2 );
 					var question2Id = questionDic["B"];
-					var answer2Node = GetAnswerNode( xml, answer2Column, question2Id, true );
+					var answer2Node = CourseConverterHelper.GetAnswerNode( xml, answer2Column, question2Id, true );
 					if ( answer2Node != null ) {
 						pbMcqNode.AppendChild( answer2Node );
 						questionIds.Add( question2Id );
@@ -361,7 +359,7 @@ namespace ExcelParser
 
 					var answer3Column = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Answer3 );
 					var question3Id = questionDic["C"];
-					var answer3Node = GetAnswerNode( xml, answer3Column, question3Id, true );
+					var answer3Node = CourseConverterHelper.GetAnswerNode( xml, answer3Column, question3Id, true );
 					if ( answer3Node != null ) {
 						pbMcqNode.AppendChild( answer3Node );
 						questionIds.Add( question3Id );
@@ -369,7 +367,7 @@ namespace ExcelParser
 
 					var answer4Column = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Answer4 );
 					var question4Id = questionDic["D"];
-					var answer4Node = GetAnswerNode( xml, answer4Column, question4Id );
+					var answer4Node = CourseConverterHelper.GetAnswerNode( xml, answer4Column, question4Id );
 					if ( answer4Node != null ) {
 						pbMcqNode.AppendChild( answer4Node );
 						questionIds.Add( question4Id );
@@ -389,7 +387,7 @@ namespace ExcelParser
 						: "";
 
 					var questionTipNode = xml.CreateElement( "pb-tip-block" );
-					questionTipNode.SetAttribute( "url_name", getNewGuid() );
+					questionTipNode.SetAttribute( "url_name", CourseConverterHelper.getNewGuid() );
 					questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
 					questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
 					questionTipNode.InnerText = String.Format( "{0}{1}", justificationValue, justificationInnerText );
@@ -405,13 +403,11 @@ namespace ExcelParser
 				AppendStudySessionTestQuestions( xml, previousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 			}
 
-
-			if ( progressTestExcel != null ) {
+            if ( progressTestExcel != null ) {
 				var progressTestChapetNode = GetProgressTestQuestionsChapetNode( xml, progressTestExcel );
 				courseNode.AppendChild( progressTestChapetNode );
 			}
-
-
+            
 			XmlElement wikiNode = xml.CreateElement( "wiki" );
 			wikiNode.SetAttribute( "slug", "test.1.2015" );
 			courseNode.AppendChild( wikiNode );
@@ -435,10 +431,13 @@ namespace ExcelParser
 				verticalNode.SetAttribute( "cfa_type", "test" );
 				verticalNode.SetAttribute( "cfa_short_name", "SST" );
 				verticalNode.SetAttribute( "study_session_test_id", verticalTestId );
-				verticalNode.SetAttribute( "url_name", getGuid( verticalTestId, CourseTypes.Reading ) );
+				verticalNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( verticalTestId, CourseTypes.Reading ) );
 
-				var problemBuilderNode = GetProblemBuilderNode( xml, excelRows, "Study Session Test", getGuid( verticalTestId, CourseTypes.Question ) );
-
+                var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, excelRows, new ProblemBuilderNodeSettings
+                {
+                    DisplayName = "Study Session Test",
+                    UrlName = CourseConverterHelper.getGuid(verticalTestId, CourseTypes.Question)
+                });
 
 				verticalNode.AppendChild( problemBuilderNode );
 				sequentialNode.AppendChild( verticalNode );
@@ -450,13 +449,11 @@ namespace ExcelParser
 
 		private XmlElement GetProgressTestQuestionsChapetNode( XmlDocument xml, Excel<TestExcelColumn, TestExcelColumnType> progressTestExcel )
 		{
-
 			var chapterNode = xml.CreateElement( "chapter" );
 			chapterNode.SetAttribute( "display_name", "Progress Test" );
-			chapterNode.SetAttribute( "url_name", getGuid( "ProgressTestChapeterNode", CourseTypes.Topic ) );
+			chapterNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( "ProgressTestChapeterNode", CourseTypes.Topic ) );
 			chapterNode.SetAttribute( "cfa_type", "progress_test" );
 			chapterNode.SetAttribute( "cfa_short_name", "Progress Test" );
-
 
 			var topicGroup = new List<List<IExcelColumn<TestExcelColumnType>>>();
 			string previousTopicName = null;
@@ -471,7 +468,6 @@ namespace ExcelParser
 				var topicAbbrevation = row.First( c => c.Type == TestExcelColumnType.TopicAbbrevation ).Value;
 
 				string topicId = String.Format( "{0}-r-progressTest", topicAbbrevation );
-
 
 				if ( previousTopicName != null && previousTopicName != topicName) {
 
@@ -494,8 +490,6 @@ namespace ExcelParser
 
 
 			return chapterNode;
-
-
 		}
 
 
@@ -503,225 +497,24 @@ namespace ExcelParser
 		{
 			var sequentialNode = xml.CreateElement( "sequential" );
 			sequentialNode.SetAttribute( "display_name", topicName );
-			sequentialNode.SetAttribute( "url_name", getGuid( topicId, CourseTypes.StudySession ) );
+			sequentialNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( topicId, CourseTypes.StudySession ) );
 			sequentialNode.SetAttribute( "taxon_id", kStructure );
 
 			var verticalNode = xml.CreateElement( "vertical" );
 			verticalNode.SetAttribute( "display_name", "Progress test - R" );
 			verticalNode.SetAttribute( "study_session_test_id", "" );
-			verticalNode.SetAttribute( "url_name", getGuid( topicId, CourseTypes.Reading ) );
+			verticalNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( topicId, CourseTypes.Reading ) );
 
 			sequentialNode.AppendChild( verticalNode );
 
-			var problemBuilderNode = GetProblemBuilderNode( xml, topicGroup, "Progress test", getGuid( topicId, CourseTypes.Question ) );
+			var problemBuilderNode = ProblemBuilderNodeGenerator.Generate( xml, topicGroup, new ProblemBuilderNodeSettings {
+                DisplayName = "Progress test",
+                UrlName = CourseConverterHelper.getGuid(topicId, CourseTypes.Question)
+            });
 			verticalNode.AppendChild( problemBuilderNode );
 
 			return sequentialNode;
 		}
 
-
-		private XmlElement GetProblemBuilderNode( XmlDocument xml, IEnumerable<List<IExcelColumn<TestExcelColumnType>>> excelRows, string displayName, string urlName )
-		{
-			var problemBuilderNode = xml.CreateElement( "problem-builder-block" );
-			problemBuilderNode.SetAttribute( "display_name", displayName );
-			problemBuilderNode.SetAttribute( "url_name", urlName );
-			problemBuilderNode.SetAttribute( "xblock-family", "xblock.v1" );
-			problemBuilderNode.SetAttribute( "cfa_type", "question" );
-
-			foreach ( var row in excelRows ) {
-				var questionDic = generateQuestionIds();
-				var questionColumn = row.FirstOrDefault( c => c.Type == TestExcelColumnType.Question );
-				var questionIdColumn = row.FirstOrDefault( c => c.Type == TestExcelColumnType.QuestionId );
-				var questionImageUrlColumn = row.FirstOrDefault( c => c.Type == TestExcelColumnType.QuestionImageUrl );
-				var answerImageUrlColumn = row.FirstOrDefault( c => c.Type == TestExcelColumnType.AnswerImageUrl );
-				string questionValue = questionColumn.HaveValue() ? questionColumn.Value : questionImageUrlColumn.HaveValue() ? "" : "Question Missing";
-
-
-				var pbMcqNode = xml.CreateElement( "pb-mcq-block" );
-				var correctColumn = row.FirstOrDefault( c => c.Type == TestExcelColumnType.Correct );
-
-				var actualCorrectValues = new List<string>();
-
-				if ( correctColumn != null && correctColumn.HaveValue() ) {
-					var correctValues = correctColumn.Value.Split( ' ' );
-
-					foreach ( var correctValue in correctValues ) {
-						actualCorrectValues.Add( questionDic[correctValue] );
-					}
-				}
-
-				pbMcqNode.SetAttribute( "url_name", getGuid( questionIdColumn.Value, CourseTypes.Question ) );
-				pbMcqNode.SetAttribute( "xblock-family", "xblock.v1" );
-				pbMcqNode.SetAttribute( "question", questionValue );
-				pbMcqNode.SetAttribute( "fitch_question_id", questionIdColumn.Value );
-				pbMcqNode.SetAttribute( "correct_choices", (correctColumn != null && correctColumn.Value != null) ? JsonConvert.SerializeObject( actualCorrectValues ) : "" );
-
-
-				if ( questionImageUrlColumn != null && questionImageUrlColumn.HaveValue() ) {
-					pbMcqNode.SetAttribute( "image", questionImageUrlColumn.Value );
-				}
-
-				problemBuilderNode.AppendChild( pbMcqNode );
-
-				var questionIds = new List<string>();
-
-				var answer1Column = row.FirstOrDefault( c => c.Type == TestExcelColumnType.Answer1 );
-				var question1Id = questionDic["A"];
-				var answer1Node = GetAnswerNode( xml, answer1Column, question1Id, false );
-				if ( answer1Node != null ) {
-					pbMcqNode.AppendChild( answer1Node );
-					questionIds.Add( question1Id );
-				}
-
-				var answer2Column = row.FirstOrDefault( c => c.Type == TestExcelColumnType.Answer2 );
-				var question2Id = questionDic["B"];
-				var answer2Node = GetAnswerNode( xml, answer2Column, question2Id, true );
-				if ( answer2Node != null ) {
-					pbMcqNode.AppendChild( answer2Node );
-					questionIds.Add( question2Id );
-				}
-
-				var answer3Column = row.FirstOrDefault( c => c.Type == TestExcelColumnType.Answer3 );
-				var question3Id = questionDic["C"];
-				var answer3Node = GetAnswerNode( xml, answer3Column, question3Id, true );
-				if ( answer3Node != null ) {
-					pbMcqNode.AppendChild( answer3Node );
-					questionIds.Add( question3Id );
-				}
-
-				//var answer4Column = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.Answer4 );
-				//var question4Id = questionDic["D"];
-				//var answer4Node = GetAnswerNode( xml, answer4Column, question4Id );
-				//if ( answer4Node != null ) {
-				//	pbMcqNode.AppendChild( answer4Node );
-				//	questionIds.Add( question4Id );
-				//}
-
-				//Harcoded answer 4 node
-				var answer4Node = xml.CreateElement( "pb-choice-block" );
-				var question4Id = questionDic["D"];
-				questionIds.Add( question4Id );
-				answer4Node.SetAttribute( "url_name", getNewGuid() );
-				answer4Node.SetAttribute( "xblock-family", "xblock.v1" );
-				answer4Node.SetAttribute( "value", question4Id );
-				pbMcqNode.AppendChild( answer4Node );
-
-
-				//tip  block
-				var justificationCell = row.FirstOrDefault( c => c.Type == TestExcelColumnType.Justification );
-				string justificationInnerText = "";
-				if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
-					justificationInnerText = String.Format( "<div class='answer-image'><img src='{0}'></div>", answerImageUrlColumn.Value );
-				}
-
-				string justificationValue = (justificationCell != null && justificationCell.HaveValue())
-						? justificationCell.Value
-						: "";
-
-				var questionTipNode = xml.CreateElement( "pb-tip-block" );
-				questionTipNode.SetAttribute( "url_name", getNewGuid() );
-				questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
-				questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
-				questionTipNode.InnerText = String.Format( "{0}{1}", justificationValue, justificationInnerText );
-				pbMcqNode.AppendChild( questionTipNode );
-
-			}
-
-			return problemBuilderNode;
-		}
-
-
-		#region HelperMetods
-		private string getGuid( string elementId, CourseTypes elementType )
-		{
-			string key = Database.Instance.GetKey( elementId, elementType );
-			if ( String.IsNullOrEmpty( key ) ) {
-				key = getNewGuid();
-				Database.Instance.AddKey( elementId, key, elementType );
-				Program.Log.Info( String.Format( "New Key generated elementType: {0}; element_id: {1}; generatedKey: {2}", elementType.ToString(), elementId, key ) );
-			}
-
-			if ( _generatedGuids.ContainsKey( key ) ) {
-				var existing = _generatedGuids[key];
-				Program.Log.Warn(
-					String.Format(
-						"DUPLICATE ID DETECTED >>GeneratedId = '{0}' ; existingReferenceId = {1}  existingType = {2}; newRefrenceId = {3} newType = {4} ",
-						key, existing.ElementId, existing.elementType, elementId, elementType ) );
-			}
-			else {
-				_generatedGuids[key] = new guidRequest {
-					ElementId = elementId,
-					elementType = elementType
-				};
-			}
-
-			return key;
-		}
-
-		private string getNewGuid()
-		{
-			return Guid.NewGuid().ToString().Replace( "-", "" );
-		}
-
-
-		private Dictionary<string, string> generateQuestionIds()
-		{
-			var dic = new Dictionary<string, string>();
-
-			while ( !dic.ContainsKey( "D" ) ) {
-
-				var questionId = generateQuestionId();
-				if ( !generatedQuestionIds.ContainsKey( questionId ) ) {
-					generatedQuestionIds[questionId] = questionId;
-
-					if ( !dic.ContainsKey( "A" ) ) {
-						dic["A"] = questionId;
-					}
-					else if ( !dic.ContainsKey( "B" ) ) {
-						dic["B"] = questionId;
-					}
-					else if ( !dic.ContainsKey( "C" ) ) {
-						dic["C"] = questionId;
-					}
-					else {
-						dic["D"] = questionId;
-					}
-				}
-			}
-
-			return dic;
-
-		}
-
-		private string generateQuestionId()
-		{
-			string guid = getNewGuid();
-			return guid.Substring( guid.Length - 7 );
-		}
-
-		private XmlElement GetAnswerNode( XmlDocument xml, IExcelColumn<QuestionExcelColumnType> answerColumn, string questionId, bool addMissingValue = false )
-		{
-			return GetAnswerNode( xml, answerColumn != null && answerColumn.HaveValue() ? answerColumn.Value : "", questionId, addMissingValue );
-		}
-
-		private XmlElement GetAnswerNode( XmlDocument xml, IExcelColumn<TestExcelColumnType> answerColumn, string questionId, bool addMissingValue = false )
-		{
-			return GetAnswerNode( xml, answerColumn != null && answerColumn.HaveValue() ? answerColumn.Value : "", questionId, addMissingValue );
-		}
-
-		private XmlElement GetAnswerNode( XmlDocument xml, string answer, string questionId, bool addMissingValue = false )
-		{
-			if ( !String.IsNullOrWhiteSpace( answer ) || addMissingValue ) {
-				var answerNode = xml.CreateElement( "pb-choice-block" );
-				answerNode.SetAttribute( "url_name", getNewGuid() );
-				answerNode.SetAttribute( "xblock-family", "xblock.v1" );
-				answerNode.SetAttribute( "value", questionId );
-				answerNode.InnerText = String.IsNullOrWhiteSpace( answer ) ? "Answer Missing" : answer.Replace( "/n", "" );
-				return answerNode;
-			}
-
-			return null;
-		}
-		#endregion
 	}
 }
