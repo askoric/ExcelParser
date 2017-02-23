@@ -76,21 +76,21 @@ namespace ExcelParser
         }
 
 
-        public static XmlElement GetAnswerNode(XmlDocument xml, IExcelColumn<QuestionExcelColumnType> answerColumn, string questionId, bool addMissingValue = false)
+        public static XmlElement GetAnswerNode(XmlDocument xml, IExcelColumn<QuestionExcelColumnType> answerColumn, string questionId, bool addMissingValue = false, string elementName = "pb-choice-block")
         {
-            return GetAnswerNode(xml, answerColumn != null && answerColumn.HaveValue() ? answerColumn.Value : "", questionId, addMissingValue);
+            return GetAnswerNode(xml, answerColumn != null && answerColumn.HaveValue() ? answerColumn.Value : "", questionId, addMissingValue, elementName);
         }
 
-        public static XmlElement GetAnswerNode(XmlDocument xml, IExcelColumn<TestExcelColumnType> answerColumn, string questionId, bool addMissingValue = false)
+        public static XmlElement GetAnswerNode(XmlDocument xml, IExcelColumn<TestExcelColumnType> answerColumn, string questionId, bool addMissingValue = false, string elementName = "pb-choice-block")
         {
-            return GetAnswerNode(xml, answerColumn != null && answerColumn.HaveValue() ? answerColumn.Value : "", questionId, addMissingValue);
+            return GetAnswerNode(xml, answerColumn != null && answerColumn.HaveValue() ? answerColumn.Value : "", questionId, addMissingValue, elementName);
         }
 
-        public static XmlElement GetAnswerNode(XmlDocument xml, string answer, string questionId, bool addMissingValue = false)
+        public static XmlElement GetAnswerNode(XmlDocument xml, string answer, string questionId, bool addMissingValue, string elementName)
         {
             if (!String.IsNullOrWhiteSpace(answer) || addMissingValue)
             {
-                var answerNode = xml.CreateElement("pb-choice-block");
+                var answerNode = xml.CreateElement(elementName);
                 answerNode.SetAttribute("url_name", getNewGuid());
                 answerNode.SetAttribute("xblock-family", "xblock.v1");
                 answerNode.SetAttribute("value", questionId);

@@ -51,7 +51,7 @@ namespace ExcelParser
         {
             var sequentialNode = xml.CreateElement("sequential");
             sequentialNode.SetAttribute("display_name", displayName);
-            sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid("sequential-" + displayName, CourseTypes.Mock));
+            sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("sequential-{0}-{1}", displayName, fcmNumber), CourseTypes.Mock));
             sequentialNode.SetAttribute("taxon_id", fcmNumber);
 
             var topicNameGroup = rows.GroupBy(r=> r.First(tn => tn.Type == TestExcelColumnType.TopicName).Value);
@@ -62,14 +62,14 @@ namespace ExcelParser
                 var verticalNode = xml.CreateElement("vertical");
                 verticalNode.SetAttribute("display_name", topicName );
                 verticalNode.SetAttribute("study_session_test_id", "");
-                verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid("vertical-" + displayName, CourseTypes.Mock));
+                verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("vertical-{0}-{1}", displayName, topicName), CourseTypes.Mock));
 
                 sequentialNode.AppendChild(verticalNode);
 
                 var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, topic, new ProblemBuilderNodeSettings
                 {
                     DisplayName = String.Format("Mock exam - {0} questions", displayName),
-                    UrlName = CourseConverterHelper.getGuid("progress-test-" + displayName, CourseTypes.Mock),
+                    UrlName = CourseConverterHelper.getGuid(String.Format("progress-test-{0}-{1}", displayName, topicName), CourseTypes.Mock),
                     ProblemBuilderNodeElement = "problem-builder-mock-exam",
                     PbMcqNodeElement = "pb-mcq-mock-exam",
                     PbChoiceBlockElement = "pb-choice-mock-exam",

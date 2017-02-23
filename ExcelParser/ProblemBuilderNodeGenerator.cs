@@ -71,7 +71,7 @@ namespace ExcelParser
 
                 var answer1Column = row.FirstOrDefault(c => c.Type == TestExcelColumnType.Answer1);
                 var question1Id = questionDic["A"];
-                var answer1Node = CourseConverterHelper.GetAnswerNode(xml, answer1Column, question1Id, false);
+                var answer1Node = CourseConverterHelper.GetAnswerNode(xml, answer1Column, question1Id, false, settings.PbChoiceBlockElement);
                 if (answer1Node != null)
                 {
                     pbMcqNode.AppendChild(answer1Node);
@@ -80,7 +80,7 @@ namespace ExcelParser
 
                 var answer2Column = row.FirstOrDefault(c => c.Type == TestExcelColumnType.Answer2);
                 var question2Id = questionDic["B"];
-                var answer2Node = CourseConverterHelper.GetAnswerNode(xml, answer2Column, question2Id, true);
+                var answer2Node = CourseConverterHelper.GetAnswerNode(xml, answer2Column, question2Id, true, settings.PbChoiceBlockElement);
                 if (answer2Node != null)
                 {
                     pbMcqNode.AppendChild(answer2Node);
@@ -89,20 +89,13 @@ namespace ExcelParser
 
                 var answer3Column = row.FirstOrDefault(c => c.Type == TestExcelColumnType.Answer3);
                 var question3Id = questionDic["C"];
-                var answer3Node = CourseConverterHelper.GetAnswerNode(xml, answer3Column, question3Id, true);
+                var answer3Node = CourseConverterHelper.GetAnswerNode(xml, answer3Column, question3Id, true, settings.PbChoiceBlockElement);
                 if (answer3Node != null)
                 {
                     pbMcqNode.AppendChild(answer3Node);
                     questionIds.Add(question3Id);
                 }
 
-                //var answer4Column = ssRow.FirstOrDefault( c => c.Type == SsTestExcelColumnType.Answer4 );
-                //var question4Id = questionDic["D"];
-                //var answer4Node = GetAnswerNode( xml, answer4Column, question4Id );
-                //if ( answer4Node != null ) {
-                //	pbMcqNode.AppendChild( answer4Node );
-                //	questionIds.Add( question4Id );
-                //}
 
                 //Harcoded answer 4 node
                 var answer4Node = xml.CreateElement(settings.PbMcqNodeElement);
