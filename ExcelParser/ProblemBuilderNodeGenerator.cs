@@ -98,7 +98,7 @@ namespace ExcelParser
 
 
                 //Harcoded answer 4 node
-                var answer4Node = xml.CreateElement(settings.PbMcqNodeElement);
+                var answer4Node = xml.CreateElement(settings.PbChoiceBlockElement);
                 var question4Id = questionDic["D"];
                 questionIds.Add(question4Id);
                 answer4Node.SetAttribute("url_name", CourseConverterHelper.getNewGuid());
