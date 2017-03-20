@@ -248,6 +248,14 @@ namespace ExcelParser
 						return new TestExcelColumn( columnName, TestExcelColumnType.Justification, index );
                     case "fcm_number":
                         return new TestExcelColumn(columnName, TestExcelColumnType.FcmNumber, index);
+                    case "containerref":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.ContainerRef, index);
+                    case "topic_taxon_id":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.TopicTaxonId, index);
+                    case "pdf_answers":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.PdfAnswers, index);
+                    case "pdf_questions":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.PdfQuestions, index);
                 }
 			}
 
@@ -274,8 +282,12 @@ namespace ExcelParser
 		Correct,
 		QuestionImageUrl, 
 		Justification,
-        FcmNumber //MOckTestExcelOnly
-	}
+        FcmNumber, //MOckTestExcelOnly
+        ContainerRef, //MockTestExcelOnly
+        TopicTaxonId, //MockTestExcelOnly
+        PdfAnswers, //MockTestExcelOnly
+        PdfQuestions //MockTestExcelOnly
+    }
 
 
 	public class MainStructureExcelColumn : ExcelColumn<MainStructureColumnType>
