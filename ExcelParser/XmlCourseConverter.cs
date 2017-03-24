@@ -17,7 +17,7 @@ namespace ExcelParser
 
 	public class ExcelParser
 	{
-		public XmlDocument ConvertExcelToCourseXml( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel, Excel<QuestionExcelColumn, QuestionExcelColumnType> questionExcel, Excel<LosExcelColumn, LosExcelColumnType> losExcel, Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> acceptanceCriteriaExcel, Excel<TestExcelColumn, TestExcelColumnType> ssTestExcel, Excel<TestExcelColumn, TestExcelColumnType> progressTestExcel, Excel<TestExcelColumn, TestExcelColumnType> MockExamExcel,  bool setTranscripts )
+		public XmlDocument ConvertExcelToCourseXml( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel, Excel<QuestionExcelColumn, QuestionExcelColumnType> questionExcel, Excel<LosExcelColumn, LosExcelColumnType> losExcel, Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> acceptanceCriteriaExcel, Excel<TestExcelColumn, TestExcelColumnType> ssTestExcel, Excel<TestExcelColumn, TestExcelColumnType> progressTestExcel, Excel<TestExcelColumn, TestExcelColumnType> MockExamExcel, Excel<TestExcelColumn, TestExcelColumnType> FinalMockExamExcel, bool setTranscripts )
 		{
             CourseConverterHelper.generatedQuestionIds = new Dictionary<string, string>();
             CourseConverterHelper._generatedGuids = new Dictionary<string, guidRequest>();
@@ -379,8 +379,18 @@ namespace ExcelParser
 			}
 
             if (MockExamExcel != null) {
-                var mockExamChapterNode = MockExamExcelConverter.Convert( xml, MockExamExcel );
-                courseNode.AppendChild(mockExamChapterNode);
+                var mockExamChapterNodes = MockExamExcelConverter.Convert( xml, MockExamExcel );
+                foreach(var mockExamChapterNode in mockExamChapterNodes)
+                {
+                    courseNode.AppendChild(mockExamChapterNode);
+                }
+                
+            }
+
+            if (FinalMockExamExcel != null)
+            {
+                var finalMockExamChapterNode = FinalMockExamExcelConverter.Convert(xml, FinalMockExamExcel);
+                courseNode.AppendChild(finalMockExamChapterNode);
             }
 
             XmlElement wikiNode = xml.CreateElement( "wiki" );
