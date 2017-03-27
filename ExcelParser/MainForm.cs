@@ -133,8 +133,8 @@ namespace ExcelParser
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
 				var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
 				SsTestExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-                // -6 there is no FcmNumber and ContainerRef and TopicTaxonId and PdfAnswers/Questions
-                if ( SsTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 6 ) {
+                // -5 there is no FcmNumber and TopicTaxonId and PdfAnswers/Questions
+                if ( SsTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 5 ) {
 					UploadSsTestCheckImage.Visible = true;
 				}
 				else {

@@ -418,17 +418,29 @@ namespace ExcelParser
 				verticalNode.SetAttribute( "study_session_test_id", verticalTestId );
 				verticalNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( verticalTestId, CourseTypes.Reading ) );
 
-                var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, excelRows, new ProblemBuilderNodeSettings
+                var containerReferences = excelRows.GroupBy(r => r.First(tn => tn.Type == TestExcelColumnType.ContainerRef).Value);
+                foreach (var containerReference in containerReferences)
                 {
-                    DisplayName = "Study Session Test",
-                    UrlName = CourseConverterHelper.getGuid(verticalTestId, CourseTypes.Question),
-                    ProblemBuilderNodeElement = "problem-builder-block",
-                    PbMcqNodeElement = "pb-mcq-block",
-                    PbChoiceBlockElement = "pb-choice-block",
-                    PbTipBlockElement = "pb-tip-block"
-                });
+                    string containerReferenceValue = containerReference.Key;
+                    var ssRows = excelRows.Where(r => r.Any(c => c.Type == TestExcelColumnType.ContainerRef && c.Value.Contains(containerReferenceValue)));
 
-				verticalNode.AppendChild( problemBuilderNode );
+                    if (ssRows.Any())
+                    {
+                        char index = containerReferenceValue.Last();
+                        var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, ssRows, new ProblemBuilderNodeSettings
+                        {
+                            DisplayName = "Study Session Test",
+                            UrlName = CourseConverterHelper.getGuid(verticalTestId + '_' + index, CourseTypes.Question),
+                            ProblemBuilderNodeElement = "problem-builder-block",
+                            PbMcqNodeElement = "pb-mcq-block",
+                            PbChoiceBlockElement = "pb-choice-block",
+                            PbTipBlockElement = "pb-tip-block"
+                        });
+
+                        verticalNode.AppendChild(problemBuilderNode);
+                    }
+                }
+
 				sequentialNode.AppendChild( verticalNode );
 			}
 		}
