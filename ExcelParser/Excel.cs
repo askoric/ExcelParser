@@ -28,7 +28,7 @@ namespace ExcelParser
 
 			FileStream stream = File.Open( filePath, FileMode.Open, FileAccess.Read );
 
-			IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader( stream );
+			IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader( stream );
 
 			excelReader.IsFirstRowAsColumnNames = true;
 
