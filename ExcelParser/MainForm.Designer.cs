@@ -50,6 +50,8 @@
             this.uploadMockExamCheckIcon = new System.Windows.Forms.PictureBox();
             this.uploadFinalMockExamCheckIcon = new System.Windows.Forms.PictureBox();
             this.FinalMockExamBtn = new System.Windows.Forms.Button();
+            this.TopicWorkshopBtn = new System.Windows.Forms.Button();
+            this.uploadTopicWorkshopCheckIcon = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.MainStructureExcelCheckImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LosExcelCheckImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.QuestionExcelCheckImg)).BeginInit();
@@ -58,6 +60,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.uploadProgressTestCheckIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.uploadMockExamCheckIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.uploadFinalMockExamCheckIcon)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.uploadTopicWorkshopCheckIcon)).BeginInit();
             this.SuspendLayout();
             // 
             // label6
@@ -72,7 +75,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(22, 260);
+            this.label7.Location = new System.Drawing.Point(22, 288);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(43, 13);
             this.label7.TabIndex = 7;
@@ -81,7 +84,7 @@
             // StatusLabel
             // 
             this.StatusLabel.AutoSize = true;
-            this.StatusLabel.Location = new System.Drawing.Point(71, 243);
+            this.StatusLabel.Location = new System.Drawing.Point(71, 288);
             this.StatusLabel.Name = "StatusLabel";
             this.StatusLabel.Size = new System.Drawing.Size(0, 13);
             this.StatusLabel.TabIndex = 8;
@@ -90,7 +93,7 @@
             // 
             this.SetTranscript.AutoSize = true;
             this.SetTranscript.Enabled = false;
-            this.SetTranscript.Location = new System.Drawing.Point(226, 256);
+            this.SetTranscript.Location = new System.Drawing.Point(226, 284);
             this.SetTranscript.Name = "SetTranscript";
             this.SetTranscript.Size = new System.Drawing.Size(89, 17);
             this.SetTranscript.TabIndex = 9;
@@ -285,11 +288,34 @@
             this.FinalMockExamBtn.UseVisualStyleBackColor = true;
             this.FinalMockExamBtn.Click += new System.EventHandler(this.FinalMockExamBtn_Click);
             // 
+            // TopicWorkshopBtn
+            // 
+            this.TopicWorkshopBtn.Location = new System.Drawing.Point(25, 250);
+            this.TopicWorkshopBtn.Name = "TopicWorkshopBtn";
+            this.TopicWorkshopBtn.Size = new System.Drawing.Size(152, 23);
+            this.TopicWorkshopBtn.TabIndex = 25;
+            this.TopicWorkshopBtn.Text = "Upload Topic Workshop";
+            this.TopicWorkshopBtn.UseVisualStyleBackColor = true;
+            this.TopicWorkshopBtn.Click += new System.EventHandler(this.TopicWorkshopBtn_Click);
+            // 
+            // uploadTopicWorkshopCheckIcon
+            // 
+            this.uploadTopicWorkshopCheckIcon.Image = ((System.Drawing.Image)(resources.GetObject("uploadTopicWorkshopCheckIcon.Image")));
+            this.uploadTopicWorkshopCheckIcon.Location = new System.Drawing.Point(183, 250);
+            this.uploadTopicWorkshopCheckIcon.Name = "uploadTopicWorkshopCheckIcon";
+            this.uploadTopicWorkshopCheckIcon.Size = new System.Drawing.Size(16, 23);
+            this.uploadTopicWorkshopCheckIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.uploadTopicWorkshopCheckIcon.TabIndex = 26;
+            this.uploadTopicWorkshopCheckIcon.TabStop = false;
+            this.uploadTopicWorkshopCheckIcon.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(462, 291);
+            this.ClientSize = new System.Drawing.Size(481, 310);
+            this.Controls.Add(this.uploadTopicWorkshopCheckIcon);
+            this.Controls.Add(this.TopicWorkshopBtn);
             this.Controls.Add(this.uploadFinalMockExamCheckIcon);
             this.Controls.Add(this.FinalMockExamBtn);
             this.Controls.Add(this.uploadMockExamCheckIcon);
@@ -322,6 +348,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.uploadProgressTestCheckIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.uploadMockExamCheckIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.uploadFinalMockExamCheckIcon)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.uploadTopicWorkshopCheckIcon)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -351,5 +378,7 @@
         private System.Windows.Forms.PictureBox uploadMockExamCheckIcon;
         private System.Windows.Forms.PictureBox uploadFinalMockExamCheckIcon;
         private System.Windows.Forms.Button FinalMockExamBtn;
+        private System.Windows.Forms.Button TopicWorkshopBtn;
+        private System.Windows.Forms.PictureBox uploadTopicWorkshopCheckIcon;
     }
 }

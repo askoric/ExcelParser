@@ -15,6 +15,8 @@ namespace ExcelParser
 		Concept,
 		Question,
 		Video,
-        Mock
+        Mock,
+        Workshop,
+        ItemSet
 	}
 }

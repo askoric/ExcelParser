@@ -17,7 +17,7 @@ namespace ExcelParser
 
 	public class ExcelParser
 	{
-		public XmlDocument ConvertExcelToCourseXml( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel, Excel<QuestionExcelColumn, QuestionExcelColumnType> questionExcel, Excel<LosExcelColumn, LosExcelColumnType> losExcel, Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> acceptanceCriteriaExcel, Excel<TestExcelColumn, TestExcelColumnType> ssTestExcel, Excel<TestExcelColumn, TestExcelColumnType> progressTestExcel, Excel<TestExcelColumn, TestExcelColumnType> MockExamExcel, Excel<TestExcelColumn, TestExcelColumnType> FinalMockExamExcel, bool setTranscripts )
+		public XmlDocument ConvertExcelToCourseXml( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel, Excel<QuestionExcelColumn, QuestionExcelColumnType> questionExcel, Excel<LosExcelColumn, LosExcelColumnType> losExcel, Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> acceptanceCriteriaExcel, Excel<TestExcelColumn, TestExcelColumnType> ssTestExcel, Excel<TestExcelColumn, TestExcelColumnType> progressTestExcel, Excel<TestExcelColumn, TestExcelColumnType> MockExamExcel, Excel<TestExcelColumn, TestExcelColumnType> FinalMockExamExcel, Excel<TestExcelColumn, TestExcelColumnType> TopicWorkshopExcel, bool setTranscripts )
 		{
             CourseConverterHelper.generatedQuestionIds = new Dictionary<string, string>();
             CourseConverterHelper._generatedGuids = new Dictionary<string, guidRequest>();
@@ -42,14 +42,16 @@ namespace ExcelParser
 			XmlElement chapterNode = null;
 			XmlElement sequentialNode = null;
 			XmlElement previousSequentialNode = null;
-			XmlElement verticalNode = null;
+            XmlElement previousChapterNode = null;
+            XmlElement verticalNode = null;
 			XmlElement bandContainerNode = null;
 			XmlElement conceptNameContainerNode = null;
 
 			bool skip = false;
 
 			IExcelColumn<MainStructureColumnType> previousStudySessionId = null;
-			string previousStudySessionLocked = "";
+            IExcelColumn<MainStructureColumnType> previousTopicId = null;
+            string previousStudySessionLocked = "";
 			string locked = "";
 
 			foreach ( var row in mainStructureExcel.Rows ) {
@@ -84,7 +86,8 @@ namespace ExcelParser
 
 				var topicNameColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.TopicName );
 				skip = (chapterNode != null && chapterNode.GetAttribute( "display_name" ) != topicNameColumn.Value) ? false : skip;
-				if ( !skip ) {
+                var topicId = row.FirstOrDefault(c => c.Type == MainStructureColumnType.TopicShortName);
+                if ( !skip ) {
 					var topicShortName = row.FirstOrDefault( c => c.Type == MainStructureColumnType.TopicShortName );
 					var examPercantage = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ExamPercentage );
 					var lockedColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Locked );
@@ -104,7 +107,17 @@ namespace ExcelParser
 					chapterNode.SetAttribute( "cfa_type", cfaTypeColumn != null && cfaTypeColumn.HaveValue() ? cfaTypeColumn.Value : "" );
 					chapterNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 2 ) ) );
 					courseNode.AppendChild( chapterNode );
-				}
+
+                    //ADD TOPIC WORKSHOP
+                    if (TopicWorkshopExcel != null && previousChapterNode != null && previousTopicId != null)
+                    {
+                        AppendTopicWorkshop(xml, previousChapterNode, previousTopicId.Value, TopicWorkshopExcel);
+                    }
+
+                    previousChapterNode = chapterNode;
+                    previousTopicId = topicId;
+
+                }
 
 
 				var sessionNameColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.SessionName );
@@ -125,7 +138,7 @@ namespace ExcelParser
 
 					//ADD TEST TO THE BOTTOM OF LAST SESSION NAME NODE
 					if ( ssTestExcel != null && previousSequentialNode != null && previousStudySessionId != null && previousStudySessionLocked != "yes" ) {
-						AppendStudySessionTestQuestions( xml, previousSequentialNode, previousStudySessionId.Value, ssTestExcel );
+                        AppendStudySessionTestQuestions( xml, previousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 					}
 
 					previousSequentialNode = sequentialNode;
@@ -370,7 +383,7 @@ namespace ExcelParser
 			}
 
 			if ( ssTestExcel != null && previousStudySessionLocked != "yes" ) {
-				AppendStudySessionTestQuestions( xml, previousSequentialNode, previousStudySessionId.Value, ssTestExcel );
+                AppendStudySessionTestQuestions( xml, previousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 			}
 
             if ( progressTestExcel != null ) {
@@ -391,6 +404,11 @@ namespace ExcelParser
             {
                 var finalMockExamChapterNode = FinalMockExamExcelConverter.Convert(xml, FinalMockExamExcel);
                 courseNode.AppendChild(finalMockExamChapterNode);
+            }
+
+            if (TopicWorkshopExcel != null)
+            {
+                AppendTopicWorkshop(xml, previousChapterNode, previousTopicId.Value, TopicWorkshopExcel);
             }
 
             XmlElement wikiNode = xml.CreateElement( "wiki" );
@@ -444,6 +462,92 @@ namespace ExcelParser
 				sequentialNode.AppendChild( verticalNode );
 			}
 		}
+
+
+        private void AppendTopicWorkshop(XmlDocument xml, XmlElement chapterNode, string topicId, Excel<TestExcelColumn, TestExcelColumnType> TopicWorkshopExcel)
+        {
+            var topicWorkshopRows = TopicWorkshopExcel.Rows.Where(r => r.Any(c => c.Type == TestExcelColumnType.TopicAbbrevation && c.Value == topicId));
+            if (topicWorkshopRows.Any())
+            {
+                var workshopReferences = topicWorkshopRows.GroupBy(r => r.First(tn => tn.Type == TestExcelColumnType.TopicWorkshopReference).Value);
+                foreach (var workshopReference in workshopReferences)
+                {
+                    string workshopReferenceValue = workshopReference.Key;
+                    var workshopRows = topicWorkshopRows.Where(r => r.Any(c => c.Type == TestExcelColumnType.TopicWorkshopReference && c.Value.Contains(workshopReferenceValue)));
+
+                    if (workshopRows.Any())
+                    {
+                        string topicWorkshopTitle = workshopRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicWorkshopTitle).Value;
+                        string topicWorkshopType = workshopRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicWorkshopType).Value;
+
+                        if (topicWorkshopType == "Topic Workshop")
+                        {
+                            topicWorkshopType = "topic_workshop";
+                        }
+                        else if (topicWorkshopType == "Review Course Workshop")
+                        {
+                            topicWorkshopType = "course_workshop";
+                        }
+
+                        var sequentialNode = xml.CreateElement("sequential");
+                        sequentialNode.SetAttribute("display_name", topicWorkshopTitle);
+                        sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid(workshopReferenceValue, CourseTypes.Workshop));
+                        sequentialNode.SetAttribute("workshop_id", workshopReferenceValue);
+                        sequentialNode.SetAttribute("cfa_type", topicWorkshopType);
+
+                        chapterNode.AppendChild(sequentialNode);
+
+                        var itemSetReferences = workshopRows.GroupBy(r => r.First(tn => tn.Type == TestExcelColumnType.ItemSetReference).Value);
+                        foreach (var itemSetReference in itemSetReferences)
+                        {
+                            string itemSetReferenceValue = itemSetReference.Key;
+                            char index = itemSetReferenceValue.Last();
+                            var itemSetRows = workshopRows.Where(r => r.Any(c => c.Type == TestExcelColumnType.ItemSetReference && c.Value.Contains(itemSetReferenceValue)));
+
+                            if (itemSetRows.Any())
+                            {
+                                string itemSetTitle = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetTitle).Value;
+                                string itemSetPdf = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetPdf).Value;
+                                string itemSetStudySessions = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.Session).Value;
+                                string itemSetAnswerVideo = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.AnswerVideo).Value;
+                                string vignetteTitle = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteTitle).Value;
+                                string vignetteBody = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteBody).Value;
+                                string topicTaxonId = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicTaxonId).Value;
+
+                                var verticalNode = xml.CreateElement("vertical");
+                                verticalNode.SetAttribute("cfa_type", "item_set");
+                                verticalNode.SetAttribute("item_set_id", itemSetReferenceValue);
+                                verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(itemSetReferenceValue, CourseTypes.ItemSet));
+                                verticalNode.SetAttribute("display_name", itemSetTitle);
+                                verticalNode.SetAttribute("taxon_id", topicTaxonId);
+                                verticalNode.SetAttribute("item_set_pdf", itemSetPdf);
+                                verticalNode.SetAttribute("item_set_sessions", itemSetStudySessions);
+                                verticalNode.SetAttribute("item_set_video", itemSetAnswerVideo);
+                                verticalNode.SetAttribute("vignette_title", vignetteTitle);
+                                verticalNode.SetAttribute("vignette_body", vignetteBody);
+
+                                sequentialNode.AppendChild(verticalNode);
+
+                                //skip first row(vignette row)
+                                itemSetRows = itemSetRows.Skip(1);
+
+                                var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, itemSetRows, new ProblemBuilderNodeSettings
+                                {
+                                    DisplayName = "Item Set " + index,
+                                    UrlName = CourseConverterHelper.getGuid(itemSetReferenceValue, CourseTypes.Question),
+                                    ProblemBuilderNodeElement = "problem-builder-block",
+                                    PbMcqNodeElement = "pb-mcq-block",
+                                    PbChoiceBlockElement = "pb-choice-block",
+                                    PbTipBlockElement = "pb-tip-block"
+                                });
+
+                                verticalNode.AppendChild(problemBuilderNode);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         public List<string> GetVideoReferenceIds(Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel)
         {

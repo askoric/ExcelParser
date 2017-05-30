@@ -256,6 +256,26 @@ namespace ExcelParser
                         return new TestExcelColumn(columnName, TestExcelColumnType.PdfAnswers, index);
                     case "pdf_questions":
                         return new TestExcelColumn(columnName, TestExcelColumnType.PdfQuestions, index);
+                    case "container1_title":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.TopicWorkshopTitle, index);
+                    case "container1_ref":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.TopicWorkshopReference, index);
+                    case "container1_type":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.TopicWorkshopType, index);
+                    case "container2_ref":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.ItemSetReference, index);
+                    case "container2_title":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.ItemSetTitle, index);
+                    case "container_pdf_url":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.ItemSetPdf, index);
+                    case "session":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.Session, index);
+                    case "answervideo":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.AnswerVideo, index);
+                    case "vignette_title":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.VignetteTitle, index);
+                    case "vignette_body":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.VignetteBody, index);
                 }
 			}
 
@@ -282,11 +302,23 @@ namespace ExcelParser
 		Correct,
 		QuestionImageUrl, 
 		Justification,
+        Session,
         FcmNumber, //MOckTestExcelOnly
         ContainerRef, //MockTestExcelOnly
         TopicTaxonId, //MockTestExcelOnly
         PdfAnswers, //MockTestExcelOnly
-        PdfQuestions //MockTestExcelOnly
+        PdfQuestions, //MockTestExcelOnly
+
+        //topic workshop only
+        TopicWorkshopTitle,
+        TopicWorkshopReference,
+        TopicWorkshopType,
+        ItemSetReference,
+        ItemSetTitle,
+        ItemSetPdf,
+        AnswerVideo,
+        VignetteTitle,
+        VignetteBody
     }
 
 
