@@ -263,6 +263,7 @@ namespace ExcelParser
                     case "container1_type":
                         return new TestExcelColumn(columnName, TestExcelColumnType.TopicWorkshopType, index);
                     case "container2_ref":
+                    case "container reference":
                         return new TestExcelColumn(columnName, TestExcelColumnType.ItemSetReference, index);
                     case "container2_title":
                         return new TestExcelColumn(columnName, TestExcelColumnType.ItemSetTitle, index);

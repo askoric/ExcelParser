@@ -151,8 +151,8 @@ namespace ExcelParser
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
 				var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
 				ProgressTestExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-                //-16 there is no question type and fcmNumber and ContainerRef and TopicTaxonId and PdfAnswers/Questions and workshop stuff(9)
-                if ( ProgressTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 16 ) {
+                //-5 fcmNumber and ContainerRef and PdfAnswers/Questions
+                if ( (ProgressTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 5) || ProgressTestExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 15 ) {
 					uploadProgressTestCheckIcon.Visible = true;
 				}
 				else {
