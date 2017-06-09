@@ -1,0 +1,148 @@
+﻿<metadata>
+  <policies semester="assets.json"/>
+  <policies semester="course">
+    <gradingpolicy>
+      {
+      "GRADER": [
+      {
+      "drop_count": 2,
+      "min_count": 12,
+      "short_label": "HW",
+      "type": "Homework",
+      "weight": 0.15
+      },
+      {
+      "drop_count": 2,
+      "min_count": 12,
+      "type": "Lab",
+      "weight": 0.15
+      },
+      {
+      "drop_count": 0,
+      "min_count": 1,
+      "short_label": "Midterm",
+      "type": "Midterm Exam",
+      "weight": 0.3
+      },
+      {
+      "drop_count": 0,
+      "min_count": 1,
+      "short_label": "Final",
+      "type": "Final Exam",
+      "weight": 0.4
+      }
+      ],
+      "GRADE_CUTOFFS": {
+      "Pass": 0.5
+      }
+      }
+    </gradingpolicy>
+    <policy>
+      {
+      "course/course": {
+      "advanced_modules": [
+      "annotatable",
+      "brightcove-video",
+      "openassessment",
+      "container",
+      "problem-builder-block",
+      "problem-builder-progress-test",
+      "problem-builder-mock-exam"
+      ],
+      "discussion_topics": {
+      "General": {
+      "id": "i4x-s-s-course-course"
+      }
+      },
+      "display_name": "CFA level 2 - version 80",
+      "language": "en",
+      "start": "2016-01-01T00:00:00Z",
+      "tabs": [
+      {
+      "name": "Courseware",
+      "type": "courseware"
+      },
+      {
+      "name": "Course Info",
+      "type": "course_info"
+      },
+      {
+      "name": "Textbooks",
+      "type": "textbooks"
+      },
+      {
+      "name": "Discussion",
+      "type": "discussion"
+      },
+      {
+      "name": "Wiki",
+      "type": "wiki"
+      },
+      {
+      "name": "Progress",
+      "type": "progress"
+      }
+      ],
+      "xml_attributes": {
+      "filename": [
+      "course/course.xml",
+      "course/course.xml"
+      ],
+      "semester": "course"
+      }
+      }
+      }
+    </policy>
+  </policies>
+  <about>
+    <file filename="overview.html">
+      <section class="about">
+        <h2>About This Course</h2>
+        <p>Include your long course description here. The long course description should contain 150-400 words.</p>
+
+        <p>This is paragraph 2 of the long course description. Add more paragraphs as needed. Make sure to enclose them in paragraph tags.</p>
+      </section>
+
+      <section class="prerequisites">
+        <h2>Requirements</h2>
+        <p>Add information about the skills and knowledge students need to take this course.</p>
+      </section>
+
+      <section class="course-staff">
+        <h2>Course Staff</h2>
+        <article class="teacher">
+          <div class="teacher-image">
+            <img src="/static/images/placeholder-faculty.png" align="left" style="margin:0 20 px 0" alt="Course Staff Image #1"></img>
+          </div>
+
+          <h3>Staff Member #1</h3>
+          <p>Biography of instructor/staff member #1</p>
+        </article>
+
+        <article class="teacher">
+          <div class="teacher-image">
+            <img src="/static/images/placeholder-faculty.png" align="left" style="margin:0 20 px 0" alt="Course Staff Image #2"></img>
+          </div>
+
+          <h3>Staff Member #2</h3>
+          <p>Biography of instructor/staff member #2</p>
+        </article>
+      </section>
+
+      <section class="faq">
+        <section class="responses">
+          <h2>Frequently Asked Questions</h2>
+          <article class="response">
+            <h3>Do I need to buy a textbook?</h3>
+            <p>No, a free online version of Chemistry: Principles, Patterns, and Applications, First Edition by Bruce Averill and Patricia Eldredge will be available, though you can purchase a printed version (published by FlatWorld Knowledge) if you&#x2019;d like.</p>
+          </article>
+
+          <article class="response">
+            <h3>Question #2</h3>
+            <p>Your answer would be displayed here.</p>
+          </article>
+        </section>
+      </section>
+    </file>
+  </about>
+</metadata>

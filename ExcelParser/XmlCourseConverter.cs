@@ -28,18 +28,30 @@ namespace ExcelParser
 			XmlElement rootNode = xml.CreateElement( "xbundle" );
 			xml.AppendChild( rootNode );
 
-			XmlElement courseNode = xml.CreateElement( "course" );
-			courseNode.SetAttribute( "advanced_modules", "[&quot;annotatable&quot;, &quot;videoalpha&quot;, &quot;openassessment&quot;, &quot;container&quot;, &quot;problem-builder-block&quot;]" );
-			courseNode.SetAttribute( "display_name", "CFA sample 1" );
+            // Getting Metadata from xml file
+            XmlDocument doc = new XmlDocument();
+            System.Reflection.Assembly a = System.Reflection.Assembly.GetExecutingAssembly();
+            doc.Load(a.GetManifestResourceStream("ExcelParser.MetadataXml.xml"));
+            XmlNode importNode = doc.DocumentElement.SelectSingleNode("/metadata");
+            XmlNode metadataNode = rootNode.OwnerDocument.ImportNode(importNode, true);
+            rootNode.AppendChild(metadataNode);
+
+            XmlElement courseNode = xml.CreateElement( "course" );
+			courseNode.SetAttribute( "advanced_modules", "[&quot;annotatable&quot;, &quot;videoalpha&quot;, &quot;openassessment&quot;, &quot;container&quot;, &quot;problem-builder-block&quot;, &quot;problem-builder-progress-test&quot;, &quot;problem-builder-mock-exam&quot;]");
+			courseNode.SetAttribute( "display_name", "CFA level 2 - version 80");
 			courseNode.SetAttribute( "language", "en" );
-			courseNode.SetAttribute( "start", "&quot;2030-01-01T00:00:00+00:00&quot;" );
+			courseNode.SetAttribute( "start", "&quot;2016-01-01T00:00:00+00:00&quot;" );
 			courseNode.SetAttribute( "org", "s" );
 			courseNode.SetAttribute( "course", "s" );
 			courseNode.SetAttribute( "url_name_orig", "course" );
 			courseNode.SetAttribute( "semester", "course" );
-			rootNode.AppendChild( courseNode );
+            courseNode.SetAttribute( "days_before_review_unlock", "28");
+            rootNode.AppendChild( courseNode );
 
-			XmlElement chapterNode = null;
+            // Add Introduction Node
+            courseNode.AppendChild(AddIntroductionTopic(xml));
+
+            XmlElement chapterNode = null;
 			XmlElement sequentialNode = null;
 			XmlElement previousSequentialNode = null;
             XmlElement previousChapterNode = null;
@@ -47,7 +59,7 @@ namespace ExcelParser
 			XmlElement bandContainerNode = null;
 			XmlElement conceptNameContainerNode = null;
 
-			bool skip = false;
+            bool skip = false;
 
 			IExcelColumn<MainStructureColumnType> previousStudySessionId = null;
             IExcelColumn<MainStructureColumnType> previousTopicId = null;
@@ -104,7 +116,7 @@ namespace ExcelParser
 					chapterNode.SetAttribute( "description", description != null && description.HaveValue() ? description.Value : "" );
 					chapterNode.SetAttribute( "locked", locked );
 					chapterNode.SetAttribute( "topic_color", colorColumn != null && colorColumn.HaveValue() ? colorColumn.Value : "" );
-					chapterNode.SetAttribute( "cfa_type", cfaTypeColumn != null && cfaTypeColumn.HaveValue() ? cfaTypeColumn.Value : "" );
+					chapterNode.SetAttribute( "cfa_type", cfaTypeColumn != null && cfaTypeColumn.HaveValue() ? cfaTypeColumn.Value : "topic" );
 					chapterNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 2 ) ) );
 					courseNode.AppendChild( chapterNode );
 
@@ -388,8 +400,10 @@ namespace ExcelParser
 
             if ( progressTestExcel != null ) {
 				var progressTestChapterNode = ProgressTestExcelConverter.Convert( xml, progressTestExcel );
-				courseNode.AppendChild( progressTestChapterNode );
-			}
+                // Insert Progress Test after Equity
+                var equityTopicNode = courseNode.SelectSingleNode("chapter[@display_name = 'Equity']");
+                courseNode.InsertAfter(progressTestChapterNode, equityTopicNode);
+            }
 
             if (MockExamExcel != null) {
                 var mockExamChapterNodes = MockExamExcelConverter.Convert( xml, MockExamExcel );
@@ -397,7 +411,6 @@ namespace ExcelParser
                 {
                     courseNode.AppendChild(mockExamChapterNode);
                 }
-                
             }
 
             if (FinalMockExamExcel != null)
@@ -411,8 +424,12 @@ namespace ExcelParser
                 AppendTopicWorkshop(xml, previousChapterNode, previousTopicId.Value, TopicWorkshopExcel);
             }
 
+            // Add Revision and FinalExam Node
+            courseNode.AppendChild(AddRevisionTopic(xml));
+            courseNode.AppendChild(AddFinalExamTopic(xml));
+
             XmlElement wikiNode = xml.CreateElement( "wiki" );
-			wikiNode.SetAttribute( "slug", "test.1.2015" );
+			wikiNode.SetAttribute( "slug", "sf1.sf1.sf1");
 			courseNode.AppendChild( wikiNode );
 
 			return xml;
@@ -576,6 +593,43 @@ namespace ExcelParser
                 }
             }
             return referenceIds;
+        }
+
+        public XmlElement AddIntroductionTopic(XmlDocument xml)
+        {
+            var introTopicNode = ChapterNodeGenerator.Generate(xml, new ChapterNodeGeneratorSettings
+            {
+                DisplayName = "Introduction",
+                UrlName = "mrnwbbsgvab1y5faqfq7vv28e29yhsfk",
+                CfaType = "intro",
+                Description = "This is the introduction video.",
+                Locked = "no"
+            });
+            return introTopicNode;
+        }
+
+        public XmlElement AddRevisionTopic(XmlDocument xml)
+        {
+            var revisionTopicNode = ChapterNodeGenerator.Generate(xml, new ChapterNodeGeneratorSettings
+            {
+                DisplayName = "Revision",
+                UrlName = "jqb8xtxn9ub55a7pnlys9e1zmyl5xf7u",
+                CfaType = "revision",
+                Locked = "no"
+            });
+            return revisionTopicNode;
+        }
+
+        public XmlElement AddFinalExamTopic(XmlDocument xml)
+        {
+            var finalExamTopicNode = ChapterNodeGenerator.Generate(xml, new ChapterNodeGeneratorSettings
+            {
+                DisplayName = "Final Exam",
+                UrlName = "lysuv2kibu68r387yhboz5mfh5sxg3ve",
+                CfaType = "final_exam",
+                Locked = "no"
+            });
+            return finalExamTopicNode;
         }
     }
 }
