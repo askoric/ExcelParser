@@ -37,8 +37,8 @@ namespace ExcelParser
             rootNode.AppendChild(metadataNode);
 
             XmlElement courseNode = xml.CreateElement( "course" );
-			courseNode.SetAttribute( "advanced_modules", "[&quot;annotatable&quot;, &quot;videoalpha&quot;, &quot;openassessment&quot;, &quot;container&quot;, &quot;problem-builder-block&quot;, &quot;problem-builder-progress-test&quot;, &quot;problem-builder-mock-exam&quot;]");
-			courseNode.SetAttribute( "display_name", "CFA level 2 - version 80");
+			courseNode.SetAttribute( "advanced_modules", "[&quot;annotatable&quot;, &quot;videoalpha&quot;, &quot;openassessment&quot;, &quot;container&quot;, &quot;problem-builder-block&quot;, &quot;problem-builder-progress-test&quot;, &quot;problem-builder-mock-exam&quot;, &quot;textualatom&quot;]");
+			courseNode.SetAttribute( "display_name", "CFA level 2 - version 81");
 			courseNode.SetAttribute( "language", "en" );
 			courseNode.SetAttribute( "start", "&quot;2016-01-01T00:00:00+00:00&quot;" );
 			courseNode.SetAttribute( "org", "s" );
@@ -77,7 +77,7 @@ namespace ExcelParser
 				}
 
 				var atomType = row.FirstOrDefault( c => c.Type == MainStructureColumnType.AtomType );
-				if ( atomType == null || !atomType.HaveValue() || !(atomType.Value == "IN" || atomType.Value == "Q") ) {
+				if ( atomType == null || !atomType.HaveValue() || !(atomType.Value == "IN" || atomType.Value == "Q" || atomType.Value == "TXT") ) {
 					continue;
 				}
 
@@ -290,6 +290,25 @@ namespace ExcelParser
 
 					conceptNameContainerNode.AppendChild( videoNode );
 				}
+
+                //TEXT
+                else if(atomType.Value == "TXT")
+                {
+                    var atomTitleColumn = row.FirstOrDefault(c => c.Type == MainStructureColumnType.AtomTitle);
+                    var itemIdCoclumn = row.FirstOrDefault(c => c.Type == MainStructureColumnType.ItemId);
+                    var atomText = row.FirstOrDefault(c => c.Type == MainStructureColumnType.AtomBody);
+                    var textualNode = xml.CreateElement("textualatom");
+
+                    textualNode.SetAttribute("url_name", CourseConverterHelper.getGuid(atomIdColumn.Value, CourseTypes.TextAtom));
+                    textualNode.SetAttribute("xblock-family", "xblock.v1");
+                    textualNode.SetAttribute("atom_text", atomText != null && atomText.HaveValue() ? atomText.Value : "");
+                    textualNode.SetAttribute("display_name", atomTitleColumn != null && atomTitleColumn.HaveValue() ? atomTitleColumn.Value : "");
+                    textualNode.SetAttribute("cfa_type", "text");
+                    textualNode.SetAttribute("atom_id", atomIdColumn.Value);
+                    textualNode.SetAttribute("taxon_id", atomTaxonId);
+
+                    conceptNameContainerNode.AppendChild(textualNode);
+                }
 
 				//QUESTION
 				else {

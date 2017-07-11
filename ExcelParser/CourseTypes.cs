@@ -15,6 +15,7 @@ namespace ExcelParser
 		Concept,
 		Question,
 		Video,
+        TextAtom,
         Mock,
         Workshop,
         ItemSet

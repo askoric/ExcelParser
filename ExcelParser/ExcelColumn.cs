@@ -367,7 +367,9 @@ namespace ExcelParser
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.AtomId, index );
 					case "atom title":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.AtomTitle, index );
-					case "studysession":
+                    case "atom body":
+                        return new MainStructureExcelColumn(columnName, MainStructureColumnType.AtomBody, index);
+                    case "studysession":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.StudySession, index );
 					case "studysession abb":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.StudySessionId, index );
@@ -414,8 +416,9 @@ namespace ExcelParser
 		ItemId, 
 		AtomType, 
 		AtomId, 
-		AtomTitle, 
-		StudySession,
+		AtomTitle,
+        AtomBody,
+        StudySession,
 		StudySessionId, 
 		Structure,
 		Reading, 
