@@ -102,7 +102,8 @@ namespace ExcelParser
                 if ( !skip ) {
 					var topicShortName = row.FirstOrDefault( c => c.Type == MainStructureColumnType.TopicShortName );
 					var examPercantage = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ExamPercentage );
-					var lockedColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Locked );
+                    var cfatopicweight = row.FirstOrDefault(c => c.Type == MainStructureColumnType.CfaTopicWeight);
+                    var lockedColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Locked );
 					var colorColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Color );
 					var cfaTypeColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.CfaType );
 					locked = lockedColumn != null && lockedColumn.HaveValue() ? lockedColumn.Value : "";
@@ -113,7 +114,8 @@ namespace ExcelParser
 					chapterNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( topicShortName.Value, CourseTypes.Topic ) );
 					chapterNode.SetAttribute( "cfa_short_name", topicShortName != null && topicShortName.HaveValue() ? topicShortName.Value : "" );
 					chapterNode.SetAttribute( "exam_percentage", examPercantage != null && examPercantage.HaveValue() ? examPercantage.Value : "" );
-					chapterNode.SetAttribute( "description", description != null && description.HaveValue() ? description.Value : "" );
+                    chapterNode.SetAttribute( "cfa_topic_weight", cfatopicweight != null && cfatopicweight.HaveValue() ? cfatopicweight.Value : "");
+                    chapterNode.SetAttribute( "description", description != null && description.HaveValue() ? description.Value : "" );
 					chapterNode.SetAttribute( "locked", locked );
 					chapterNode.SetAttribute( "topic_color", colorColumn != null && colorColumn.HaveValue() ? colorColumn.Value : "" );
 					chapterNode.SetAttribute( "cfa_type", cfaTypeColumn != null && cfaTypeColumn.HaveValue() ? cfaTypeColumn.Value : "topic" );

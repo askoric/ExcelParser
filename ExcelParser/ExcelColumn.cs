@@ -357,7 +357,7 @@ namespace ExcelParser
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.BandId, index );
 					case "lo description":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ConceptName, index );
-					case "lo /concept id":
+                    case "lo/concept id":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ConceptId, index );
 					case "item id":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ItemId, index );
@@ -379,7 +379,9 @@ namespace ExcelParser
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Reading, index );
 					case "exam percentage":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ExamPercentage, index );
-					case "description":
+                    case "cfa topic weight":
+                        return new MainStructureExcelColumn(columnName, MainStructureColumnType.CfaTopicWeight, index);
+                    case "description":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Description, index );
 					case "downloads":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Downloads, index );
@@ -428,6 +430,7 @@ namespace ExcelParser
 		Downloads2, 
 		Locked, 
 		Color, 
-		CfaType 
-	}
+		CfaType,
+        CfaTopicWeight
+    }
 }
