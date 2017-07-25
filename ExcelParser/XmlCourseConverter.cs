@@ -633,7 +633,7 @@ namespace ExcelParser
         {
             var revisionTopicNode = ChapterNodeGenerator.Generate(xml, new ChapterNodeGeneratorSettings
             {
-                DisplayName = "Revision",
+                DisplayName = "Review",
                 UrlName = "jqb8xtxn9ub55a7pnlys9e1zmyl5xf7u",
                 CfaType = "revision",
                 Locked = "no"
