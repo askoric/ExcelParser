@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Excel.Log;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace ExcelParser
 {
@@ -323,8 +324,8 @@ namespace ExcelParser
 					var questionImageUrlColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.QuestionImageUrl );
 					string questionValue = questionColumn.HaveValue() ? questionColumn.Value : questionImageUrlColumn.HaveValue() ? "" : "Question Missing";
 
-					problemBuilderNode.SetAttribute( "display_name", questionValue.Replace( "<br>", "" ) );
-					problemBuilderNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( atomIdColumn.Value, CourseTypes.Question ) );
+                    problemBuilderNode.SetAttribute( "display_name", Regex.Replace(questionValue, "<.*?>", string.Empty));
+                    problemBuilderNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( atomIdColumn.Value, CourseTypes.Question ) );
 					problemBuilderNode.SetAttribute( "xblock-family", "xblock.v1" );
 					problemBuilderNode.SetAttribute( "cfa_type", "question" );
 					problemBuilderNode.SetAttribute( "atom_id", atomIdColumn != null && atomIdColumn.HaveValue() ? atomIdColumn.Value : "" );
