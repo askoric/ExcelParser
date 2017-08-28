@@ -56,12 +56,13 @@ namespace ExcelParser
 
 		public void AddKeyIfDoesntExists( string element_id, string generatedId, CourseTypes elementType )
 		{
-			if ( String.IsNullOrEmpty( element_id ) || String.IsNullOrEmpty( generatedId ) ) {
+            if ( String.IsNullOrEmpty( element_id ) || String.IsNullOrEmpty( generatedId ) ) {
 				return;
 			}
 
 			if ( GetKey( element_id, elementType ) == null ) {
-				AddKey( element_id, generatedId, elementType );
+                Program.Log.Info(String.Format("Key added elementType: {0}; element_id: {1}; generatedKey: {2}", elementType.ToString(), element_id, generatedId));
+                AddKey( element_id, generatedId, elementType );
 			}
 		}
 
