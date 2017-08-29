@@ -170,7 +170,9 @@ namespace ExcelParser
                 var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
                 MockExamExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
                 //-11 there is no question type and workshop stuff(9)
-                if (MockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 11)
+                var firstnum = MockExamExcel.Header.Count();
+                var secondnum = Enum.GetNames(typeof(TestExcelColumnType)).Length;
+                if ((MockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 11) || (MockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 4))
                 {
                     uploadMockExamCheckIcon.Visible = true;
                 }
