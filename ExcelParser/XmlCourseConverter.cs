@@ -340,7 +340,7 @@ namespace ExcelParser
 					var actualCorrectValues = new List<string>();
 
 					if ( correctColumn != null && correctColumn.HaveValue() ) {
-						var correctValues = correctColumn.Value.Split( ' ' );
+						var correctValues = correctColumn.Value.Trim().Split( ' ' );
 
 						foreach ( var correctValue in correctValues ) {
 							actualCorrectValues.Add( questionDic[correctValue] );
