@@ -545,42 +545,59 @@ namespace ExcelParser
 
                             if (itemSetRows.Any())
                             {
+                                string itemSetType = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetType).Value;
                                 string itemSetTitle = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetTitle).Value;
-                                string itemSetPdf = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetPdf).Value;
-                                string itemSetStudySessions = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.Session).Value;
-                                string itemSetAnswerVideo = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.AnswerVideo).Value;
-                                string vignetteTitle = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteTitle).Value;
-                                string vignetteBody = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteBody).Value;
                                 string topicTaxonId = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicTaxonId).Value;
+                                string itemSetStudySessions = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.Session).Value;
+                                string itemSetPdf = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetPdf).Value;
 
                                 var verticalNode = xml.CreateElement("vertical");
-                                verticalNode.SetAttribute("cfa_type", "item_set");
                                 verticalNode.SetAttribute("item_set_id", itemSetReferenceValue);
-                                verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(itemSetReferenceValue, CourseTypes.ItemSet));
                                 verticalNode.SetAttribute("display_name", itemSetTitle);
                                 verticalNode.SetAttribute("taxon_id", topicTaxonId);
-                                verticalNode.SetAttribute("item_set_pdf", itemSetPdf);
                                 verticalNode.SetAttribute("item_set_sessions", itemSetStudySessions);
-                                verticalNode.SetAttribute("item_set_video", itemSetAnswerVideo);
-                                verticalNode.SetAttribute("vignette_title", vignetteTitle);
-                                verticalNode.SetAttribute("vignette_body", vignetteBody);
+                                verticalNode.SetAttribute("item_set_pdf", itemSetPdf);
 
-                                sequentialNode.AppendChild(verticalNode);
-
-                                //skip first row(vignette row)
-                                itemSetRows = itemSetRows.Skip(1);
-
-                                var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, itemSetRows, new ProblemBuilderNodeSettings
+                                if (itemSetType == "Item Set")
                                 {
-                                    DisplayName = "Item Set " + index,
-                                    UrlName = CourseConverterHelper.getGuid(itemSetReferenceValue, CourseTypes.Question),
-                                    ProblemBuilderNodeElement = "problem-builder-block",
-                                    PbMcqNodeElement = "pb-mcq-block",
-                                    PbChoiceBlockElement = "pb-choice-block",
-                                    PbTipBlockElement = "pb-tip-block"
-                                });
+                                    string itemSetAnswerVideo = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.AnswerVideo).Value;
+                                    string vignetteTitle = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteTitle).Value;
+                                    string vignetteBody = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteBody).Value;
+                                
+                                    verticalNode.SetAttribute("cfa_type", "item_set");
+                                    verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(itemSetReferenceValue, CourseTypes.ItemSet));
+                                    verticalNode.SetAttribute("item_set_video", itemSetAnswerVideo);
+                                    verticalNode.SetAttribute("vignette_title", vignetteTitle);
+                                    verticalNode.SetAttribute("vignette_body", vignetteBody);
 
-                                verticalNode.AppendChild(problemBuilderNode);
+                                    sequentialNode.AppendChild(verticalNode);
+
+                                    //skip first row(vignette row)
+                                    itemSetRows = itemSetRows.Skip(1);
+
+                                    var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, itemSetRows, new ProblemBuilderNodeSettings
+                                    {
+                                        DisplayName = "Item Set " + index,
+                                        UrlName = CourseConverterHelper.getGuid(itemSetReferenceValue, CourseTypes.Question),
+                                        ProblemBuilderNodeElement = "problem-builder-block",
+                                        PbMcqNodeElement = "pb-mcq-block",
+                                        PbChoiceBlockElement = "pb-choice-block",
+                                        PbTipBlockElement = "pb-tip-block"
+                                    });
+
+                                    verticalNode.AppendChild(problemBuilderNode);
+                                }
+                                else if (itemSetType == "Essay")
+                                {
+                                    string essayMaxPoints = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.EssayMaxPoints).Value;
+
+                                    verticalNode.SetAttribute("cfa_type", "essay");
+                                    verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(itemSetReferenceValue, CourseTypes.Essay));
+                                    verticalNode.SetAttribute("essay_max_points", essayMaxPoints);
+
+                                    sequentialNode.AppendChild(verticalNode);
+                                }
+                                    
                             }
                         }
                     }

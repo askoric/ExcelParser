@@ -277,6 +277,10 @@ namespace ExcelParser
                         return new TestExcelColumn(columnName, TestExcelColumnType.VignetteTitle, index);
                     case "vignette_body":
                         return new TestExcelColumn(columnName, TestExcelColumnType.VignetteBody, index);
+                    case "container2_type":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.ItemSetType, index);
+                    case "essay max points":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.EssayMaxPoints, index);
                 }
 			}
 
@@ -319,7 +323,11 @@ namespace ExcelParser
         ItemSetPdf,
         AnswerVideo,
         VignetteTitle,
-        VignetteBody
+        VignetteBody,
+
+        //Essay stuff
+        ItemSetType,
+        EssayMaxPoints
     }
 
 

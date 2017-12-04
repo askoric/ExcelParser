@@ -18,6 +18,7 @@ namespace ExcelParser
         TextAtom,
         Mock,
         Workshop,
-        ItemSet
+        ItemSet,
+        Essay
 	}
 }
