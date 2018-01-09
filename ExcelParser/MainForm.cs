@@ -134,8 +134,8 @@ namespace ExcelParser
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
 				var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
 				SsTestExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-                // -14 there is no FcmNumber and TopicTaxonId and PdfAnswers/Questions and workshop stuff(9) and essays(2)
-                if ( SsTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 16 ) {
+                // -14 there is no FcmNumber and TopicTaxonId and PdfAnswers/Questions and workshop stuff(9) and essays(4)
+                if ( SsTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 18 ) {
 					UploadSsTestCheckImage.Visible = true;
 				}
 				else {
@@ -152,7 +152,7 @@ namespace ExcelParser
 				var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
 				ProgressTestExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
                 //-5 fcmNumber and ContainerRef and PdfAnswers/Questions and essays(2)
-                if ( (ProgressTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 6) || ProgressTestExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 17 ) {
+                if ((ProgressTestExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 5) || (ProgressTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 8) || ProgressTestExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 19 ) {
 					uploadProgressTestCheckIcon.Visible = true;
 				}
 				else {
@@ -169,8 +169,8 @@ namespace ExcelParser
             {
                 var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
                 MockExamExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
-                //-11 there is no question type and workshop stuff(9)
-                if ((MockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 13) || (MockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 5))
+                //-11 there is no question type and workshop stuff(9) and essays(4)
+                if ((MockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 15) || (MockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 7))
                 {
                     uploadMockExamCheckIcon.Visible = true;
                 }
@@ -225,8 +225,8 @@ namespace ExcelParser
             {
                 var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
                 FinalMockExamExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
-                //-11 there is no question type and workshop stuff(9) and essays(2)
-                if (FinalMockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 13)
+                //-11 there is no question type and workshop stuff(9) and essays(4)
+                if (FinalMockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 15)
                 {
                     uploadFinalMockExamCheckIcon.Visible = true;
                 }
@@ -245,8 +245,8 @@ namespace ExcelParser
             {
                 var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
                 TopicWorkshopExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
-                //-5 there is no fcmNumber and ContainerRef and PdfAnswers/ Questions and essays(1)
-                if ((TopicWorkshopExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 5) || TopicWorkshopExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 6)
+                //-5 there is no fcmNumber and ContainerRef and PdfAnswers/ Questions and essays(3)
+                if ((TopicWorkshopExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 7) || TopicWorkshopExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 8)
                 {
                     uploadTopicWorkshopCheckIcon.Visible = true;
                 }

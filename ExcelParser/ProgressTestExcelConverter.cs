@@ -17,16 +17,26 @@ namespace ExcelParser
             chapterNode.SetAttribute("cfa_type", "progress_test");
             chapterNode.SetAttribute("cfa_short_name", "Progress Test");
 
-            string progressTestPdf = progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetPdf) != null ? progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetPdf).Value : "";
+            string progressTestId = progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicWorkshopReference) != null ? progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicWorkshopReference).Value : "";
+
+            var essayRows = progressTestExcel.Rows.Where(r => r.Any(c => c.Type == TestExcelColumnType.ItemSetType && c.Value.Contains("Essay")));
+            var questionRows = progressTestExcel.Rows.Where(r => r.Any(c => c.Type == TestExcelColumnType.ItemSetType && c.Value.Contains("Item Set")));
+
+            if (!questionRows.Any())
+            {
+                questionRows = progressTestExcel.Rows;
+            }
+
+            string progressTestPdf = questionRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetPdf) != null ? questionRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetPdf).Value : "";
 
             chapterNode.SetAttribute("topic_pdf", progressTestPdf);
 
-            var topicReferences = progressTestExcel.Rows.GroupBy(r => r.First(tn => tn.Type == TestExcelColumnType.TopicAbbrevation).Value);
+            var topicReferences = questionRows.GroupBy(r => r.First(tn => tn.Type == TestExcelColumnType.TopicAbbrevation).Value);
 
             foreach (var topicRef in topicReferences)
             {
                 string topicRefValue = topicRef.Key;
-                var topicRows = progressTestExcel.Rows.Where(r => r.Any(c => c.Type == TestExcelColumnType.TopicAbbrevation && c.Value.Contains(topicRefValue)));
+                var topicRows = questionRows.Where(r => r.Any(c => c.Type == TestExcelColumnType.TopicAbbrevation && c.Value.Contains(topicRefValue)));
 
                 var itemSetReferences = topicRows.GroupBy(r => r.First(tn => tn.Type == TestExcelColumnType.ItemSetReference).Value);
 
@@ -64,6 +74,44 @@ namespace ExcelParser
 
             chapterNode.SetAttribute("exam_type", ifItemSet ? "item_set" : "regular");
             chapterNode.SetAttribute("test_duration", ifItemSet ? "01:48" : "02:00");
+
+
+            if (essayRows.Any())
+            {
+                chapterNode.SetAttribute("exam_type", "essay");
+
+                string essaysPdfQuestions = essayRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.EssaysPdfQuestions).Value;
+                string essaysPdfAnswers = essayRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.EssaysPdfAnswers).Value;
+
+                var sequentialNode = xml.CreateElement("sequential");
+                sequentialNode.SetAttribute("display_name", "Progress Test Essays");
+                sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("{0}--essays", progressTestId), CourseTypes.StudySession));
+                sequentialNode.SetAttribute("cfa_type", "essay");
+                sequentialNode.SetAttribute("pdf_answers", essaysPdfAnswers);
+                sequentialNode.SetAttribute("pdf_questions", essaysPdfQuestions);
+
+                foreach (var row in essayRows)
+                {
+                    string essayTitle = row.FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetTitle).Value;
+                    string topicTaxonId = row.FirstOrDefault(c => c.Type == TestExcelColumnType.TopicTaxonId).Value;
+                    string essayTopics = row.FirstOrDefault(c => c.Type == TestExcelColumnType.TopicAbbrevation).Value;
+                    string essayMaxPoints = row.FirstOrDefault(c => c.Type == TestExcelColumnType.EssayMaxPoints).Value;
+                    string essayReferenceValue = row.FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetReference).Value;
+
+                    var verticalNode = xml.CreateElement("vertical");
+                    verticalNode.SetAttribute("cfa_type", "essay");
+                    verticalNode.SetAttribute("item_set_id", essayReferenceValue);
+                    verticalNode.SetAttribute("display_name", essayTitle);
+                    verticalNode.SetAttribute("taxon_id", topicTaxonId);
+                    verticalNode.SetAttribute("item_set_sessions", essayTopics);
+                    verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(essayReferenceValue, CourseTypes.Essay));
+                    verticalNode.SetAttribute("essay_max_points", essayMaxPoints);
+
+                    sequentialNode.AppendChild(verticalNode);
+                }
+
+                chapterNode.AppendChild(sequentialNode);
+            }
 
             return chapterNode;
         }

@@ -280,7 +280,12 @@ namespace ExcelParser
                     case "container2_type":
                         return new TestExcelColumn(columnName, TestExcelColumnType.ItemSetType, index);
                     case "essay max points":
+                    case "container2_max_points":
                         return new TestExcelColumn(columnName, TestExcelColumnType.EssayMaxPoints, index);
+                    case "container2_pdf_questions":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.EssaysPdfQuestions, index);
+                    case "container2_pdf_answers":
+                        return new TestExcelColumn(columnName, TestExcelColumnType.EssaysPdfAnswers, index);
                 }
 			}
 
@@ -327,7 +332,9 @@ namespace ExcelParser
 
         //Essay stuff
         ItemSetType,
-        EssayMaxPoints
+        EssayMaxPoints,
+        EssaysPdfQuestions,
+        EssaysPdfAnswers
     }
 
 
