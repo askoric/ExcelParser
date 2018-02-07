@@ -408,7 +408,9 @@ namespace ExcelParser
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Color, index );
 					case "type":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.CfaType, index );
-				}
+                    case "demo":
+                        return new MainStructureExcelColumn(columnName, MainStructureColumnType.Demo, index);
+                }
 
 			}
 
@@ -446,6 +448,7 @@ namespace ExcelParser
 		Locked, 
 		Color, 
 		CfaType,
-        CfaTopicWeight
+        CfaTopicWeight,
+        Demo
     }
 }

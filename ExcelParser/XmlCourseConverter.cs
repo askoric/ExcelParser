@@ -105,11 +105,13 @@ namespace ExcelParser
 					var examPercantage = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ExamPercentage );
                     var cfatopicweight = row.FirstOrDefault(c => c.Type == MainStructureColumnType.CfaTopicWeight);
                     var lockedColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Locked );
-					var colorColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Color );
+                    var demoColumn = row.FirstOrDefault(c => c.Type == MainStructureColumnType.Demo);
+                    var colorColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Color );
 					var cfaTypeColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.CfaType );
 					locked = lockedColumn != null && lockedColumn.HaveValue() ? lockedColumn.Value : "";
+                    var demo = demoColumn != null && demoColumn.HaveValue() ? demoColumn.Value : "no";
 
-					var description = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Description );
+                    var description = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Description );
 					chapterNode = xml.CreateElement( "chapter" );
 					chapterNode.SetAttribute( "display_name", topicNameColumn != null && topicNameColumn.HaveValue() ? topicNameColumn.Value : "" );
 					chapterNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( topicShortName.Value, CourseTypes.Topic ) );
@@ -118,7 +120,8 @@ namespace ExcelParser
                     chapterNode.SetAttribute( "cfa_topic_weight", cfatopicweight != null && cfatopicweight.HaveValue() ? cfatopicweight.Value : "");
                     chapterNode.SetAttribute( "description", description != null && description.HaveValue() ? description.Value : "" );
 					chapterNode.SetAttribute( "locked", locked );
-					chapterNode.SetAttribute( "topic_color", colorColumn != null && colorColumn.HaveValue() ? colorColumn.Value : "" );
+                    chapterNode.SetAttribute( "demo_topic", demo);
+                    chapterNode.SetAttribute( "topic_color", colorColumn != null && colorColumn.HaveValue() ? colorColumn.Value : "" );
 					chapterNode.SetAttribute( "cfa_type", cfaTypeColumn != null && cfaTypeColumn.HaveValue() ? cfaTypeColumn.Value : "topic" );
 					chapterNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 2 ) ) );
 					courseNode.AppendChild( chapterNode );
