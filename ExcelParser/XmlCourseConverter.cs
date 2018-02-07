@@ -189,9 +189,9 @@ namespace ExcelParser
 						var outcomes = new List<object>();
 
 						var losRows = losExcel.Rows.Where( r =>
-							r.Any( c => c.Type == LosExcelColumnType.ReadingTitle && c.Value == readingNameColumn.Value ) &&
-							r.Any( c => c.Type == LosExcelColumnType.TopicTitle && c.Value == topicNameColumn.Value ) &&
-							r.Any( c => c.Type == LosExcelColumnType.SessionTitle && c.Value == sessionNameColumn.Value )
+							r.Any( c => c.Type == LosExcelColumnType.ReadingRef && c.Value == readingIdColumn.Value ) &&
+							r.Any( c => c.Type == LosExcelColumnType.TopicRef && c.Value == topicId.Value ) &&
+							r.Any( c => c.Type == LosExcelColumnType.SessionRef && c.Value == studySessionId.Value )
 							);
 
 						foreach ( var losRow in losRows ) {

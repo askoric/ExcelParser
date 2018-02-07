@@ -71,7 +71,13 @@ namespace ExcelParser
 			if ( columnName != null )
 			{
 				switch ( columnName.ToLower().Trim() ) {
-					case "topictitle":
+                    case "t-ref":
+                        return new LosExcelColumn(columnName, LosExcelColumnType.TopicRef, index);
+                    case "s-ref":
+                        return new LosExcelColumn(columnName, LosExcelColumnType.SessionRef, index);
+                    case "r-ref":
+                        return new LosExcelColumn(columnName, LosExcelColumnType.ReadingRef, index);
+                    case "topictitle":
 						return new LosExcelColumn( columnName, LosExcelColumnType.TopicTitle, index );
 					case "sessiontitle":
 						return new LosExcelColumn( columnName, LosExcelColumnType.SessionTitle, index );
@@ -90,6 +96,9 @@ namespace ExcelParser
 	public enum LosExcelColumnType
 	{
 		Undefined,
+        TopicRef,
+        SessionRef,
+        ReadingRef,
 		TopicTitle,
 		SessionTitle,
 		ReadingTitle,
