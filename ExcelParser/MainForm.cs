@@ -226,7 +226,7 @@ namespace ExcelParser
                 var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
                 FinalMockExamExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
                 //-11 there is no question type and workshop stuff(9) and essays(4)
-                if (FinalMockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 15)
+                if ((FinalMockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 13) || (FinalMockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 15))
                 {
                     uploadFinalMockExamCheckIcon.Visible = true;
                 }
