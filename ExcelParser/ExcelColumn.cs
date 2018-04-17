@@ -460,4 +460,96 @@ namespace ExcelParser
         CfaTopicWeight,
         Demo
     }
+
+    public class MockExamExcelColumn : ExcelColumn<MockExamExcelColumnType>
+    {
+        public MockExamExcelColumn()
+        {
+        }
+
+        public MockExamExcelColumn(string value, MockExamExcelColumnType type, int index) : base(value, type, index) { }
+
+        public override bool IsRecognizableColumn()
+        {
+            return this.Type != MockExamExcelColumnType.Undefined;
+        }
+
+        public override IExcelColumn<MockExamExcelColumnType> GetColumn(string columnName, int index)
+        {
+            if (columnName != null)
+            {
+                switch (columnName.ToLower().Trim())
+                {
+                    case "topic abbreviation":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.TopicAbbrevation, index);
+                    case "topicname":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.TopicName, index);
+                    case "fcm_number":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.FcmNumber, index);
+                    case "container1_ref":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Container1Ref, index);
+                    case "mock_type":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.MockType, index);
+                    case "topic_taxon_id":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.TopicTaxonId, index);
+                    case "container2_ref":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Container2Ref, index);
+                    case "container2_type":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Container2Type, index);
+                    case "container2_title":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Container2Title, index);
+                    case "pdf_answers":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.PdfAnswers, index);
+                    case "pdf_questions":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.PdfQuestions, index);
+                    case "q_id":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.QuestionId, index);
+                    case "question":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Question, index);
+                    case "answer_1":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Answer1, index);
+                    case "answer_2":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Answer2, index);
+                    case "answer_3":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Answer3, index);
+                    case "correct":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Correct, index);
+                    case "justification":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Justification, index);
+                    case "vignette_title":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.VignetteTitle, index);
+                    case "vignette_body":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.VignetteBody, index);
+                }
+            }
+
+            return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Undefined, index);
+        }
+    }
+
+
+    public enum MockExamExcelColumnType
+    {
+        Undefined,
+        TopicAbbrevation,
+        TopicName,
+        FcmNumber,
+        Container1Ref,
+        MockType,
+        TopicTaxonId,
+        Container2Ref,
+        Container2Type,
+        Container2Title,
+        PdfAnswers, 
+        PdfQuestions, 
+        QuestionId,
+        Question,
+        Answer1,
+        Answer2,
+        Answer3,
+        Correct,
+        Justification,
+        VignetteTitle,
+        VignetteBody,
+    }
 }

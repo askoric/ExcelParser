@@ -48,8 +48,6 @@
             this.UploadProgressTestExcell = new System.Windows.Forms.Button();
             this.MockExamBtn = new System.Windows.Forms.Button();
             this.uploadMockExamCheckIcon = new System.Windows.Forms.PictureBox();
-            this.uploadFinalMockExamCheckIcon = new System.Windows.Forms.PictureBox();
-            this.FinalMockExamBtn = new System.Windows.Forms.Button();
             this.TopicWorkshopBtn = new System.Windows.Forms.Button();
             this.uploadTopicWorkshopCheckIcon = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.MainStructureExcelCheckImg)).BeginInit();
@@ -59,7 +57,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.UploadSsTestCheckImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.uploadProgressTestCheckIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.uploadMockExamCheckIcon)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.uploadFinalMockExamCheckIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.uploadTopicWorkshopCheckIcon)).BeginInit();
             this.SuspendLayout();
             // 
@@ -267,30 +264,9 @@
             this.uploadMockExamCheckIcon.TabStop = false;
             this.uploadMockExamCheckIcon.Visible = false;
             // 
-            // uploadFinalMockExamCheckIcon
-            // 
-            this.uploadFinalMockExamCheckIcon.Image = ((System.Drawing.Image)(resources.GetObject("uploadFinalMockExamCheckIcon.Image")));
-            this.uploadFinalMockExamCheckIcon.Location = new System.Drawing.Point(183, 220);
-            this.uploadFinalMockExamCheckIcon.Name = "uploadFinalMockExamCheckIcon";
-            this.uploadFinalMockExamCheckIcon.Size = new System.Drawing.Size(16, 23);
-            this.uploadFinalMockExamCheckIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.uploadFinalMockExamCheckIcon.TabIndex = 24;
-            this.uploadFinalMockExamCheckIcon.TabStop = false;
-            this.uploadFinalMockExamCheckIcon.Visible = false;
-            // 
-            // FinalMockExamBtn
-            // 
-            this.FinalMockExamBtn.Location = new System.Drawing.Point(25, 220);
-            this.FinalMockExamBtn.Name = "FinalMockExamBtn";
-            this.FinalMockExamBtn.Size = new System.Drawing.Size(152, 23);
-            this.FinalMockExamBtn.TabIndex = 23;
-            this.FinalMockExamBtn.Text = "Upload Final Mock Exam";
-            this.FinalMockExamBtn.UseVisualStyleBackColor = true;
-            this.FinalMockExamBtn.Click += new System.EventHandler(this.FinalMockExamBtn_Click);
-            // 
             // TopicWorkshopBtn
             // 
-            this.TopicWorkshopBtn.Location = new System.Drawing.Point(25, 250);
+            this.TopicWorkshopBtn.Location = new System.Drawing.Point(25, 220);
             this.TopicWorkshopBtn.Name = "TopicWorkshopBtn";
             this.TopicWorkshopBtn.Size = new System.Drawing.Size(152, 23);
             this.TopicWorkshopBtn.TabIndex = 25;
@@ -301,7 +277,7 @@
             // uploadTopicWorkshopCheckIcon
             // 
             this.uploadTopicWorkshopCheckIcon.Image = ((System.Drawing.Image)(resources.GetObject("uploadTopicWorkshopCheckIcon.Image")));
-            this.uploadTopicWorkshopCheckIcon.Location = new System.Drawing.Point(183, 250);
+            this.uploadTopicWorkshopCheckIcon.Location = new System.Drawing.Point(183, 220);
             this.uploadTopicWorkshopCheckIcon.Name = "uploadTopicWorkshopCheckIcon";
             this.uploadTopicWorkshopCheckIcon.Size = new System.Drawing.Size(16, 23);
             this.uploadTopicWorkshopCheckIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -316,8 +292,6 @@
             this.ClientSize = new System.Drawing.Size(481, 310);
             this.Controls.Add(this.uploadTopicWorkshopCheckIcon);
             this.Controls.Add(this.TopicWorkshopBtn);
-            this.Controls.Add(this.uploadFinalMockExamCheckIcon);
-            this.Controls.Add(this.FinalMockExamBtn);
             this.Controls.Add(this.uploadMockExamCheckIcon);
             this.Controls.Add(this.MockExamBtn);
             this.Controls.Add(this.uploadProgressTestCheckIcon);
@@ -347,7 +321,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.UploadSsTestCheckImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.uploadProgressTestCheckIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.uploadMockExamCheckIcon)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.uploadFinalMockExamCheckIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.uploadTopicWorkshopCheckIcon)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -376,8 +349,6 @@
 		private System.Windows.Forms.Button UploadProgressTestExcell;
         private System.Windows.Forms.Button MockExamBtn;
         private System.Windows.Forms.PictureBox uploadMockExamCheckIcon;
-        private System.Windows.Forms.PictureBox uploadFinalMockExamCheckIcon;
-        private System.Windows.Forms.Button FinalMockExamBtn;
         private System.Windows.Forms.Button TopicWorkshopBtn;
         private System.Windows.Forms.PictureBox uploadTopicWorkshopCheckIcon;
     }

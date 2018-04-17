@@ -23,8 +23,7 @@ namespace ExcelParser
 		private Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> AcceptanceCriteriaExcel { get; set; }
 		private Excel<TestExcelColumn, TestExcelColumnType> SsTestExcel { get; set; }
 		private Excel<TestExcelColumn, TestExcelColumnType> ProgressTestExcel { get; set; }
-		private Excel<TestExcelColumn, TestExcelColumnType> MockExamExcel { get; set; }
-        private Excel<TestExcelColumn, TestExcelColumnType> FinalMockExamExcel { get; set; }
+		private Excel<MockExamExcelColumn, MockExamExcelColumnType> MockExamsExcel { get; set; }
         private Excel<TestExcelColumn, TestExcelColumnType> TopicWorkshopExcel { get; set; }
 
         private OpenFileDialog OpenFileDialog { get; set; }
@@ -167,17 +166,39 @@ namespace ExcelParser
         {
             if (OpenFileDialog.ShowDialog() == DialogResult.OK)
             {
-                var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
-                MockExamExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
-                //-11 there is no question type and workshop stuff(9) and essays(4)
-                if ((MockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 15) || (MockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 7))
+                var excel = new Excel<MockExamExcelColumn, MockExamExcelColumnType>();
+                MockExamsExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
+                //
+                var num1 = MockExamsExcel.Header.Count();
+                var num2 = Enum.GetNames(typeof(MockExamExcelColumnType)).Length;
+                if ((MockExamsExcel.Header.Count() == Enum.GetNames(typeof(MockExamExcelColumnType)).Length - 1))
                 {
                     uploadMockExamCheckIcon.Visible = true;
                 }
                 else {
                     uploadMockExamCheckIcon.Visible = false;
+                    MessageBox.Show("Invalid excel. Excel does not have all required columns");
+                    MockExamsExcel = null;
+                }
+            }
+        }
+
+        private void TopicWorkshopBtn_Click(object sender, EventArgs e)
+        {
+            if (OpenFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
+                TopicWorkshopExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
+                //-5 there is no fcmNumber and ContainerRef and PdfAnswers/ Questions and essays(3)
+                if ((TopicWorkshopExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 7) || TopicWorkshopExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 8)
+                {
+                    uploadTopicWorkshopCheckIcon.Visible = true;
+                }
+                else
+                {
+                    uploadTopicWorkshopCheckIcon.Visible = false;
                     MessageBox.Show("Invalid excel. Excel does not have all required columns: StudySessionId, KStructure, QuestionId, Question, Answer1, Answer2, Answer3, Answer4, AnswerImageUrl, Correct, QuestionImageUrl, Justification");
-                    MockExamExcel = null;
+                    TopicWorkshopExcel = null;
                 }
             }
         }
@@ -209,7 +230,7 @@ namespace ExcelParser
 			}
 
 			StatusLabel.Text = "Generating output XML";
-			XmlDocument xml = excelParser.ConvertExcelToCourseXml( MainStructureExcel, QuestionsExcel, LosExcel, AcceptanceCriteriaExcel, SsTestExcel, ProgressTestExcel, MockExamExcel, FinalMockExamExcel, TopicWorkshopExcel, SetTranscript.Checked );
+			XmlDocument xml = excelParser.ConvertExcelToCourseXml( MainStructureExcel, QuestionsExcel, LosExcel, AcceptanceCriteriaExcel, SsTestExcel, ProgressTestExcel, MockExamsExcel, TopicWorkshopExcel, SetTranscript.Checked );
 			SaveFileDialog saveFileDialog = new SaveFileDialog();
 			saveFileDialog.FileName = "output.xml";
 			if ( saveFileDialog.ShowDialog() == DialogResult.OK ) {
@@ -218,45 +239,5 @@ namespace ExcelParser
 
 			StatusLabel.Text = "All Done";
 		}
-
-        private void FinalMockExamBtn_Click(object sender, EventArgs e)
-        {
-            if (OpenFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
-                FinalMockExamExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
-                //-11 there is no question type and workshop stuff(9) and essays(4)
-                if ((FinalMockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 13) || (FinalMockExamExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 15))
-                {
-                    uploadFinalMockExamCheckIcon.Visible = true;
-                }
-                else
-                {
-                    uploadFinalMockExamCheckIcon.Visible = false;
-                    MessageBox.Show("Invalid excel. Excel does not have all required columns: StudySessionId, KStructure, QuestionId, Question, Answer1, Answer2, Answer3, Answer4, AnswerImageUrl, Correct, QuestionImageUrl, Justification");
-                    FinalMockExamExcel = null;
-                }
-            }
-        }
-
-        private void TopicWorkshopBtn_Click(object sender, EventArgs e)
-        {
-            if (OpenFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
-                TopicWorkshopExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
-                //-5 there is no fcmNumber and ContainerRef and PdfAnswers/ Questions and essays(3)
-                if ((TopicWorkshopExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 7) || TopicWorkshopExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 8)
-                {
-                    uploadTopicWorkshopCheckIcon.Visible = true;
-                }
-                else
-                {
-                    uploadTopicWorkshopCheckIcon.Visible = false;
-                    MessageBox.Show("Invalid excel. Excel does not have all required columns: StudySessionId, KStructure, QuestionId, Question, Answer1, Answer2, Answer3, Answer4, AnswerImageUrl, Correct, QuestionImageUrl, Justification");
-                    TopicWorkshopExcel = null;
-                }
-            }
-        }
     }
 }

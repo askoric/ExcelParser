@@ -103,6 +103,7 @@
     </Compile>
     <Compile Include="FinalMockExamExcelConverter.cs" />
     <Compile Include="MockExamExcelConverter.cs" />
+    <Compile Include="MockExamsExcelConverter.cs" />
     <Compile Include="ProblemBuilderNodeGenerator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProgressTestExcelConverter.cs" />
