@@ -37,8 +37,11 @@ namespace ExcelParser
                     char index = containerReference.Last();
                     var mockExamChapterNode = GetMockExamChapterNode(xml, mockRows);
                     mockExamChapterNode.SetAttribute("display_name", "Mock Examination " + index);
+                    //mockExamChapterNode.SetAttribute("url_name", CourseConverterHelper.getGuid("MockExam" + index + "ChapterNode", CourseTypes.Topic)); TRIBA PROMINIT
                     mockExamChapterNode.SetAttribute("cfa_type", "mock_exam");
+                    mockExamChapterNode = GetMockExamType(mockExamChapterNode);
                     mockExamChapterNode.SetAttribute("cfa_short_name", "Mock Exam " + index);
+                    mockExamChapterNode.SetAttribute("test_duration", "03:00");
                     chapterNodes.Add(mockExamChapterNode);
                 }
             }
@@ -47,11 +50,33 @@ namespace ExcelParser
             //work on final mock exam
             var finalExamChapterNode = GetMockExamChapterNode(xml, finalMockRows);
             finalExamChapterNode.SetAttribute("display_name", "Final Mock Examination");
+            //finalExamChapterNode.SetAttribute("url_name", CourseConverterHelper.getGuid("MockExam" + index + "ChapterNode", CourseTypes.Topic)); TRIBA PROMINIT
             finalExamChapterNode.SetAttribute("cfa_type", "final_mock_exam");
+            finalExamChapterNode = GetMockExamType(finalExamChapterNode);
             finalExamChapterNode.SetAttribute("cfa_short_name", "Final Mock Exam");
+            finalExamChapterNode.SetAttribute("test_duration", "03:00");
             chapterNodes.Add(finalExamChapterNode);
 
             return chapterNodes;
+        }
+
+        private static XmlElement GetMockExamType(XmlElement chapterNode)
+        {
+            //check if mock exam is item_set or regular
+            bool ifItemSet = true;
+            foreach (XmlElement sequentialNode in chapterNode.ChildNodes)
+            {
+                foreach (XmlElement verticalNode in sequentialNode.ChildNodes)
+                {
+                    if (verticalNode.GetAttributeNode("vignette_title").Value == "" && verticalNode.GetAttributeNode("vignette_body").Value == "")
+                    {
+                        ifItemSet = false;
+                    }
+                }
+            }
+            chapterNode.SetAttribute("exam_type", ifItemSet ? "item_set" : "regular");
+
+            return chapterNode;
         }
 
         private static XmlElement GetMockExamChapterNode(XmlDocument xml, IEnumerable<List<IExcelColumn<MockExamExcelColumnType>>> mockRows)
@@ -59,8 +84,6 @@ namespace ExcelParser
 
             //create chapter node
             var chapterNode = xml.CreateElement("chapter");
-            chapterNode.SetAttribute("test_duration", "03:00");
-            //chapterNode.SetAttribute("url_name", CourseConverterHelper.getGuid("MockExam" + index + "ChapterNode", CourseTypes.Topic)); TRIBA PROMINIT
 
             //divide between AM and PM
             var amRows = new List<List<IExcelColumn<MockExamExcelColumnType>>>();
@@ -87,21 +110,6 @@ namespace ExcelParser
             var pmSequentialNode = GetMockExamSequantialNode(xml, "PM", pmFcmNumber, pmRows);
             chapterNode.AppendChild(amSequentialNode);
             chapterNode.AppendChild(pmSequentialNode);
-
-            //check if mock exam is item_set or regular
-            //bool ifItemSet = true;
-            //foreach (XmlElement sequentialNode in chapterNode.ChildNodes)
-            //{
-            //    foreach (XmlElement verticalNode in sequentialNode.ChildNodes)
-            //    {
-            //        if (verticalNode.GetAttributeNode("vignette_title").Value == "" && verticalNode.GetAttributeNode("vignette_body").Value == "")
-            //        {
-            //            ifItemSet = false;
-            //        }
-            //    }
-            //}
-            //chapterNode.SetAttribute("exam_type", ifItemSet ? "item_set" : "regular");
-            chapterNode.SetAttribute("exam_type", "regular");
 
             return chapterNode;
         }
@@ -130,23 +138,49 @@ namespace ExcelParser
             {
                 var topicRows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.TopicAbbrevation && c.Value.Contains(containerReference)));
 
-                var verticalNode = GetMockExamVerticalNode(xml, fcmNumber, topicRows);
+                var verticalNode = GetMockExamVerticalNode(xml, displayName, fcmNumber, topicRows);
                 sequentialNode.AppendChild(verticalNode);
             }
 
             return sequentialNode;
         }
 
-        private static XmlNode GetMockExamVerticalNode(XmlDocument xml, string fcmNumber, IEnumerable<List<IExcelColumn<MockExamExcelColumnType>>> mockRows)
+        private static XmlNode GetMockExamVerticalNode(XmlDocument xml, string displayName, string fcmNumber, IEnumerable<List<IExcelColumn<MockExamExcelColumnType>>> mockRows)
         {
             string topicName = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicName).Value;
             string topicTaxonId = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicTaxonId).Value;
+            string vignetteTitle = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.VignetteTitle) != null ? 
+                mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.VignetteTitle).Value : "";
+            string vignetteBody = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.VignetteBody) != null ? 
+                mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.VignetteBody).Value : "";
 
             //create vertical node
             var verticalNode = xml.CreateElement("vertical");
             verticalNode.SetAttribute("display_name", topicName);
+            //verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-{0}-vertical-{1}-{2}", index, displayName, topicName), CourseTypes.Mock)); TRIBA PROMINIT
             verticalNode.SetAttribute("study_session_test_id", "");
             verticalNode.SetAttribute("taxon_id", topicTaxonId);
+            verticalNode.SetAttribute("vignette_title", vignetteTitle);
+            verticalNode.SetAttribute("vignette_body", vignetteBody);
+
+            //get which mock exam it is
+            var letter = fcmNumber.Remove(fcmNumber.Length - 3).Last();
+
+            //skip vignette row, if there is any
+            var topicQuestions = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.Question).HaveValue() &&
+                mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.Question) != null ? mockRows : mockRows.Skip(1);
+
+            var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, topicQuestions, new ProblemBuilderNodeSettings
+            {
+                DisplayName = String.Format("Mock exam {0} - {1} questions", letter, displayName),
+                //UrlName = CourseConverterHelper.getGuid(String.Format("mock-{0}-progress-test-{1}-{2}", index, displayName, topicName), CourseTypes.Mock), TRIBA PROMINIT
+                ProblemBuilderNodeElement = "problem-builder-mock-exam",
+                PbMcqNodeElement = "pb-mcq-mock-exam",
+                PbChoiceBlockElement = "pb-choice-mock-exam",
+                PbTipBlockElement = "pb-tip-mock-exam"
+            });
+
+            verticalNode.AppendChild(problemBuilderNode);
 
             return verticalNode;
         }
