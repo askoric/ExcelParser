@@ -19,7 +19,7 @@ namespace ExcelParser
             var practiceMockRows = mockExamsExcel.Rows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.MockType && c.Value.Contains(practiceMockReference)));
             var finalMockRows = mockExamsExcel.Rows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.MockType && c.Value.Contains(finalMockReference)));
 
-            //divide practice mocks
+            //work on practice mocks
             List<String> practiceMockExamContainerReferences = new List<String>();
             var practiceMockExamContainerReferencesValues = practiceMockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.Container1Ref).Value);
             foreach (var practiceMockExamContainerReferencesValue in practiceMockExamContainerReferencesValues)
@@ -82,7 +82,73 @@ namespace ExcelParser
                 }
             }
 
+            //get sequential nodes for AM and PM sections
+            var amSequentialNode = GetMockExamSequantialNode(xml, "AM", amFcmNumber, amRows);
+            var pmSequentialNode = GetMockExamSequantialNode(xml, "PM", pmFcmNumber, pmRows);
+            chapterNode.AppendChild(amSequentialNode);
+            chapterNode.AppendChild(pmSequentialNode);
+
+            //check if mock exam is item_set or regular
+            //bool ifItemSet = true;
+            //foreach (XmlElement sequentialNode in chapterNode.ChildNodes)
+            //{
+            //    foreach (XmlElement verticalNode in sequentialNode.ChildNodes)
+            //    {
+            //        if (verticalNode.GetAttributeNode("vignette_title").Value == "" && verticalNode.GetAttributeNode("vignette_body").Value == "")
+            //        {
+            //            ifItemSet = false;
+            //        }
+            //    }
+            //}
+            //chapterNode.SetAttribute("exam_type", ifItemSet ? "item_set" : "regular");
+            chapterNode.SetAttribute("exam_type", "regular");
+
             return chapterNode;
+        }
+
+        private static XmlNode GetMockExamSequantialNode(XmlDocument xml, string displayName, string fcmNumber, List<List<IExcelColumn<MockExamExcelColumnType>>> mockRows)
+        {
+
+            //create sequential node
+            var pdfAnswers = mockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.PdfAnswers).Value;
+            var pdfQuestions = mockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.PdfQuestions).Value;
+            var sequentialNode = xml.CreateElement("sequential");
+            sequentialNode.SetAttribute("display_name", displayName);
+            //sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-{0}-sequential-{1}-{2}", index, displayName, fcmNumber), CourseTypes.Mock)); TRIBA PROMINIT
+            sequentialNode.SetAttribute("taxon_id", fcmNumber);
+            sequentialNode.SetAttribute("pdf_answers", pdfAnswers);
+            sequentialNode.SetAttribute("pdf_questions", pdfQuestions);
+
+
+            List<String> verticalContainerReferences = new List<String>();
+            var verticalContainerReferencesValues = mockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.TopicAbbrevation).Value);
+            foreach (var verticalContainerReferencesValue in verticalContainerReferencesValues)
+            {
+                verticalContainerReferences.Add(verticalContainerReferencesValue.Key);
+            }
+            foreach (var containerReference in verticalContainerReferences)
+            {
+                var topicRows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.TopicAbbrevation && c.Value.Contains(containerReference)));
+
+                var verticalNode = GetMockExamVerticalNode(xml, fcmNumber, topicRows);
+                sequentialNode.AppendChild(verticalNode);
+            }
+
+            return sequentialNode;
+        }
+
+        private static XmlNode GetMockExamVerticalNode(XmlDocument xml, string fcmNumber, IEnumerable<List<IExcelColumn<MockExamExcelColumnType>>> mockRows)
+        {
+            string topicName = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicName).Value;
+            string topicTaxonId = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicTaxonId).Value;
+
+            //create vertical node
+            var verticalNode = xml.CreateElement("vertical");
+            verticalNode.SetAttribute("display_name", topicName);
+            verticalNode.SetAttribute("study_session_test_id", "");
+            verticalNode.SetAttribute("taxon_id", topicTaxonId);
+
+            return verticalNode;
         }
     }
 }
