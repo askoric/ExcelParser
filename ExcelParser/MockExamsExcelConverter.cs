@@ -35,9 +35,11 @@ namespace ExcelParser
                 if(mockRows.Any())
                 {
                     char index = containerReference.Last();
+                    var mockExamChapterFcmNumber = mockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.FcmNumber).Value;
+                    mockExamChapterFcmNumber = mockExamChapterFcmNumber.Remove(mockExamChapterFcmNumber.Length - 3);
                     var mockExamChapterNode = GetMockExamChapterNode(xml, mockRows);
                     mockExamChapterNode.SetAttribute("display_name", "Mock Examination " + index);
-                    //mockExamChapterNode.SetAttribute("url_name", CourseConverterHelper.getGuid("MockExam" + index + "ChapterNode", CourseTypes.Topic)); TRIBA PROMINIT
+                    mockExamChapterNode.SetAttribute("url_name", CourseConverterHelper.getGuid("MockExamChapterNode " + mockExamChapterFcmNumber, CourseTypes.Topic));
                     mockExamChapterNode.SetAttribute("cfa_type", "mock_exam");
                     mockExamChapterNode = GetMockExamType(mockExamChapterNode);
                     mockExamChapterNode.SetAttribute("cfa_short_name", "Mock Exam " + index);
@@ -49,8 +51,10 @@ namespace ExcelParser
 
             //work on final mock exam
             var finalExamChapterNode = GetMockExamChapterNode(xml, finalMockRows);
+            var finalExamChapterFcmNumber = finalMockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.FcmNumber).Value;
+            finalExamChapterFcmNumber = finalExamChapterFcmNumber.Remove(finalExamChapterFcmNumber.Length - 3);
             finalExamChapterNode.SetAttribute("display_name", "Final Mock Examination");
-            //finalExamChapterNode.SetAttribute("url_name", CourseConverterHelper.getGuid("MockExam" + index + "ChapterNode", CourseTypes.Topic)); TRIBA PROMINIT
+            finalExamChapterNode.SetAttribute("url_name", CourseConverterHelper.getGuid("MockExamChapterNode " + finalExamChapterFcmNumber, CourseTypes.Topic));
             finalExamChapterNode.SetAttribute("cfa_type", "final_mock_exam");
             finalExamChapterNode = GetMockExamType(finalExamChapterNode);
             finalExamChapterNode.SetAttribute("cfa_short_name", "Final Mock Exam");
@@ -122,7 +126,7 @@ namespace ExcelParser
             var pdfQuestions = mockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.PdfQuestions).Value;
             var sequentialNode = xml.CreateElement("sequential");
             sequentialNode.SetAttribute("display_name", displayName);
-            //sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-{0}-sequential-{1}-{2}", index, displayName, fcmNumber), CourseTypes.Mock)); TRIBA PROMINIT
+            sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-sequential-" + fcmNumber), CourseTypes.Mock));
             sequentialNode.SetAttribute("taxon_id", fcmNumber);
             sequentialNode.SetAttribute("pdf_answers", pdfAnswers);
             sequentialNode.SetAttribute("pdf_questions", pdfQuestions);
@@ -138,8 +142,21 @@ namespace ExcelParser
             {
                 var topicRows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.TopicAbbrevation && c.Value.Contains(containerReference)));
 
-                var verticalNode = GetMockExamVerticalNode(xml, displayName, fcmNumber, topicRows);
-                sequentialNode.AppendChild(verticalNode);
+                //divide topic in item sets
+                List<String> container2References = new List<String>();
+                var container2ReferencesValues = topicRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.Container2Ref).Value);
+                foreach (var container2ReferencesValue in container2ReferencesValues)
+                {
+                    container2References.Add(container2ReferencesValue.Key);
+                }
+
+                foreach (var container2Reference in container2References)
+                {
+                    //work on vertical
+                    var container2Rows = topicRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.Container2Ref && c.Value.Contains(container2Reference)));
+                    var verticalNode = GetMockExamVerticalNode(xml, displayName, fcmNumber, container2Rows);
+                    sequentialNode.AppendChild(verticalNode);
+                }
             }
 
             return sequentialNode;
@@ -149,6 +166,10 @@ namespace ExcelParser
         {
             string topicName = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicName).Value;
             string topicTaxonId = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicTaxonId).Value;
+            string container2Title = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.Container2Title) != null ? 
+                mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.Container2Title).Value : "";
+            //if item set title empty leave old vertical display name, if not change it
+            topicName = (container2Title == "") ? topicName : container2Title;
             string vignetteTitle = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.VignetteTitle) != null ? 
                 mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.VignetteTitle).Value : "";
             string vignetteBody = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.VignetteBody) != null ? 
@@ -157,7 +178,7 @@ namespace ExcelParser
             //create vertical node
             var verticalNode = xml.CreateElement("vertical");
             verticalNode.SetAttribute("display_name", topicName);
-            //verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-{0}-vertical-{1}-{2}", index, displayName, topicName), CourseTypes.Mock)); TRIBA PROMINIT
+            verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-vertical-" + fcmNumber + "-" + topicName), CourseTypes.Mock));
             verticalNode.SetAttribute("study_session_test_id", "");
             verticalNode.SetAttribute("taxon_id", topicTaxonId);
             verticalNode.SetAttribute("vignette_title", vignetteTitle);
@@ -173,7 +194,7 @@ namespace ExcelParser
             var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, topicQuestions, new ProblemBuilderNodeSettings
             {
                 DisplayName = String.Format("Mock exam {0} - {1} questions", letter, displayName),
-                //UrlName = CourseConverterHelper.getGuid(String.Format("mock-{0}-progress-test-{1}-{2}", index, displayName, topicName), CourseTypes.Mock), TRIBA PROMINIT
+                UrlName = CourseConverterHelper.getGuid(String.Format("mock-progress-test-" + fcmNumber + "-" + topicName), CourseTypes.Mock),
                 ProblemBuilderNodeElement = "problem-builder-mock-exam",
                 PbMcqNodeElement = "pb-mcq-mock-exam",
                 PbChoiceBlockElement = "pb-choice-mock-exam",
