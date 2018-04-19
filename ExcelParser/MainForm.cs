@@ -168,9 +168,6 @@ namespace ExcelParser
             {
                 var excel = new Excel<MockExamExcelColumn, MockExamExcelColumnType>();
                 MockExamsExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
-                //
-                var num1 = MockExamsExcel.Header.Count();
-                var num2 = Enum.GetNames(typeof(MockExamExcelColumnType)).Length;
                 if ((MockExamsExcel.Header.Count() == Enum.GetNames(typeof(MockExamExcelColumnType)).Length - 1))
                 {
                     uploadMockExamCheckIcon.Visible = true;

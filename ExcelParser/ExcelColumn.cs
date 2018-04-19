@@ -480,14 +480,14 @@ namespace ExcelParser
             {
                 switch (columnName.ToLower().Trim())
                 {
-                    case "topic abbreviation":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.TopicAbbrevation, index);
+                    case "topicref":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.TopicRef, index);
                     case "topicname":
                         return new MockExamExcelColumn(columnName, MockExamExcelColumnType.TopicName, index);
-                    case "fcm_number":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.FcmNumber, index);
                     case "container1_ref":
                         return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Container1Ref, index);
+                    case "positionref":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.PositionRef, index);
                     case "mock_type":
                         return new MockExamExcelColumn(columnName, MockExamExcelColumnType.MockType, index);
                     case "topic_taxon_id":
@@ -502,7 +502,7 @@ namespace ExcelParser
                         return new MockExamExcelColumn(columnName, MockExamExcelColumnType.PdfAnswers, index);
                     case "pdf_questions":
                         return new MockExamExcelColumn(columnName, MockExamExcelColumnType.PdfQuestions, index);
-                    case "q_id":
+                    case "qid":
                         return new MockExamExcelColumn(columnName, MockExamExcelColumnType.QuestionId, index);
                     case "question":
                         return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Question, index);
@@ -531,10 +531,10 @@ namespace ExcelParser
     public enum MockExamExcelColumnType
     {
         Undefined,
-        TopicAbbrevation,
+        TopicRef,
         TopicName,
-        FcmNumber,
         Container1Ref,
+        PositionRef,
         MockType,
         TopicTaxonId,
         Container2Ref,

@@ -14,32 +14,32 @@ namespace ExcelParser
             List<XmlElement> chapterNodes = new List<XmlElement>();
 
             //get practice and final mock exam questions
-            var practiceMockReference = "practice";
-            var finalMockReference = "final";
+            var practiceMockReference = "Practice";
+            var finalMockReference = "Final";
             var practiceMockRows = mockExamsExcel.Rows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.MockType && c.Value.Contains(practiceMockReference)));
             var finalMockRows = mockExamsExcel.Rows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.MockType && c.Value.Contains(finalMockReference)));
 
             //work on practice mocks
-            List<String> practiceMockExamContainerReferences = new List<String>();
-            var practiceMockExamContainerReferencesValues = practiceMockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.Container1Ref).Value);
-            foreach (var practiceMockExamContainerReferencesValue in practiceMockExamContainerReferencesValues)
+            List<String> practiceMockExamPositionReferences = new List<String>();
+            var practiceMockExamPositionReferencesValues = practiceMockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.PositionRef).Value);
+            foreach (var practiceMockExamPositionReferencesValue in practiceMockExamPositionReferencesValues)
             {
-                string containerReferenceValue = practiceMockExamContainerReferencesValue.Key;
+                string containerReferenceValue = practiceMockExamPositionReferencesValue.Key;
                 //remove _AM and _PM from keys
-                practiceMockExamContainerReferences.Add(containerReferenceValue.Remove(containerReferenceValue.Length - 3));
+                practiceMockExamPositionReferences.Add(containerReferenceValue.Remove(containerReferenceValue.Length - 3));
             }
-            practiceMockExamContainerReferences = practiceMockExamContainerReferences.Distinct().ToList();
-            foreach (var containerReference in practiceMockExamContainerReferences)
+            practiceMockExamPositionReferences = practiceMockExamPositionReferences.Distinct().ToList();
+            foreach (var positionReference in practiceMockExamPositionReferences)
             {
-                var mockRows = practiceMockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.Container1Ref && c.Value.Contains(containerReference)));
+                var mockRows = practiceMockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.PositionRef && c.Value.Contains(positionReference)));
                 if(mockRows.Any())
                 {
-                    char index = containerReference.Last();
-                    var mockExamChapterFcmNumber = mockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.FcmNumber).Value;
-                    mockExamChapterFcmNumber = mockExamChapterFcmNumber.Remove(mockExamChapterFcmNumber.Length - 3);
+                    char index = positionReference.Last();
+                    var mockExamChapterContainerRef = mockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.Container1Ref).Value;
+                    mockExamChapterContainerRef = mockExamChapterContainerRef.Remove(mockExamChapterContainerRef.Length - 3);
                     var mockExamChapterNode = GetMockExamChapterNode(xml, mockRows);
                     mockExamChapterNode.SetAttribute("display_name", "Mock Examination " + index);
-                    mockExamChapterNode.SetAttribute("url_name", CourseConverterHelper.getGuid("MockExamChapterNode " + mockExamChapterFcmNumber, CourseTypes.Topic));
+                    mockExamChapterNode.SetAttribute("url_name", CourseConverterHelper.getGuid("MockExamChapterNode " + mockExamChapterContainerRef, CourseTypes.Topic));
                     mockExamChapterNode.SetAttribute("cfa_type", "mock_exam");
                     mockExamChapterNode = GetMockExamType(mockExamChapterNode);
                     mockExamChapterNode.SetAttribute("cfa_short_name", "Mock Exam " + index);
@@ -51,10 +51,10 @@ namespace ExcelParser
 
             //work on final mock exam
             var finalExamChapterNode = GetMockExamChapterNode(xml, finalMockRows);
-            var finalExamChapterFcmNumber = finalMockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.FcmNumber).Value;
-            finalExamChapterFcmNumber = finalExamChapterFcmNumber.Remove(finalExamChapterFcmNumber.Length - 3);
+            var finalExamChapterContainerRef = finalMockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.Container1Ref).Value;
+            finalExamChapterContainerRef = finalExamChapterContainerRef.Remove(finalExamChapterContainerRef.Length - 3);
             finalExamChapterNode.SetAttribute("display_name", "Final Mock Examination");
-            finalExamChapterNode.SetAttribute("url_name", CourseConverterHelper.getGuid("MockExamChapterNode " + finalExamChapterFcmNumber, CourseTypes.Topic));
+            finalExamChapterNode.SetAttribute("url_name", CourseConverterHelper.getGuid("MockExamChapterNode " + finalExamChapterContainerRef, CourseTypes.Topic));
             finalExamChapterNode.SetAttribute("cfa_type", "final_mock_exam");
             finalExamChapterNode = GetMockExamType(finalExamChapterNode);
             finalExamChapterNode.SetAttribute("cfa_short_name", "Final Mock Exam");
@@ -92,33 +92,33 @@ namespace ExcelParser
             //divide between AM and PM
             var amRows = new List<List<IExcelColumn<MockExamExcelColumnType>>>();
             var pmRows = new List<List<IExcelColumn<MockExamExcelColumnType>>>();
-            string amFcmNumber = "";
-            string pmFcmNumber = "";
+            string amContainerRef = "";
+            string pmContainerRef = "";
             foreach (var row in mockRows)
             {
-                var fcmNumber = row.FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.FcmNumber).Value;
-                if (fcmNumber.Contains("_AM"))
+                var seqContainerRef = row.FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.Container1Ref).Value;
+                if (seqContainerRef.Contains("_AM"))
                 {
                     amRows.Add(row);
-                    amFcmNumber = fcmNumber;
+                    amContainerRef = seqContainerRef;
                 }
-                else if (fcmNumber.Contains("_PM"))
+                else if (seqContainerRef.Contains("_PM"))
                 {
                     pmRows.Add(row);
-                    pmFcmNumber = fcmNumber;
+                    pmContainerRef = seqContainerRef;
                 }
             }
 
             //get sequential nodes for AM and PM sections
-            var amSequentialNode = GetMockExamSequantialNode(xml, "AM", amFcmNumber, amRows);
-            var pmSequentialNode = GetMockExamSequantialNode(xml, "PM", pmFcmNumber, pmRows);
+            var amSequentialNode = GetMockExamSequantialNode(xml, "AM", amContainerRef, amRows);
+            var pmSequentialNode = GetMockExamSequantialNode(xml, "PM", pmContainerRef, pmRows);
             chapterNode.AppendChild(amSequentialNode);
             chapterNode.AppendChild(pmSequentialNode);
 
             return chapterNode;
         }
 
-        private static XmlNode GetMockExamSequantialNode(XmlDocument xml, string displayName, string fcmNumber, List<List<IExcelColumn<MockExamExcelColumnType>>> mockRows)
+        private static XmlNode GetMockExamSequantialNode(XmlDocument xml, string displayName, string seqContainerRef, List<List<IExcelColumn<MockExamExcelColumnType>>> mockRows)
         {
 
             //create sequential node
@@ -126,21 +126,21 @@ namespace ExcelParser
             var pdfQuestions = mockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.PdfQuestions).Value;
             var sequentialNode = xml.CreateElement("sequential");
             sequentialNode.SetAttribute("display_name", displayName);
-            sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-sequential-{0}", fcmNumber), CourseTypes.Mock));
-            sequentialNode.SetAttribute("taxon_id", fcmNumber);
+            sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-sequential-{0}", seqContainerRef), CourseTypes.Mock));
+            sequentialNode.SetAttribute("taxon_id", seqContainerRef);
             sequentialNode.SetAttribute("pdf_answers", pdfAnswers);
             sequentialNode.SetAttribute("pdf_questions", pdfQuestions);
 
             //divide by topics
             List<String> verticalContainerReferences = new List<String>();
-            var verticalContainerReferencesValues = mockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.TopicAbbrevation).Value);
+            var verticalContainerReferencesValues = mockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.TopicRef).Value);
             foreach (var verticalContainerReferencesValue in verticalContainerReferencesValues)
             {
                 verticalContainerReferences.Add(verticalContainerReferencesValue.Key);
             }
             foreach (var containerReference in verticalContainerReferences)
             {
-                var topicRows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.TopicAbbrevation && c.Value.Contains(containerReference)));
+                var topicRows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.TopicRef && c.Value.Contains(containerReference)));
 
                 //divide topic in item sets
                 List<String> container2References = new List<String>();
@@ -158,14 +158,14 @@ namespace ExcelParser
                     {
                         //work on vertical
                         var container2Rows = topicRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.Container2Ref && c.Value.Contains(container2Reference)));
-                        var verticalNode = GetMockExamVerticalNode(xml, fcmNumber, container2Rows);
+                        var verticalNode = GetMockExamVerticalNode(xml, seqContainerRef, container2Rows);
                         sequentialNode.AppendChild(verticalNode);
                     }
                 }
                 else
                 {
                     //work on vertical
-                    var verticalNode = GetMockExamVerticalNode(xml, fcmNumber, topicRows);
+                    var verticalNode = GetMockExamVerticalNode(xml, seqContainerRef, topicRows);
                     sequentialNode.AppendChild(verticalNode);
                 }
             }
@@ -173,7 +173,7 @@ namespace ExcelParser
             return sequentialNode;
         }
 
-        private static XmlNode GetMockExamVerticalNode(XmlDocument xml, string fcmNumber, IEnumerable<List<IExcelColumn<MockExamExcelColumnType>>> mockRows)
+        private static XmlNode GetMockExamVerticalNode(XmlDocument xml, string seqContainerRef, IEnumerable<List<IExcelColumn<MockExamExcelColumnType>>> mockRows)
         {
             string topicName = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicName).Value;
             string topicTaxonId = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicTaxonId).Value;
@@ -189,7 +189,7 @@ namespace ExcelParser
             //create vertical node
             var verticalNode = xml.CreateElement("vertical");
             verticalNode.SetAttribute("display_name", topicName);
-            verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-vertical-{0}-{1}", fcmNumber, topicName), CourseTypes.Mock));
+            verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-vertical-{0}-{1}", seqContainerRef, topicName), CourseTypes.Mock));
             verticalNode.SetAttribute("study_session_test_id", "");
             verticalNode.SetAttribute("taxon_id", topicTaxonId);
             verticalNode.SetAttribute("vignette_title", vignetteTitle);
@@ -201,8 +201,8 @@ namespace ExcelParser
 
             var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, topicQuestions, new ProblemBuilderNodeSettings
             {
-                DisplayName = String.Format("Mock exam questions - {0} - {1}", fcmNumber, topicName),
-                UrlName = CourseConverterHelper.getGuid(String.Format("mock-progress-test-{0}-{1}", fcmNumber, topicName), CourseTypes.Mock),
+                DisplayName = String.Format("Mock exam questions - {0} - {1}", seqContainerRef, topicName),
+                UrlName = CourseConverterHelper.getGuid(String.Format("mock-progress-test-{0}-{1}", seqContainerRef, topicName), CourseTypes.Mock),
                 ProblemBuilderNodeElement = "problem-builder-mock-exam",
                 PbMcqNodeElement = "pb-mcq-mock-exam",
                 PbChoiceBlockElement = "pb-choice-mock-exam",
