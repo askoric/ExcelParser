@@ -131,7 +131,7 @@ namespace ExcelParser
             sequentialNode.SetAttribute("pdf_answers", pdfAnswers);
             sequentialNode.SetAttribute("pdf_questions", pdfQuestions);
 
-
+            //divide by topics
             List<String> verticalContainerReferences = new List<String>();
             var verticalContainerReferencesValues = mockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.TopicAbbrevation).Value);
             foreach (var verticalContainerReferencesValue in verticalContainerReferencesValues)
@@ -144,17 +144,28 @@ namespace ExcelParser
 
                 //divide topic in item sets
                 List<String> container2References = new List<String>();
-                var container2ReferencesValues = topicRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.Container2Ref).Value);
-                foreach (var container2ReferencesValue in container2ReferencesValues)
+                //check if topic needs to be divided to item sets
+                var container2RefKey = topicRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.Container2Ref).Value;
+                if (container2RefKey != null)
                 {
-                    container2References.Add(container2ReferencesValue.Key);
-                }
+                    var container2ReferencesValues = topicRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.Container2Ref).Value);
+                    foreach (var container2ReferencesValue in container2ReferencesValues)
+                    {
+                        container2References.Add(container2ReferencesValue.Key);
+                    }
 
-                foreach (var container2Reference in container2References)
+                    foreach (var container2Reference in container2References)
+                    {
+                        //work on vertical
+                        var container2Rows = topicRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.Container2Ref && c.Value.Contains(container2Reference)));
+                        var verticalNode = GetMockExamVerticalNode(xml, fcmNumber, container2Rows);
+                        sequentialNode.AppendChild(verticalNode);
+                    }
+                }
+                else
                 {
                     //work on vertical
-                    var container2Rows = topicRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.Container2Ref && c.Value.Contains(container2Reference)));
-                    var verticalNode = GetMockExamVerticalNode(xml, fcmNumber, container2Rows);
+                    var verticalNode = GetMockExamVerticalNode(xml, fcmNumber, topicRows);
                     sequentialNode.AppendChild(verticalNode);
                 }
             }
@@ -166,13 +177,13 @@ namespace ExcelParser
         {
             string topicName = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicName).Value;
             string topicTaxonId = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicTaxonId).Value;
-            string container2Title = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.Container2Title) != null ? 
+            string container2Title = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.Container2Title).Value != null ? 
                 mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.Container2Title).Value : "";
             //if item set title empty leave old vertical display name, if not change it
             topicName = (container2Title == "") ? topicName : container2Title;
-            string vignetteTitle = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.VignetteTitle) != null ? 
+            string vignetteTitle = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.VignetteTitle).Value != null ? 
                 mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.VignetteTitle).Value : "";
-            string vignetteBody = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.VignetteBody) != null ? 
+            string vignetteBody = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.VignetteBody).Value != null ? 
                 mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.VignetteBody).Value : "";
 
             //create vertical node
@@ -186,7 +197,7 @@ namespace ExcelParser
 
             //skip vignette row, if there is any
             var topicQuestions = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.Question).HaveValue() &&
-                mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.Question) != null ? mockRows : mockRows.Skip(1);
+                mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.Question).Value != null ? mockRows : mockRows.Skip(1);
 
             var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, topicQuestions, new ProblemBuilderNodeSettings
             {
