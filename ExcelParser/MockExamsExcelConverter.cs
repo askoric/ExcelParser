@@ -126,7 +126,7 @@ namespace ExcelParser
             var pdfQuestions = mockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.PdfQuestions).Value;
             var sequentialNode = xml.CreateElement("sequential");
             sequentialNode.SetAttribute("display_name", displayName);
-            sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-sequential-" + fcmNumber), CourseTypes.Mock));
+            sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-sequential-{0}", fcmNumber), CourseTypes.Mock));
             sequentialNode.SetAttribute("taxon_id", fcmNumber);
             sequentialNode.SetAttribute("pdf_answers", pdfAnswers);
             sequentialNode.SetAttribute("pdf_questions", pdfQuestions);
@@ -154,7 +154,7 @@ namespace ExcelParser
                 {
                     //work on vertical
                     var container2Rows = topicRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.Container2Ref && c.Value.Contains(container2Reference)));
-                    var verticalNode = GetMockExamVerticalNode(xml, displayName, fcmNumber, container2Rows);
+                    var verticalNode = GetMockExamVerticalNode(xml, fcmNumber, container2Rows);
                     sequentialNode.AppendChild(verticalNode);
                 }
             }
@@ -162,7 +162,7 @@ namespace ExcelParser
             return sequentialNode;
         }
 
-        private static XmlNode GetMockExamVerticalNode(XmlDocument xml, string displayName, string fcmNumber, IEnumerable<List<IExcelColumn<MockExamExcelColumnType>>> mockRows)
+        private static XmlNode GetMockExamVerticalNode(XmlDocument xml, string fcmNumber, IEnumerable<List<IExcelColumn<MockExamExcelColumnType>>> mockRows)
         {
             string topicName = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicName).Value;
             string topicTaxonId = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicTaxonId).Value;
@@ -178,14 +178,11 @@ namespace ExcelParser
             //create vertical node
             var verticalNode = xml.CreateElement("vertical");
             verticalNode.SetAttribute("display_name", topicName);
-            verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-vertical-" + fcmNumber + "-" + topicName), CourseTypes.Mock));
+            verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-vertical-{0}-{1}", fcmNumber, topicName), CourseTypes.Mock));
             verticalNode.SetAttribute("study_session_test_id", "");
             verticalNode.SetAttribute("taxon_id", topicTaxonId);
             verticalNode.SetAttribute("vignette_title", vignetteTitle);
             verticalNode.SetAttribute("vignette_body", vignetteBody);
-
-            //get which mock exam it is
-            var letter = fcmNumber.Remove(fcmNumber.Length - 3).Last();
 
             //skip vignette row, if there is any
             var topicQuestions = mockRows.First().FirstOrDefault(c => c.Type == MockExamExcelColumnType.Question).HaveValue() &&
@@ -193,8 +190,8 @@ namespace ExcelParser
 
             var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, topicQuestions, new ProblemBuilderNodeSettings
             {
-                DisplayName = String.Format("Mock exam {0} - {1} questions", letter, displayName),
-                UrlName = CourseConverterHelper.getGuid(String.Format("mock-progress-test-" + fcmNumber + "-" + topicName), CourseTypes.Mock),
+                DisplayName = String.Format("Mock exam questions - {0} - {1}", fcmNumber, topicName),
+                UrlName = CourseConverterHelper.getGuid(String.Format("mock-progress-test-{0}-{1}", fcmNumber, topicName), CourseTypes.Mock),
                 ProblemBuilderNodeElement = "problem-builder-mock-exam",
                 PbMcqNodeElement = "pb-mcq-mock-exam",
                 PbChoiceBlockElement = "pb-choice-mock-exam",
