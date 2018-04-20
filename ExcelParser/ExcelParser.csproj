@@ -101,7 +101,6 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="FinalMockExamExcelConverter.cs" />
     <Compile Include="MockExamsExcelConverter.cs" />
     <Compile Include="ProblemBuilderNodeGenerator.cs" />
     <Compile Include="Program.cs" />
