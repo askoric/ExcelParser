@@ -22,7 +22,7 @@ namespace ExcelParser
 				return value;
 			}
 
-			return value.Replace( "", "<br>" ).Replace( "/n", "<br>" );
+			return value.Replace( "", "<br>" );
 		}
 	}
 }
