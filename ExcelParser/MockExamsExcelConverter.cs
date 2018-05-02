@@ -131,40 +131,39 @@ namespace ExcelParser
             sequentialNode.SetAttribute("pdf_answers", pdfAnswers);
             sequentialNode.SetAttribute("pdf_questions", pdfQuestions);
 
-            //divide by topics
+
+            //divide by item sets or topics
+            List<String> container2References = new List<String>();
             List<String> verticalContainerReferences = new List<String>();
-            var verticalContainerReferencesValues = mockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.TopicRef).Value);
-            foreach (var verticalContainerReferencesValue in verticalContainerReferencesValues)
+            //check if topic needs to be divided to item sets
+            var container2RefKey = mockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.Container2Ref).Value;
+            if (container2RefKey != null)
             {
-                verticalContainerReferences.Add(verticalContainerReferencesValue.Key);
-            }
-            foreach (var containerReference in verticalContainerReferences)
-            {
-                var topicRows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.TopicRef && c.Value.Contains(containerReference)));
-
-                //divide topic in item sets
-                List<String> container2References = new List<String>();
-                //check if topic needs to be divided to item sets
-                var container2RefKey = topicRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.Container2Ref).Value;
-                if (container2RefKey != null)
+                var container2ReferencesValues = mockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.Container2Ref).Value);
+                foreach (var container2ReferencesValue in container2ReferencesValues)
                 {
-                    var container2ReferencesValues = topicRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.Container2Ref).Value);
-                    foreach (var container2ReferencesValue in container2ReferencesValues)
-                    {
-                        container2References.Add(container2ReferencesValue.Key);
-                    }
-
-                    foreach (var container2Reference in container2References)
-                    {
-                        //work on vertical
-                        var container2Rows = topicRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.Container2Ref && c.Value.Contains(container2Reference)));
-                        var verticalNode = GetMockExamVerticalNode(xml, seqContainerRef, container2Rows);
-                        sequentialNode.AppendChild(verticalNode);
-                    }
+                    container2References.Add(container2ReferencesValue.Key);
                 }
-                else
+
+                foreach (var container2Reference in container2References)
                 {
                     //work on vertical
+                    var container2Rows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.Container2Ref && c.Value.Contains(container2Reference)));
+                    var verticalNode = GetMockExamVerticalNode(xml, seqContainerRef, container2Rows);
+                    sequentialNode.AppendChild(verticalNode);
+                }
+            }
+            else
+            {
+                var verticalContainerReferencesValues = mockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.TopicRef).Value);
+                foreach (var verticalContainerReferencesValue in verticalContainerReferencesValues)
+                {
+                    verticalContainerReferences.Add(verticalContainerReferencesValue.Key);
+                }
+                foreach (var containerReference in verticalContainerReferences)
+                {
+                    //work on vertical
+                    var topicRows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.TopicRef && c.Value.Contains(containerReference)));
                     var verticalNode = GetMockExamVerticalNode(xml, seqContainerRef, topicRows);
                     sequentialNode.AppendChild(verticalNode);
                 }
