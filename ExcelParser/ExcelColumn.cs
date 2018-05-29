@@ -498,6 +498,8 @@ namespace ExcelParser
                         return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Container2Type, index);
                     case "container2_title":
                         return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Container2Title, index);
+                    case "container2_max_points":
+                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Container2MaxPoints, index);
                     case "pdf_answers":
                         return new MockExamExcelColumn(columnName, MockExamExcelColumnType.PdfAnswers, index);
                     case "pdf_questions":
@@ -540,6 +542,7 @@ namespace ExcelParser
         Container2Ref,
         Container2Type,
         Container2Title,
+        Container2MaxPoints,
         PdfAnswers, 
         PdfQuestions, 
         QuestionId,

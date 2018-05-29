@@ -80,6 +80,20 @@ namespace ExcelParser
             }
             chapterNode.SetAttribute("exam_type", ifItemSet ? "item_set" : "regular");
 
+            bool ifEssay = false;
+            foreach (XmlElement sequentialNode in chapterNode.ChildNodes)
+            {
+                if (sequentialNode.GetAttributeNode("cfa_type").Value == "essay")
+                {
+                    ifEssay = true;
+                }
+            }
+
+            if (ifEssay)
+            {
+                chapterNode.SetAttribute("exam_type", "essay");
+            }
+
             return chapterNode;
         }
 
@@ -130,42 +144,84 @@ namespace ExcelParser
             sequentialNode.SetAttribute("taxon_id", seqContainerRef);
             sequentialNode.SetAttribute("pdf_answers", pdfAnswers);
             sequentialNode.SetAttribute("pdf_questions", pdfQuestions);
+            sequentialNode.SetAttribute("cfa_type", "");
 
+            //get essays and questions
+            var essayRows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.Container2Type && c.Value.Contains("Essay")));
+            var questionRows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.Container2Type && c.Value.Contains("Item Set")));
 
-            //divide by item sets or topics
-            List<String> container2References = new List<String>();
-            List<String> verticalContainerReferences = new List<String>();
-            //check if topic needs to be divided to item sets
-            var container2RefKey = mockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.Container2Ref).Value;
-            if (container2RefKey != null)
+            if (!questionRows.Any() && !essayRows.Any())
             {
-                var container2ReferencesValues = mockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.Container2Ref).Value);
-                foreach (var container2ReferencesValue in container2ReferencesValues)
-                {
-                    container2References.Add(container2ReferencesValue.Key);
-                }
+                questionRows = mockRows;
+            }
 
-                foreach (var container2Reference in container2References)
+            //work on questions
+            if (questionRows.Any())
+            {
+                //divide by item sets or topics
+                List<String> container2References = new List<String>();
+                List<String> verticalContainerReferences = new List<String>();
+                //check if topic needs to be divided to item sets
+                var container2RefKey = mockRows.First().FirstOrDefault(tn => tn.Type == MockExamExcelColumnType.Container2Ref).Value;
+                if (container2RefKey != null)
                 {
-                    //work on vertical
-                    var container2Rows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.Container2Ref && c.Value.Contains(container2Reference)));
-                    var verticalNode = GetMockExamVerticalNode(xml, seqContainerRef, container2Rows);
-                    sequentialNode.AppendChild(verticalNode);
+                    var container2ReferencesValues = mockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.Container2Ref).Value);
+                    foreach (var container2ReferencesValue in container2ReferencesValues)
+                    {
+                        container2References.Add(container2ReferencesValue.Key);
+                    }
+
+                    foreach (var container2Reference in container2References)
+                    {
+                        //work on vertical
+                        var container2Rows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.Container2Ref && c.Value.Contains(container2Reference)));
+                        var verticalNode = GetMockExamVerticalNode(xml, seqContainerRef, container2Rows);
+                        sequentialNode.AppendChild(verticalNode);
+                    }
+                }
+                else
+                {
+                    var verticalContainerReferencesValues = mockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.TopicRef).Value);
+                    foreach (var verticalContainerReferencesValue in verticalContainerReferencesValues)
+                    {
+                        verticalContainerReferences.Add(verticalContainerReferencesValue.Key);
+                    }
+                    foreach (var containerReference in verticalContainerReferences)
+                    {
+                        //work on vertical
+                        var topicRows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.TopicRef && c.Value.Contains(containerReference)));
+                        var verticalNode = GetMockExamVerticalNode(xml, seqContainerRef, topicRows);
+                        sequentialNode.AppendChild(verticalNode);
+                    }
                 }
             }
-            else
+
+            //work on essays
+            if (essayRows.Any())
             {
-                var verticalContainerReferencesValues = mockRows.GroupBy(r => r.First(tn => tn.Type == MockExamExcelColumnType.TopicRef).Value);
-                foreach (var verticalContainerReferencesValue in verticalContainerReferencesValues)
+                sequentialNode.SetAttribute("cfa_type", "essay");
+
+                foreach (var row in essayRows)
                 {
-                    verticalContainerReferences.Add(verticalContainerReferencesValue.Key);
-                }
-                foreach (var containerReference in verticalContainerReferences)
-                {
-                    //work on vertical
-                    var topicRows = mockRows.Where(r => r.Any(c => c.Type == MockExamExcelColumnType.TopicRef && c.Value.Contains(containerReference)));
-                    var verticalNode = GetMockExamVerticalNode(xml, seqContainerRef, topicRows);
+                    string topicTaxonId = row.FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicTaxonId).Value;
+                    string container2Title = row.FirstOrDefault(c => c.Type == MockExamExcelColumnType.Container2Title).Value != null ?
+                        row.FirstOrDefault(c => c.Type == MockExamExcelColumnType.Container2Title).Value : "";
+                    string essayMaxPoints = row.FirstOrDefault(c => c.Type == MockExamExcelColumnType.Container2MaxPoints).Value;
+                    string essayTopics = row.FirstOrDefault(c => c.Type == MockExamExcelColumnType.TopicRef).Value;
+
+                    var verticalNode = xml.CreateElement("vertical");
+                    verticalNode.SetAttribute("cfa_type", "essay");
+                    verticalNode.SetAttribute("taxon_id", topicTaxonId);
+                    verticalNode.SetAttribute("display_name", container2Title);
+                    verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("mock-vertical-{0}-{1}", seqContainerRef, container2Title), CourseTypes.Mock));
+                    verticalNode.SetAttribute("essay_max_points", essayMaxPoints);
+                    verticalNode.SetAttribute("study_session_test_id", "");
+                    verticalNode.SetAttribute("vignette_title", "");
+                    verticalNode.SetAttribute("vignette_body", "");
+                    verticalNode.SetAttribute("item_set_sessions", essayTopics);
+
                     sequentialNode.AppendChild(verticalNode);
+
                 }
             }
 
