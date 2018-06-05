@@ -67,7 +67,7 @@ namespace ExcelParser
             string previousStudySessionLocked = "";
 			string locked = "";
 
-			foreach ( var row in mainStructureExcel.Rows ) {
+            foreach ( var row in mainStructureExcel.Rows ) {
 
 				var structureTokens = row.First( c => c.Type == MainStructureColumnType.Structure ).Value.Split( '|' );
 
@@ -177,15 +177,18 @@ namespace ExcelParser
 				if ( !skip ) {
 					var readingColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Reading );
 					var readingIdColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ReadingId );
-					verticalNode = xml.CreateElement( "vertical" );
+                    var readingLockedColumn = row.FirstOrDefault(c => c.Type == MainStructureColumnType.Locked);
+                    var readingLocked = readingLockedColumn != null && readingLockedColumn.HaveValue() ? readingLockedColumn.Value : "";
+                    verticalNode = xml.CreateElement( "vertical" );
 					verticalNode.SetAttribute( "display_name", readingNameColumn != null && readingNameColumn.HaveValue() ? readingNameColumn.Value : "" );
 					verticalNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( readingIdColumn.Value, CourseTypes.Reading ) );
 					verticalNode.SetAttribute( "cfa_short_name", readingColumn != null && readingColumn.HaveValue() ? readingColumn.Value : "" );
 					verticalNode.SetAttribute( "downloads", JsonConvert.SerializeObject( downloads ) );
 					verticalNode.SetAttribute( "taxon_id", String.Join( "|", structureTokens.Take( 4 ) ) );
 					verticalNode.SetAttribute( "proficiency_target", "70" );
+                    verticalNode.SetAttribute("locked", readingLocked);
 
-					if ( losExcel != null ) {
+                    if ( losExcel != null ) {
 						var outcomes = new List<object>();
 
 						var losRows = losExcel.Rows.Where( r =>
@@ -447,6 +450,8 @@ namespace ExcelParser
             courseNode.AppendChild(AddRevisionTopic(xml));
             courseNode.AppendChild(AddFinalExamTopic(xml));
 
+            LockStudySessionsTopic(courseNode);
+
             XmlElement wikiNode = xml.CreateElement( "wiki" );
 			wikiNode.SetAttribute( "slug", "sf1.sf1.sf1");
 			courseNode.AppendChild( wikiNode );
@@ -666,6 +671,62 @@ namespace ExcelParser
                 Locked = "no"
             });
             return finalExamTopicNode;
+        }
+
+        public XmlElement LockStudySessionsTopic(XmlElement courseNode)
+        {
+            foreach (XmlElement chapterNode in courseNode.ChildNodes)
+            {
+                if (chapterNode.GetAttribute("cfa_type") == "selected" || chapterNode.GetAttribute("cfa_type") == "topic")
+                {
+                    bool chapterNodeLocked = true;
+                    foreach (XmlElement ssNode in chapterNode.ChildNodes)
+                    {
+                        if (ssNode.GetAttribute("cfa_type") != "topic_workshop" && ssNode.GetAttribute("cfa_type") != "course_workshop")
+                        {
+                            bool ssNodeLocked = true;
+                            foreach (XmlElement readingNode in ssNode.ChildNodes)
+                            {
+                                if (readingNode.GetAttribute("cfa_type") != "test")
+                                {
+                                    if (readingNode.GetAttribute("locked") == "no")
+                                    {
+                                        ssNodeLocked = false;
+                                    }
+                                }
+                                else
+                                {
+                                    readingNode.SetAttribute("locked", "no");
+                                }
+                            }
+
+                            if (ssNodeLocked)
+                            {
+                                ssNode.SetAttribute("locked", "yes");
+                            }
+                            else
+                            {
+                                ssNode.SetAttribute("locked", "no");
+                                chapterNodeLocked = false;
+                            }
+                        }
+                        else
+                        {
+                            ssNode.SetAttribute("locked", "no");
+                        }
+                    }
+
+                    if (chapterNodeLocked)
+                    {
+                        chapterNode.SetAttribute("locked", "yes");
+                    }
+                    else
+                    {
+                        chapterNode.SetAttribute("locked", "no");
+                    }
+                }
+            }
+            return courseNode;
         }
     }
 }
