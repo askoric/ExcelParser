@@ -73,12 +73,13 @@ namespace ExcelParser
             }
 
             chapterNode.SetAttribute("exam_type", ifItemSet ? "item_set" : "regular");
-            chapterNode.SetAttribute("test_duration", ifItemSet ? "01:48" : "02:00");
+            chapterNode.SetAttribute("test_duration", "02:00");
 
 
             if (essayRows.Any())
             {
                 chapterNode.SetAttribute("exam_type", "essay");
+                chapterNode.SetAttribute("test_duration", "01:00");
 
                 string essaysPdfQuestions = essayRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.EssaysPdfQuestions).Value;
                 string essaysPdfAnswers = essayRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.EssaysPdfAnswers).Value;
