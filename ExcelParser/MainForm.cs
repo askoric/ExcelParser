@@ -83,7 +83,7 @@ namespace ExcelParser
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
 				var excel = new Excel<QuestionExcelColumn, QuestionExcelColumnType>();
 				QuestionsExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-				if ( QuestionsExcel.Header.Count() == Enum.GetNames( typeof( QuestionExcelColumnType ) ).Length - 1 ) {
+                if ( QuestionsExcel.Header.Count() == Enum.GetNames( typeof( QuestionExcelColumnType ) ).Length - 4 ) {
 					QuestionExcelCheckImg.Visible = true;
 				}
 				else {
@@ -134,7 +134,7 @@ namespace ExcelParser
 				var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
 				SsTestExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
                 // -14 there is no FcmNumber and TopicTaxonId and PdfAnswers/Questions and workshop stuff(9) and essays(4)
-                if ( SsTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 18 ) {
+                if ( SsTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 25 ) {
 					UploadSsTestCheckImage.Visible = true;
 				}
 				else {
@@ -151,7 +151,7 @@ namespace ExcelParser
 				var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
 				ProgressTestExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
                 //-5 fcmNumber and ContainerRef and PdfAnswers/Questions and essays(2)
-                if ((ProgressTestExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 5) || (ProgressTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 8) || ProgressTestExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 19 ) {
+                if ((ProgressTestExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 5) || (ProgressTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 8) || ProgressTestExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 18 ) {
 					uploadProgressTestCheckIcon.Visible = true;
 				}
 				else {
