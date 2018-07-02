@@ -552,6 +552,7 @@ namespace ExcelParser
                                 string topicTaxonId = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicTaxonId).Value;
                                 string itemSetStudySessions = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.Session).Value;
                                 string itemSetPdf = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetPdf).Value;
+                                string itemSetAnswerVideo = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.AnswerVideo).Value;
 
                                 var verticalNode = xml.CreateElement("vertical");
                                 verticalNode.SetAttribute("item_set_id", itemSetReferenceValue);
@@ -559,16 +560,16 @@ namespace ExcelParser
                                 verticalNode.SetAttribute("taxon_id", topicTaxonId);
                                 verticalNode.SetAttribute("item_set_sessions", itemSetStudySessions);
                                 verticalNode.SetAttribute("item_set_pdf", itemSetPdf);
+                                verticalNode.SetAttribute("item_set_video", itemSetAnswerVideo);
+
 
                                 if (itemSetType == "Item Set")
                                 {
-                                    string itemSetAnswerVideo = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.AnswerVideo).Value;
                                     string vignetteTitle = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteTitle).Value;
                                     string vignetteBody = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteBody).Value;
                                 
                                     verticalNode.SetAttribute("cfa_type", "item_set");
                                     verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(itemSetReferenceValue, CourseTypes.ItemSet));
-                                    verticalNode.SetAttribute("item_set_video", itemSetAnswerVideo);
                                     verticalNode.SetAttribute("vignette_title", vignetteTitle);
                                     verticalNode.SetAttribute("vignette_body", vignetteBody);
 
