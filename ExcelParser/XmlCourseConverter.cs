@@ -39,7 +39,7 @@ namespace ExcelParser
 
             XmlElement courseNode = xml.CreateElement( "course" );
 			courseNode.SetAttribute( "advanced_modules", "[&quot;annotatable&quot;, &quot;videoalpha&quot;, &quot;openassessment&quot;, &quot;container&quot;, &quot;problem-builder-block&quot;, &quot;problem-builder-progress-test&quot;, &quot;problem-builder-mock-exam&quot;, &quot;textualatom&quot;]");
-			courseNode.SetAttribute( "display_name", "CFA level 2 - version 81");
+			courseNode.SetAttribute( "display_name", "CFA Course Default name");
 			courseNode.SetAttribute( "language", "en" );
 			courseNode.SetAttribute( "start", "&quot;2016-01-01T00:00:00+00:00&quot;" );
 			courseNode.SetAttribute( "org", "s" );

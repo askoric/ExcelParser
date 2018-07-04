@@ -81,11 +81,6 @@ namespace ExcelParser
             return GetAnswerNode(xml, answerColumn != null && answerColumn.HaveValue() ? answerColumn.Value : "", questionId, addMissingValue, elementName);
         }
 
-        public static XmlElement GetAnswerNode(XmlDocument xml, IExcelColumn<TestExcelColumnType> answerColumn, string questionId, bool addMissingValue = false, string elementName = "pb-choice-block")
-        {
-            return GetAnswerNode(xml, answerColumn != null && answerColumn.HaveValue() ? answerColumn.Value : "", questionId, addMissingValue, elementName);
-        }
-
         public static XmlElement GetAnswerNode(XmlDocument xml, IExcelColumn<ExamExcelColumnType> answerColumn, string questionId, bool addMissingValue = false, string elementName = "pb-choice-block")
         {
             return GetAnswerNode(xml, answerColumn != null && answerColumn.HaveValue() ? answerColumn.Value : "", questionId, addMissingValue, elementName);
