@@ -21,7 +21,7 @@ namespace ExcelParser
 		private Excel<QuestionExcelColumn, QuestionExcelColumnType> QuestionsExcel { get; set; }
 		private Excel<LosExcelColumn, LosExcelColumnType> LosExcel { get; set; }
 		private Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> AcceptanceCriteriaExcel { get; set; }
-		private Excel<TestExcelColumn, TestExcelColumnType> SsTestExcel { get; set; }
+		private Excel<ExamExcelColumn, ExamExcelColumnType> SsTestExcel { get; set; }
 		private Excel<ExamExcelColumn, ExamExcelColumnType> ProgressTestExcel { get; set; }
 		private Excel<ExamExcelColumn, ExamExcelColumnType> MockExamsExcel { get; set; }
         private Excel<TestExcelColumn, TestExcelColumnType> TopicWorkshopExcel { get; set; }
@@ -131,15 +131,14 @@ namespace ExcelParser
 		private void UploadSSTestsExcel_Click( object sender, EventArgs e )
 		{
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
-				var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
+				var excel = new Excel<ExamExcelColumn, ExamExcelColumnType>();
 				SsTestExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-                // -14 there is no FcmNumber and TopicTaxonId and PdfAnswers/Questions and workshop stuff(9) and essays(4)
-                if ( SsTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 25 ) {
+                if ( SsTestExcel.Header.Count() == Enum.GetNames( typeof(ExamExcelColumnType) ).Length - 14 ) {
 					UploadSsTestCheckImage.Visible = true;
 				}
 				else {
 					UploadSsTestCheckImage.Visible = false;
-					MessageBox.Show( "Invalid excel. Excel does not have all required columns: StudySessionId, KStructure, QuestionId, Question, QuestionType, Answer1, Answer2, Answer3, Answer4, AnswerImageUrl, Correct, QuestionImageUrl, Justification" );
+					MessageBox.Show( "Invalid excel. Excel does not have all required columns!" );
 					SsTestExcel = null;
 				}
 			}
@@ -150,7 +149,7 @@ namespace ExcelParser
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
 				var excel = new Excel<ExamExcelColumn, ExamExcelColumnType>();
 				ProgressTestExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-                if ((ProgressTestExcel.Header.Count() == Enum.GetNames(typeof(ExamExcelColumnType)).Length - 3)) {
+                if ((ProgressTestExcel.Header.Count() == Enum.GetNames(typeof(ExamExcelColumnType)).Length - 5)) {
 					uploadProgressTestCheckIcon.Visible = true;
 				}
 				else {
@@ -167,7 +166,7 @@ namespace ExcelParser
             {
                 var excel = new Excel<ExamExcelColumn, ExamExcelColumnType>();
                 MockExamsExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
-                if ((MockExamsExcel.Header.Count() == Enum.GetNames(typeof(ExamExcelColumnType)).Length - 1))
+                if ((MockExamsExcel.Header.Count() == Enum.GetNames(typeof(ExamExcelColumnType)).Length - 3))
                 {
                     uploadMockExamCheckIcon.Visible = true;
                 }

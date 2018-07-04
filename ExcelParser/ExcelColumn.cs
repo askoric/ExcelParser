@@ -476,6 +476,10 @@ namespace ExcelParser
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.TopicRef, index);
                     case "topicname":
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.TopicName, index);
+                    case "sessionnum":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.SessionName, index);
+                    case "sessionref":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.SessionRef, index);
                     case "containerref_1":
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerRef1, index);
                     case "containerposition_1":
@@ -529,6 +533,8 @@ namespace ExcelParser
         Undefined,
         TopicRef,
         TopicName,
+        SessionName,
+        SessionRef,
         ContainerRef1,
         ContainerPosition1,
         MockType,

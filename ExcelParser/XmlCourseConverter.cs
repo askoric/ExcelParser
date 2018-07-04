@@ -18,7 +18,7 @@ namespace ExcelParser
 
 	public class ExcelParser
 	{
-		public XmlDocument ConvertExcelToCourseXml( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel, Excel<QuestionExcelColumn, QuestionExcelColumnType> questionExcel, Excel<LosExcelColumn, LosExcelColumnType> losExcel, Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> acceptanceCriteriaExcel, Excel<TestExcelColumn, TestExcelColumnType> ssTestExcel, Excel<ExamExcelColumn, ExamExcelColumnType> progressTestExcel, Excel<ExamExcelColumn, ExamExcelColumnType> MockExamsExcel, Excel<TestExcelColumn, TestExcelColumnType> TopicWorkshopExcel, bool setTranscripts )
+		public XmlDocument ConvertExcelToCourseXml( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel, Excel<QuestionExcelColumn, QuestionExcelColumnType> questionExcel, Excel<LosExcelColumn, LosExcelColumnType> losExcel, Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> acceptanceCriteriaExcel, Excel<ExamExcelColumn, ExamExcelColumnType> ssTestExcel, Excel<ExamExcelColumn, ExamExcelColumnType> progressTestExcel, Excel<ExamExcelColumn, ExamExcelColumnType> MockExamsExcel, Excel<TestExcelColumn, TestExcelColumnType> TopicWorkshopExcel, bool setTranscripts )
 		{
             CourseConverterHelper.generatedQuestionIds = new Dictionary<string, string>();
             CourseConverterHelper._generatedGuids = new Dictionary<string, guidRequest>();
@@ -448,13 +448,13 @@ namespace ExcelParser
 
 
 
-		private void AppendStudySessionTestQuestions( XmlDocument xml, XmlElement sequentialNode, string studySessionId, Excel<TestExcelColumn, TestExcelColumnType> ssTestExcel )
+		private void AppendStudySessionTestQuestions( XmlDocument xml, XmlElement sequentialNode, string studySessionId, Excel<ExamExcelColumn, ExamExcelColumnType> ssTestExcel )
 		{
-			var excelRows = ssTestExcel.Rows.Where( r => r.Any( c => c.Type == TestExcelColumnType.SessionAbbrevation && c.Value == studySessionId ) );
+			var excelRows = ssTestExcel.Rows.Where( r => r.Any( c => c.Type == ExamExcelColumnType.SessionRef && c.Value == studySessionId ) );
 
 			if ( excelRows.Any() ) {
 
-				string verticalTestId = excelRows.First().FirstOrDefault( c => c.Type == TestExcelColumnType.KStructure ).Value;
+				string verticalTestId = excelRows.First().FirstOrDefault( c => c.Type == ExamExcelColumnType.Structure ).Value;
 				verticalTestId = String.Join( "|", verticalTestId.Split( '|' ).Take( 3 ) );
 
 				var verticalNode = xml.CreateElement( "vertical" );
@@ -464,11 +464,11 @@ namespace ExcelParser
 				verticalNode.SetAttribute( "study_session_test_id", verticalTestId );
 				verticalNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( verticalTestId, CourseTypes.Reading ) );
 
-                var containerReferences = excelRows.GroupBy(r => r.First(tn => tn.Type == TestExcelColumnType.ContainerRef).Value);
+                var containerReferences = excelRows.GroupBy(r => r.First(tn => tn.Type == ExamExcelColumnType.ContainerRef1).Value);
                 foreach (var containerReference in containerReferences)
                 {
                     string containerReferenceValue = containerReference.Key;
-                    var ssRows = excelRows.Where(r => r.Any(c => c.Type == TestExcelColumnType.ContainerRef && c.Value.Contains(containerReferenceValue)));
+                    var ssRows = excelRows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.ContainerRef1 && c.Value.Contains(containerReferenceValue)));
 
                     if (ssRows.Any())
                     {
