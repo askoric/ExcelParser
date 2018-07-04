@@ -23,7 +23,7 @@ namespace ExcelParser
 		private Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> AcceptanceCriteriaExcel { get; set; }
 		private Excel<TestExcelColumn, TestExcelColumnType> SsTestExcel { get; set; }
 		private Excel<TestExcelColumn, TestExcelColumnType> ProgressTestExcel { get; set; }
-		private Excel<MockExamExcelColumn, MockExamExcelColumnType> MockExamsExcel { get; set; }
+		private Excel<ExamExcelColumn, ExamExcelColumnType> MockExamsExcel { get; set; }
         private Excel<TestExcelColumn, TestExcelColumnType> TopicWorkshopExcel { get; set; }
 
         private OpenFileDialog OpenFileDialog { get; set; }
@@ -104,7 +104,7 @@ namespace ExcelParser
 				}
 				else {
 					LosExcelCheckImg.Visible = false;
-					MessageBox.Show( "Invalid excel. Excel does not have all required columns: TopicTitle, SessionTitle, ReadingTitle Cfa_Alpha, Los Text" );
+					MessageBox.Show( "Invalid excel. Excel does not have all required columns!" );
 					LosExcel = null;
 				}
 
@@ -122,7 +122,7 @@ namespace ExcelParser
 				}
 				else {
 					AcceptanceCriteriaCheckImg.Visible = false;
-					MessageBox.Show( "Invalid excel. Excel does not have all required columns: Lo1, Target Score" );
+					MessageBox.Show( "Invalid excel. Excel does not have all required columns!" );
 					AcceptanceCriteriaExcel = null;
 				}
 			}
@@ -166,15 +166,15 @@ namespace ExcelParser
         {
             if (OpenFileDialog.ShowDialog() == DialogResult.OK)
             {
-                var excel = new Excel<MockExamExcelColumn, MockExamExcelColumnType>();
+                var excel = new Excel<ExamExcelColumn, ExamExcelColumnType>();
                 MockExamsExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
-                if ((MockExamsExcel.Header.Count() == Enum.GetNames(typeof(MockExamExcelColumnType)).Length - 1))
+                if ((MockExamsExcel.Header.Count() == Enum.GetNames(typeof(ExamExcelColumnType)).Length - 1))
                 {
                     uploadMockExamCheckIcon.Visible = true;
                 }
                 else {
                     uploadMockExamCheckIcon.Visible = false;
-                    MessageBox.Show("Invalid excel. Excel does not have all required columns");
+                    MessageBox.Show("Invalid excel. Excel does not have all required columns!");
                     MockExamsExcel = null;
                 }
             }

@@ -131,7 +131,7 @@ namespace ExcelParser
             return problemBuilderNode;
         }
 
-        public static XmlElement Generate(XmlDocument xml, IEnumerable<List<IExcelColumn<MockExamExcelColumnType>>> excelRows, ProblemBuilderNodeSettings settings)
+        public static XmlElement Generate(XmlDocument xml, IEnumerable<List<IExcelColumn<ExamExcelColumnType>>> excelRows, ProblemBuilderNodeSettings settings)
         {
             var problemBuilderNode = xml.CreateElement(settings.ProblemBuilderNodeElement);
             problemBuilderNode.SetAttribute("display_name", settings.DisplayName);
@@ -142,13 +142,13 @@ namespace ExcelParser
             foreach (var row in excelRows)
             {
                 var questionDic = CourseConverterHelper.generateQuestionIds();
-                var questionColumn = row.FirstOrDefault(c => c.Type == MockExamExcelColumnType.Question);
-                var questionIdColumn = row.FirstOrDefault(c => c.Type == MockExamExcelColumnType.QuestionId);
+                var questionColumn = row.FirstOrDefault(c => c.Type == ExamExcelColumnType.Question);
+                var questionIdColumn = row.FirstOrDefault(c => c.Type == ExamExcelColumnType.QuestionId);
                 string questionValue = questionColumn.HaveValue() ? questionColumn.Value : "Question Missing";
 
 
                 var pbMcqNode = xml.CreateElement(settings.PbMcqNodeElement);
-                var correctColumn = row.FirstOrDefault(c => c.Type == MockExamExcelColumnType.Correct);
+                var correctColumn = row.FirstOrDefault(c => c.Type == ExamExcelColumnType.Correct);
 
                 var actualCorrectValues = new List<string>();
 
@@ -172,7 +172,7 @@ namespace ExcelParser
 
                 var questionIds = new List<string>();
 
-                var answer1Column = row.FirstOrDefault(c => c.Type == MockExamExcelColumnType.Answer1);
+                var answer1Column = row.FirstOrDefault(c => c.Type == ExamExcelColumnType.Answer1);
                 var question1Id = questionDic["A"];
                 var answer1Node = CourseConverterHelper.GetAnswerNode(xml, answer1Column, question1Id, false, settings.PbChoiceBlockElement);
                 if (answer1Node != null)
@@ -181,7 +181,7 @@ namespace ExcelParser
                     questionIds.Add(question1Id);
                 }
 
-                var answer2Column = row.FirstOrDefault(c => c.Type == MockExamExcelColumnType.Answer2);
+                var answer2Column = row.FirstOrDefault(c => c.Type == ExamExcelColumnType.Answer2);
                 var question2Id = questionDic["B"];
                 var answer2Node = CourseConverterHelper.GetAnswerNode(xml, answer2Column, question2Id, true, settings.PbChoiceBlockElement);
                 if (answer2Node != null)
@@ -190,7 +190,7 @@ namespace ExcelParser
                     questionIds.Add(question2Id);
                 }
 
-                var answer3Column = row.FirstOrDefault(c => c.Type == MockExamExcelColumnType.Answer3);
+                var answer3Column = row.FirstOrDefault(c => c.Type == ExamExcelColumnType.Answer3);
                 var question3Id = questionDic["C"];
                 var answer3Node = CourseConverterHelper.GetAnswerNode(xml, answer3Column, question3Id, true, settings.PbChoiceBlockElement);
                 if (answer3Node != null)
@@ -211,7 +211,7 @@ namespace ExcelParser
 
 
                 //tip  block
-                var justificationCell = row.FirstOrDefault(c => c.Type == MockExamExcelColumnType.Justification);
+                var justificationCell = row.FirstOrDefault(c => c.Type == ExamExcelColumnType.Justification);
                 string justificationInnerText = "";
 
                 string justificationValue = (justificationCell != null && justificationCell.HaveValue())

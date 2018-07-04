@@ -371,7 +371,7 @@ namespace ExcelParser
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Band, index );
 					case "bandid":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.BandId, index );
-					case "conceptdescription":
+					case "conceptname":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ConceptName, index );
                     case "conceptid":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ConceptId, index );
@@ -453,88 +453,88 @@ namespace ExcelParser
         Demo
     }
 
-    public class MockExamExcelColumn : ExcelColumn<MockExamExcelColumnType>
+    public class ExamExcelColumn : ExcelColumn<ExamExcelColumnType>
     {
-        public MockExamExcelColumn()
+        public ExamExcelColumn()
         {
         }
 
-        public MockExamExcelColumn(string value, MockExamExcelColumnType type, int index) : base(value, type, index) { }
+        public ExamExcelColumn(string value, ExamExcelColumnType type, int index) : base(value, type, index) { }
 
         public override bool IsRecognizableColumn()
         {
-            return this.Type != MockExamExcelColumnType.Undefined;
+            return this.Type != ExamExcelColumnType.Undefined;
         }
 
-        public override IExcelColumn<MockExamExcelColumnType> GetColumn(string columnName, int index)
+        public override IExcelColumn<ExamExcelColumnType> GetColumn(string columnName, int index)
         {
             if (columnName != null)
             {
                 switch (columnName.ToLower().Trim())
                 {
                     case "topicref":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.TopicRef, index);
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.TopicRef, index);
                     case "topicname":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.TopicName, index);
-                    case "container1_ref":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Container1Ref, index);
-                    case "positionref":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.PositionRef, index);
-                    case "mock_type":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.MockType, index);
-                    case "topic_taxon_id":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.TopicTaxonId, index);
-                    case "container2_ref":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Container2Ref, index);
-                    case "container2_type":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Container2Type, index);
-                    case "container2_title":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Container2Title, index);
-                    case "container2_max_points":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Container2MaxPoints, index);
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.TopicName, index);
+                    case "containerref_1":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerRef1, index);
+                    case "containerposition_1":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerPosition1, index);
+                    case "mocktype":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.MockType, index);
+                    case "topictaxonid":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.TopicTaxonId, index);
+                    case "containerref_2":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerRef2, index);
+                    case "containertype_2":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerType2, index);
+                    case "containertitle_2":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerTitle2, index);
+                    case "containermaxpoints_2":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerMaxPoints2, index);
                     case "pdf_answers":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.PdfAnswers, index);
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.PdfAnswers, index);
                     case "pdf_questions":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.PdfQuestions, index);
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.PdfQuestions, index);
                     case "qid":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.QuestionId, index);
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.QuestionId, index);
                     case "question":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Question, index);
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.Question, index);
                     case "answer_1":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Answer1, index);
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.Answer1, index);
                     case "answer_2":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Answer2, index);
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.Answer2, index);
                     case "answer_3":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Answer3, index);
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.Answer3, index);
                     case "correct":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Correct, index);
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.Correct, index);
                     case "justification":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Justification, index);
-                    case "vignette_title":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.VignetteTitle, index);
-                    case "vignette_body":
-                        return new MockExamExcelColumn(columnName, MockExamExcelColumnType.VignetteBody, index);
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.Justification, index);
+                    case "vignettetitle":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.VignetteTitle, index);
+                    case "vignettebody":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.VignetteBody, index);
                 }
             }
 
-            return new MockExamExcelColumn(columnName, MockExamExcelColumnType.Undefined, index);
+            return new ExamExcelColumn(columnName, ExamExcelColumnType.Undefined, index);
         }
     }
 
 
-    public enum MockExamExcelColumnType
+    public enum ExamExcelColumnType
     {
         Undefined,
         TopicRef,
         TopicName,
-        Container1Ref,
-        PositionRef,
+        ContainerRef1,
+        ContainerPosition1,
         MockType,
         TopicTaxonId,
-        Container2Ref,
-        Container2Type,
-        Container2Title,
-        Container2MaxPoints,
+        ContainerRef2,
+        ContainerType2,
+        ContainerTitle2,
+        ContainerMaxPoints2,
         PdfAnswers, 
         PdfQuestions, 
         QuestionId,
