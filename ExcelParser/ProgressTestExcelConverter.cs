@@ -25,8 +25,8 @@ namespace ExcelParser
 
             string progressTestId = progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerRef1) != null ? progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerRef1).Value : "";
 
-            var essayRows = progressTestExcel.Rows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.ContainerType2 && c.Value.Contains("Essay")));
-            var questionRows = progressTestExcel.Rows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.ContainerType2 && c.Value.Contains("Item Set")));
+            var essayRows = progressTestExcel.Rows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.ContainerType2 && c.HaveValue() && c.Value.Contains("Essay")));
+            var questionRows = progressTestExcel.Rows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.ContainerType2 && c.HaveValue() && c.Value.Contains("Item Set")));
 
             if (!questionRows.Any())
             {
@@ -40,13 +40,19 @@ namespace ExcelParser
                 string topicRefValue = topicRef.Key;
                 var topicRows = questionRows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.TopicRef && c.Value.Contains(topicRefValue)));
 
+                var itemSetReferencesRows = questionRows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.ContainerRef2 && c.HaveValue()));
                 var itemSetReferences = topicRows.GroupBy(r => r.First(tn => tn.Type == ExamExcelColumnType.ContainerRef2).Value);
+
+                if (!itemSetReferencesRows.Any())
+                {
+                    itemSetReferences = topicRows.GroupBy(r => r.First(tn => tn.Type == ExamExcelColumnType.ContainerRef1).Value);
+                }
 
                 foreach (var itemSetReference in itemSetReferences)
                 {
                     string itemSetReferenceValue = itemSetReference.Key;
                     char index = itemSetReferenceValue.Last();
-                    var itemSetRows = topicRows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.ContainerRef2 && c.Value.Contains(itemSetReferenceValue)));
+                    var itemSetRows = topicRows.Where(r => r.Any(c => (c.Type == ExamExcelColumnType.ContainerRef2 || c.Type == ExamExcelColumnType.ContainerRef1) && c.Value.Contains(itemSetReferenceValue)));
 
                     if (itemSetRows.Any())
                     {
