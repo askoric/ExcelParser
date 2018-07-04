@@ -484,6 +484,10 @@ namespace ExcelParser
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerRef1, index);
                     case "containerposition_1":
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerPosition1, index);
+                    case "containertitle_1":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerTitle1, index);
+                    case "containertype_1":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerType1, index);
                     case "mocktype":
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.MockType, index);
                     case "structure":
@@ -498,6 +502,8 @@ namespace ExcelParser
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerTitle2, index);
                     case "containermaxpoints_2":
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerMaxPoints2, index);
+                    case "containerpdf_2":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerPdf2, index);
                     case "pdf_answers":
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.PdfAnswers, index);
                     case "pdf_questions":
@@ -520,6 +526,8 @@ namespace ExcelParser
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.VignetteTitle, index);
                     case "vignettebody":
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.VignetteBody, index);
+                    case "answervideo":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.AnswerVideo, index);
                 }
             }
 
@@ -537,6 +545,8 @@ namespace ExcelParser
         SessionRef,
         ContainerRef1,
         ContainerPosition1,
+        ContainerTitle1,
+        ContainerType1,
         MockType,
         Structure,
         TopicTaxonId,
@@ -544,6 +554,7 @@ namespace ExcelParser
         ContainerType2,
         ContainerTitle2,
         ContainerMaxPoints2,
+        ContainerPdf2,
         PdfAnswers, 
         PdfQuestions, 
         QuestionId,
@@ -555,5 +566,6 @@ namespace ExcelParser
         Justification,
         VignetteTitle,
         VignetteBody,
+        AnswerVideo
     }
 }

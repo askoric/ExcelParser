@@ -18,7 +18,7 @@ namespace ExcelParser
 
 	public class ExcelParser
 	{
-		public XmlDocument ConvertExcelToCourseXml( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel, Excel<QuestionExcelColumn, QuestionExcelColumnType> questionExcel, Excel<LosExcelColumn, LosExcelColumnType> losExcel, Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> acceptanceCriteriaExcel, Excel<ExamExcelColumn, ExamExcelColumnType> ssTestExcel, Excel<ExamExcelColumn, ExamExcelColumnType> progressTestExcel, Excel<ExamExcelColumn, ExamExcelColumnType> MockExamsExcel, Excel<TestExcelColumn, TestExcelColumnType> TopicWorkshopExcel, bool setTranscripts )
+		public XmlDocument ConvertExcelToCourseXml( Excel<MainStructureExcelColumn, MainStructureColumnType> mainStructureExcel, Excel<QuestionExcelColumn, QuestionExcelColumnType> questionExcel, Excel<LosExcelColumn, LosExcelColumnType> losExcel, Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> acceptanceCriteriaExcel, Excel<ExamExcelColumn, ExamExcelColumnType> ssTestExcel, Excel<ExamExcelColumn, ExamExcelColumnType> progressTestExcel, Excel<ExamExcelColumn, ExamExcelColumnType> MockExamsExcel, Excel<ExamExcelColumn, ExamExcelColumnType> TopicWorkshopExcel, bool setTranscripts )
 		{
             CourseConverterHelper.generatedQuestionIds = new Dictionary<string, string>();
             CourseConverterHelper._generatedGuids = new Dictionary<string, guidRequest>();
@@ -492,21 +492,21 @@ namespace ExcelParser
 		}
 
 
-        private void AppendTopicWorkshop(XmlDocument xml, XmlElement chapterNode, string topicId, Excel<TestExcelColumn, TestExcelColumnType> TopicWorkshopExcel)
+        private void AppendTopicWorkshop(XmlDocument xml, XmlElement chapterNode, string topicId, Excel<ExamExcelColumn, ExamExcelColumnType> TopicWorkshopExcel)
         {
-            var topicWorkshopRows = TopicWorkshopExcel.Rows.Where(r => r.Any(c => c.Type == TestExcelColumnType.TopicAbbrevation && c.Value == topicId));
+            var topicWorkshopRows = TopicWorkshopExcel.Rows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.TopicRef && c.Value == topicId));
             if (topicWorkshopRows.Any())
             {
-                var workshopReferences = topicWorkshopRows.GroupBy(r => r.First(tn => tn.Type == TestExcelColumnType.TopicWorkshopReference).Value);
+                var workshopReferences = topicWorkshopRows.GroupBy(r => r.First(tn => tn.Type == ExamExcelColumnType.ContainerRef1).Value);
                 foreach (var workshopReference in workshopReferences)
                 {
                     string workshopReferenceValue = workshopReference.Key;
-                    var workshopRows = topicWorkshopRows.Where(r => r.Any(c => c.Type == TestExcelColumnType.TopicWorkshopReference && c.Value.Contains(workshopReferenceValue)));
+                    var workshopRows = topicWorkshopRows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.ContainerRef1 && c.Value.Contains(workshopReferenceValue)));
 
                     if (workshopRows.Any())
                     {
-                        string topicWorkshopTitle = workshopRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicWorkshopTitle).Value;
-                        string topicWorkshopType = workshopRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicWorkshopType).Value;
+                        string topicWorkshopTitle = workshopRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerTitle1).Value;
+                        string topicWorkshopType = workshopRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerType1).Value;
 
                         if (topicWorkshopType == "Topic Workshop")
                         {
@@ -525,21 +525,21 @@ namespace ExcelParser
 
                         chapterNode.AppendChild(sequentialNode);
 
-                        var itemSetReferences = workshopRows.GroupBy(r => r.First(tn => tn.Type == TestExcelColumnType.ItemSetReference).Value);
+                        var itemSetReferences = workshopRows.GroupBy(r => r.First(tn => tn.Type == ExamExcelColumnType.ContainerRef2).Value);
                         foreach (var itemSetReference in itemSetReferences)
                         {
                             string itemSetReferenceValue = itemSetReference.Key;
                             char index = itemSetReferenceValue.Last();
-                            var itemSetRows = workshopRows.Where(r => r.Any(c => c.Type == TestExcelColumnType.ItemSetReference && c.Value.Contains(itemSetReferenceValue)));
+                            var itemSetRows = workshopRows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.ContainerRef2 && c.Value.Contains(itemSetReferenceValue)));
 
                             if (itemSetRows.Any())
                             {
-                                string itemSetType = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetType).Value;
-                                string itemSetTitle = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetTitle).Value;
-                                string topicTaxonId = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicTaxonId).Value;
-                                string itemSetStudySessions = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.Session).Value;
-                                string itemSetPdf = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetPdf).Value;
-                                string itemSetAnswerVideo = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.AnswerVideo).Value;
+                                string itemSetType = itemSetRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerType2).Value;
+                                string itemSetTitle = itemSetRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerTitle2).Value;
+                                string topicTaxonId = itemSetRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.TopicTaxonId).Value;
+                                string itemSetStudySessions = itemSetRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.SessionName).Value;
+                                string itemSetPdf = itemSetRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerPdf2).Value;
+                                string itemSetAnswerVideo = itemSetRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.AnswerVideo).Value;
 
                                 var verticalNode = xml.CreateElement("vertical");
                                 verticalNode.SetAttribute("item_set_id", itemSetReferenceValue);
@@ -552,8 +552,8 @@ namespace ExcelParser
 
                                 if (itemSetType == "Item Set")
                                 {
-                                    string vignetteTitle = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteTitle).Value;
-                                    string vignetteBody = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteBody).Value;
+                                    string vignetteTitle = itemSetRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.VignetteTitle).Value;
+                                    string vignetteBody = itemSetRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.VignetteBody).Value;
                                 
                                     verticalNode.SetAttribute("cfa_type", "item_set");
                                     verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(itemSetReferenceValue, CourseTypes.ItemSet));
@@ -579,7 +579,7 @@ namespace ExcelParser
                                 }
                                 else if (itemSetType == "Essay")
                                 {
-                                    string essayMaxPoints = itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.EssayMaxPoints).Value;
+                                    string essayMaxPoints = itemSetRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerMaxPoints2).Value;
 
                                     verticalNode.SetAttribute("cfa_type", "essay");
                                     verticalNode.SetAttribute("url_name", CourseConverterHelper.getGuid(itemSetReferenceValue, CourseTypes.Essay));
