@@ -9,7 +9,7 @@ namespace ExcelParser
 {
     class ProgressTestExcelConverter
     {
-        public static XmlElement Convert(XmlDocument xml, Excel<TestExcelColumn, TestExcelColumnType> progressTestExcel)
+        public static XmlElement Convert(XmlDocument xml, Excel<ExamExcelColumn, ExamExcelColumnType> progressTestExcel)
         {
             var chapterNode = xml.CreateElement("chapter");
             chapterNode.SetAttribute("display_name", "Progress Test");
@@ -17,40 +17,42 @@ namespace ExcelParser
             chapterNode.SetAttribute("cfa_type", "progress_test");
             chapterNode.SetAttribute("cfa_short_name", "Progress Test");
 
-            string progressTestId = progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicWorkshopReference) != null ? progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicWorkshopReference).Value : "";
+            string progressTestAnswersPdf = progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.PdfAnswers) != null ? progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.PdfAnswers).Value : "";
+            string progressTestQuestionsPdf = progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.PdfQuestions) != null ? progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.PdfQuestions).Value : "";
 
-            var essayRows = progressTestExcel.Rows.Where(r => r.Any(c => c.Type == TestExcelColumnType.ItemSetType && c.Value.Contains("Essay")));
-            var questionRows = progressTestExcel.Rows.Where(r => r.Any(c => c.Type == TestExcelColumnType.ItemSetType && c.Value.Contains("Item Set")));
+            chapterNode.SetAttribute("topic_pdf_answers", progressTestAnswersPdf);
+            chapterNode.SetAttribute("topic_pdf_questions", progressTestQuestionsPdf);
+
+            string progressTestId = progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerRef1) != null ? progressTestExcel.Rows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerRef1).Value : "";
+
+            var essayRows = progressTestExcel.Rows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.ContainerType2 && c.Value.Contains("Essay")));
+            var questionRows = progressTestExcel.Rows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.ContainerType2 && c.Value.Contains("Item Set")));
 
             if (!questionRows.Any())
             {
                 questionRows = progressTestExcel.Rows;
             }
 
-            string progressTestPdf = questionRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetPdf) != null ? questionRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetPdf).Value : "";
-
-            chapterNode.SetAttribute("topic_pdf", progressTestPdf);
-
-            var topicReferences = questionRows.GroupBy(r => r.First(tn => tn.Type == TestExcelColumnType.TopicAbbrevation).Value);
+            var topicReferences = questionRows.GroupBy(r => r.First(tn => tn.Type == ExamExcelColumnType.TopicRef).Value);
 
             foreach (var topicRef in topicReferences)
             {
                 string topicRefValue = topicRef.Key;
-                var topicRows = questionRows.Where(r => r.Any(c => c.Type == TestExcelColumnType.TopicAbbrevation && c.Value.Contains(topicRefValue)));
+                var topicRows = questionRows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.TopicRef && c.Value.Contains(topicRefValue)));
 
-                var itemSetReferences = topicRows.GroupBy(r => r.First(tn => tn.Type == TestExcelColumnType.ItemSetReference).Value);
+                var itemSetReferences = topicRows.GroupBy(r => r.First(tn => tn.Type == ExamExcelColumnType.ContainerRef2).Value);
 
                 foreach (var itemSetReference in itemSetReferences)
                 {
                     string itemSetReferenceValue = itemSetReference.Key;
                     char index = itemSetReferenceValue.Last();
-                    var itemSetRows = topicRows.Where(r => r.Any(c => c.Type == TestExcelColumnType.ItemSetReference && c.Value.Contains(itemSetReferenceValue)));
+                    var itemSetRows = topicRows.Where(r => r.Any(c => c.Type == ExamExcelColumnType.ContainerRef2 && c.Value.Contains(itemSetReferenceValue)));
 
                     if (itemSetRows.Any())
                     {
-                        string kStructure = String.Join("|", itemSetRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.KStructure).Value.Split('|').Take(2));
-                        string topicName = itemSetRows.First().FirstOrDefault(tn => tn.Type == TestExcelColumnType.TopicName).Value;
-                        string topicAbbrevation = itemSetRows.First().FirstOrDefault(tn => tn.Type == TestExcelColumnType.TopicAbbrevation).Value;
+                        string kStructure = String.Join("|", itemSetRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.Structure).Value.Split('|').Take(2));
+                        string topicName = itemSetRows.First().FirstOrDefault(tn => tn.Type == ExamExcelColumnType.TopicName).Value;
+                        string topicAbbrevation = itemSetRows.First().FirstOrDefault(tn => tn.Type == ExamExcelColumnType.TopicRef).Value;
                         //if index is 1 leave old progress test topic id, else change it
                         string topicId = index == '1' ? String.Format("{0}-r-progressTest", topicAbbrevation) : topicId = String.Format("{0}-r-progressTest-{1}-itemSet", topicAbbrevation, index);
 
@@ -81,23 +83,18 @@ namespace ExcelParser
                 chapterNode.SetAttribute("exam_type", "essay");
                 chapterNode.SetAttribute("test_duration", "01:00");
 
-                string essaysPdfQuestions = essayRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.EssaysPdfQuestions).Value;
-                string essaysPdfAnswers = essayRows.First().FirstOrDefault(c => c.Type == TestExcelColumnType.EssaysPdfAnswers).Value;
-
                 var sequentialNode = xml.CreateElement("sequential");
                 sequentialNode.SetAttribute("display_name", "Progress Test Essays");
                 sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("{0}--essays", progressTestId), CourseTypes.StudySession));
                 sequentialNode.SetAttribute("cfa_type", "essay");
-                sequentialNode.SetAttribute("pdf_answers", essaysPdfAnswers);
-                sequentialNode.SetAttribute("pdf_questions", essaysPdfQuestions);
 
                 foreach (var row in essayRows)
                 {
-                    string essayTitle = row.FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetTitle).Value;
-                    string topicTaxonId = row.FirstOrDefault(c => c.Type == TestExcelColumnType.TopicTaxonId).Value;
-                    string essayTopics = row.FirstOrDefault(c => c.Type == TestExcelColumnType.TopicAbbrevation).Value;
-                    string essayMaxPoints = row.FirstOrDefault(c => c.Type == TestExcelColumnType.EssayMaxPoints).Value;
-                    string essayReferenceValue = row.FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetReference).Value;
+                    string essayTitle = row.FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerTitle2).Value;
+                    string topicTaxonId = row.FirstOrDefault(c => c.Type == ExamExcelColumnType.TopicTaxonId).Value;
+                    string essayTopics = row.FirstOrDefault(c => c.Type == ExamExcelColumnType.TopicRef).Value;
+                    string essayMaxPoints = row.FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerMaxPoints2).Value;
+                    string essayReferenceValue = row.FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerRef2).Value;
 
                     var verticalNode = xml.CreateElement("vertical");
                     verticalNode.SetAttribute("cfa_type", "essay");
@@ -118,17 +115,17 @@ namespace ExcelParser
         }
 
 
-        private static XmlNode GetProgressTestSequantialNode(XmlDocument xml, string topicName, string topicId, string kStructure, IEnumerable<List<IExcelColumn<TestExcelColumnType>>> topicGroup)
+        private static XmlNode GetProgressTestSequantialNode(XmlDocument xml, string topicName, string topicId, string kStructure, IEnumerable<List<IExcelColumn<ExamExcelColumnType>>> topicGroup)
         {
             var sequentialNode = xml.CreateElement("sequential");
             sequentialNode.SetAttribute("display_name", topicName);
             sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid(topicId, CourseTypes.StudySession));
             sequentialNode.SetAttribute("taxon_id", kStructure);
 
-            string itemSetTitle = topicGroup.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetTitle) != null ? topicGroup.First().FirstOrDefault(c => c.Type == TestExcelColumnType.ItemSetTitle).Value : "";
-            string vignetteTitle = topicGroup.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteTitle) != null ? topicGroup.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteTitle).Value : "";
-            string vignetteBody = topicGroup.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteBody) != null ? topicGroup.First().FirstOrDefault(c => c.Type == TestExcelColumnType.VignetteBody).Value : "";
-            string topicTaxonId = topicGroup.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicTaxonId) != null ? topicGroup.First().FirstOrDefault(c => c.Type == TestExcelColumnType.TopicTaxonId).Value : "";
+            string itemSetTitle = topicGroup.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerTitle2) != null ? topicGroup.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.ContainerTitle2).Value : "";
+            string vignetteTitle = topicGroup.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.VignetteTitle) != null ? topicGroup.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.VignetteTitle).Value : "";
+            string vignetteBody = topicGroup.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.VignetteBody) != null ? topicGroup.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.VignetteBody).Value : "";
+            string topicTaxonId = topicGroup.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.TopicTaxonId) != null ? topicGroup.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.TopicTaxonId).Value : "";
 
             //if item set title empty leave old vertical display name, if not change it
             string displayName = (itemSetTitle == "") ? "Progress test - R" : itemSetTitle;
@@ -144,7 +141,7 @@ namespace ExcelParser
             sequentialNode.AppendChild(verticalNode);
 
             //skip vignette row. if there is any
-            topicGroup = topicGroup.First().FirstOrDefault(c => c.Type == TestExcelColumnType.Question).HaveValue() && topicGroup.First().FirstOrDefault(c => c.Type == TestExcelColumnType.Question) != null ? topicGroup : topicGroup.Skip(1);
+            topicGroup = topicGroup.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.Question).HaveValue() && topicGroup.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.Question) != null ? topicGroup : topicGroup.Skip(1);
 
             var problemBuilderNode = ProblemBuilderNodeGenerator.Generate(xml, topicGroup, new ProblemBuilderNodeSettings
             {

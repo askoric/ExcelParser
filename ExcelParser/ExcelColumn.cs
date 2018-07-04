@@ -482,6 +482,8 @@ namespace ExcelParser
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.ContainerPosition1, index);
                     case "mocktype":
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.MockType, index);
+                    case "structure":
+                        return new ExamExcelColumn(columnName, ExamExcelColumnType.Structure, index);
                     case "topictaxonid":
                         return new ExamExcelColumn(columnName, ExamExcelColumnType.TopicTaxonId, index);
                     case "containerref_2":
@@ -530,6 +532,7 @@ namespace ExcelParser
         ContainerRef1,
         ContainerPosition1,
         MockType,
+        Structure,
         TopicTaxonId,
         ContainerRef2,
         ContainerType2,

@@ -22,7 +22,7 @@ namespace ExcelParser
 		private Excel<LosExcelColumn, LosExcelColumnType> LosExcel { get; set; }
 		private Excel<AcceptanceCriteriaExcelColumn, AcceptanceCriteriaColumnType> AcceptanceCriteriaExcel { get; set; }
 		private Excel<TestExcelColumn, TestExcelColumnType> SsTestExcel { get; set; }
-		private Excel<TestExcelColumn, TestExcelColumnType> ProgressTestExcel { get; set; }
+		private Excel<ExamExcelColumn, ExamExcelColumnType> ProgressTestExcel { get; set; }
 		private Excel<ExamExcelColumn, ExamExcelColumnType> MockExamsExcel { get; set; }
         private Excel<TestExcelColumn, TestExcelColumnType> TopicWorkshopExcel { get; set; }
 
@@ -148,15 +148,14 @@ namespace ExcelParser
 		private void UploadProgressTestExcell_Click( object sender, EventArgs e )
 		{
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
-				var excel = new Excel<TestExcelColumn, TestExcelColumnType>();
+				var excel = new Excel<ExamExcelColumn, ExamExcelColumnType>();
 				ProgressTestExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-                //-5 fcmNumber and ContainerRef and PdfAnswers/Questions and essays(2)
-                if ((ProgressTestExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 5) || (ProgressTestExcel.Header.Count() == Enum.GetNames( typeof( TestExcelColumnType ) ).Length - 8) || ProgressTestExcel.Header.Count() == Enum.GetNames(typeof(TestExcelColumnType)).Length - 18 ) {
+                if ((ProgressTestExcel.Header.Count() == Enum.GetNames(typeof(ExamExcelColumnType)).Length - 3)) {
 					uploadProgressTestCheckIcon.Visible = true;
 				}
 				else {
 					uploadProgressTestCheckIcon.Visible = false;
-					MessageBox.Show( "Invalid excel. Excel does not have all required columns: StudySessionId, KStructure, QuestionId, Question, Answer1, Answer2, Answer3, Answer4, AnswerImageUrl, Correct, QuestionImageUrl, Justification" );
+					MessageBox.Show( "Invalid excel. Excel does not have all required columns!" );
 					ProgressTestExcel = null;
 				}
 			}
