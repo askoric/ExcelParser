@@ -124,29 +124,23 @@ namespace ExcelParser
 		{
 			if ( columnName != null ) {
 				switch ( columnName.ToLower().Trim() ) {
-					case "id (original & new place holders)":
+					case "qid":
 						return new QuestionExcelColumn( columnName, QuestionExcelColumnType.QuestionId, index );
-					case "question":
+                    case "inflow":
+                        return new QuestionExcelColumn(columnName, QuestionExcelColumnType.InFlow, index);
+                    case "question":
 						return new QuestionExcelColumn( columnName, QuestionExcelColumnType.Question, index );
-					case "question_image_url":
-						return new QuestionExcelColumn( columnName, QuestionExcelColumnType.QuestionImageUrl, index );
-					case "answer_image_url":
-						return new QuestionExcelColumn( columnName, QuestionExcelColumnType.AnswerImageUrl, index );
-					case "correct":
-						return new QuestionExcelColumn( columnName, QuestionExcelColumnType.Correct, index );
 					case "answer_1":
 						return new QuestionExcelColumn( columnName, QuestionExcelColumnType.Answer1, index );
 					case "answer_2":
 						return new QuestionExcelColumn( columnName, QuestionExcelColumnType.Answer2, index );
 					case "answer_3":
 						return new QuestionExcelColumn( columnName, QuestionExcelColumnType.Answer3, index );
-					case "answer_4":
-						return new QuestionExcelColumn( columnName, QuestionExcelColumnType.Answer4, index );
 					case "justification":
 						return new QuestionExcelColumn( columnName, QuestionExcelColumnType.Justification, index );
-					case "(kk/ee) instruct (k/e) asseess":
-						return new QuestionExcelColumn( columnName, QuestionExcelColumnType.KKEE, index );
-				}
+                    case "correct":
+                        return new QuestionExcelColumn(columnName, QuestionExcelColumnType.Correct, index);
+                }
 			}
 
 			return new QuestionExcelColumn( columnName, QuestionExcelColumnType.Undefined, index );
@@ -159,15 +153,13 @@ namespace ExcelParser
 		Undefined,
 		QuestionId,
 		Question,
-		QuestionImageUrl,
-		AnswerImageUrl,
+        InFlow,
 		Correct,
 		Answer1,
 		Answer2,
 		Answer3,
-		Answer4,
-		Justification,
-		KKEE
+        Answer4,
+        Justification
 	}
 
 
@@ -365,57 +357,57 @@ namespace ExcelParser
 			if (columnName != null)
 			{
 				switch ( columnName.ToLower().Trim() ) {
-					case "topictitle":
+					case "topicname":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.TopicName, index );
-					case "topic":
+					case "topicref":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.TopicShortName, index );
-					case "sessiontitle":
+					case "sessionname":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.SessionName, index );
-					case "readingtitle":
+					case "readingname":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ReadingName, index );
-					case "reading abb":
+					case "readingref":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ReadingId, index );
 					case "band":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Band, index );
 					case "bandid":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.BandId, index );
-					case "lo description":
+					case "conceptdescription":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ConceptName, index );
-                    case "lo/concept id":
+                    case "conceptid":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ConceptId, index );
-					case "item id":
+					case "itemid":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ItemId, index );
-					case "atom type":
+					case "type":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.AtomType, index );
-					case "atom id":
+					case "atomid":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.AtomId, index );
-					case "atom title":
+					case "atomname":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.AtomTitle, index );
-                    case "atom body":
+                    case "atombody":
                         return new MainStructureExcelColumn(columnName, MainStructureColumnType.AtomBody, index);
-                    case "studysession":
+                    case "sessionnum":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.StudySession, index );
-					case "studysession abb":
+					case "sessionref":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.StudySessionId, index );
 					case "structure":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Structure, index );
-					case "reading":
+					case "readingnum":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Reading, index );
-					case "exam percentage":
+					case "exampercentage":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ExamPercentage, index );
-                    case "cfa topic weight":
+                    case "cfai_topicweight":
                         return new MainStructureExcelColumn(columnName, MainStructureColumnType.CfaTopicWeight, index);
                     case "description":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Description, index );
-					case "downloads":
-						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Downloads, index );
-					case "downloads2":
+					case "downloads_1":
+						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Downloads1, index );
+					case "downloads_2":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Downloads2, index );
 					case "locked":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Locked, index );
 					case "color":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Color, index );
-					case "type":
+					case "topicstate":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.CfaType, index );
                     case "demo":
                         return new MainStructureExcelColumn(columnName, MainStructureColumnType.Demo, index);
@@ -451,8 +443,8 @@ namespace ExcelParser
 		Structure,
 		Reading, 
 		ExamPercentage, 
-		Description, 
-		Downloads, 
+		Description,
+        Downloads1, 
 		Downloads2, 
 		Locked, 
 		Color, 

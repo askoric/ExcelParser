@@ -165,11 +165,11 @@ namespace ExcelParser
 				}
 
 				var readingNameColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ReadingName );
-				var downloadsColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Downloads );
+				var downloads1Column = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Downloads1 );
 				var downloads2Column = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Downloads2 );
 				var downloads = new List<string>();
-				if ( downloadsColumn != null && downloadsColumn.HaveValue() )
-					downloads.Add( downloadsColumn.Value );
+				if ( downloads1Column != null && downloads1Column.HaveValue() )
+					downloads.Add( downloads1Column.Value );
 				if ( downloads2Column != null && downloads2Column.HaveValue() )
 					downloads.Add( downloads2Column.Value );
 
@@ -325,17 +325,15 @@ namespace ExcelParser
 					var problemBuilderNode = xml.CreateElement( "problem-builder-block" );
 					var questionIdColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.QuestionId );
 					var questionColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Question );
-					var kkEeColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.KKEE );
-					var answerImageUrlColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.AnswerImageUrl );
-					var questionImageUrlColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.QuestionImageUrl );
-					string questionValue = questionColumn.HaveValue() ? questionColumn.Value : questionImageUrlColumn.HaveValue() ? "" : "Question Missing";
+					var inFlowColumn = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.InFlow);
+					string questionValue = questionColumn.HaveValue() ? questionColumn.Value : "Question Missing";
 
                     problemBuilderNode.SetAttribute( "display_name", Regex.Replace(questionValue, "<.*?>", string.Empty));
                     problemBuilderNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( atomIdColumn.Value, CourseTypes.Question ) );
 					problemBuilderNode.SetAttribute( "xblock-family", "xblock.v1" );
 					problemBuilderNode.SetAttribute( "cfa_type", "question" );
 					problemBuilderNode.SetAttribute( "atom_id", atomIdColumn != null && atomIdColumn.HaveValue() ? atomIdColumn.Value : "" );
-					problemBuilderNode.SetAttribute( "instruct_assessment", kkEeColumn != null && kkEeColumn.HaveValue() ? kkEeColumn.Value : "" );
+					problemBuilderNode.SetAttribute( "instruct_assessment", inFlowColumn != null && inFlowColumn.HaveValue() ? inFlowColumn.Value : "" );
 					problemBuilderNode.SetAttribute( "taxon_id", atomTaxonId );
 
 					conceptNameContainerNode.AppendChild( problemBuilderNode );
@@ -358,11 +356,6 @@ namespace ExcelParser
 					pbMcqNode.SetAttribute( "question", questionValue );
 					pbMcqNode.SetAttribute( "fitch_question_id", questionIdColumn.Value );
 					pbMcqNode.SetAttribute( "correct_choices", (correctColumn != null && correctColumn.Value != null) ? JsonConvert.SerializeObject( actualCorrectValues ) : "" );
-
-
-					if ( questionImageUrlColumn != null && questionImageUrlColumn.HaveValue() ) {
-						pbMcqNode.SetAttribute( "image", questionImageUrlColumn.Value );
-					}
 
 					problemBuilderNode.AppendChild( pbMcqNode );
 
@@ -402,20 +395,14 @@ namespace ExcelParser
 
 					//tip  block
 					var justificationCell = questionRow.FirstOrDefault( c => c.Type == QuestionExcelColumnType.Justification );
-					string justificationInnerText = "";
-					if ( answerImageUrlColumn != null && answerImageUrlColumn.HaveValue() ) {
-						justificationInnerText = String.Format( "<div class='answer-image'><img src='{0}'></div>", answerImageUrlColumn.Value );
-					}
 
-					string justificationValue = (justificationCell != null && justificationCell.HaveValue())
-						? justificationCell.Value
-						: "";
+					string justificationValue = (justificationCell != null && justificationCell.HaveValue()) ? justificationCell.Value : "";
 
 					var questionTipNode = xml.CreateElement( "pb-tip-block" );
 					questionTipNode.SetAttribute( "url_name", CourseConverterHelper.getNewGuid() );
 					questionTipNode.SetAttribute( "xblock-family", "xblock.v1" );
 					questionTipNode.SetAttribute( "values", JsonConvert.SerializeObject( questionIds ) );
-					questionTipNode.InnerText = String.Format( "{0}{1}", justificationValue, justificationInnerText );
+					questionTipNode.InnerText = String.Format( "{0}", justificationValue);
 					pbMcqNode.AppendChild( questionTipNode );
 				}
 

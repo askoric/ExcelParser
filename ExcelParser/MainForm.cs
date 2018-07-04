@@ -68,12 +68,12 @@ namespace ExcelParser
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
 				var excel = new Excel<MainStructureExcelColumn, MainStructureColumnType>();
 				MainStructureExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-				if ( MainStructureExcel.Header.Count() == Enum.GetNames( typeof( MainStructureColumnType ) ).Length - 1 ) {
+                if ( MainStructureExcel.Header.Count() == Enum.GetNames( typeof( MainStructureColumnType ) ).Length - 1 ) {
 					MainStructureExcelCheckImg.Visible = true;
 				}
 				else {
 					MainStructureExcelCheckImg.Visible = false;
-					MessageBox.Show( "Invalid excel. Excel does not have all required columns: TopicTitle, Topic, SessionTitle, ReadingTitle, Band, BandId, lo description, lo /concept id, item id, atom type, atom id, atom title, StudySession, StudySession abb, reading, exam percentage, description, downloads, downloads2, locked, color, type" );
+					MessageBox.Show( "Invalid excel. Excel does not have all required columns!" );
 					MainStructureExcel = null;
 				}
 			}
@@ -83,12 +83,12 @@ namespace ExcelParser
 			if ( OpenFileDialog.ShowDialog() == DialogResult.OK ) {
 				var excel = new Excel<QuestionExcelColumn, QuestionExcelColumnType>();
 				QuestionsExcel = excel.ReadExcell( OpenFileDialog.FileName, XmlValueParser.Instance );
-                if ( QuestionsExcel.Header.Count() == Enum.GetNames( typeof( QuestionExcelColumnType ) ).Length - 4 ) {
+                if ( QuestionsExcel.Header.Count() == Enum.GetNames( typeof( QuestionExcelColumnType ) ).Length - 2) {
 					QuestionExcelCheckImg.Visible = true;
 				}
 				else {
 					QuestionExcelCheckImg.Visible = false;
-					MessageBox.Show( "Invalid excel. Excel does not have all required columns: id (original & new placeholder), Question, Question_Image_UR, Answer_Image_Url, Correct, Answer_1, Answer_2, Answer_3, Answer_4, Juristification, (kk/ee) instruct (k/e) asseess" );
+					MessageBox.Show( "Invalid excel. Excel does not have all required columns!" );
 					QuestionsExcel = null;
 				}
 			}
