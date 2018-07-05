@@ -134,7 +134,7 @@ namespace ExcelParser
             string topicTaxonId = topicGroup.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.TopicTaxonId) != null ? topicGroup.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.TopicTaxonId).Value : "";
 
             //if item set title empty leave old vertical display name, if not change it
-            string displayName = (itemSetTitle == "") ? "Progress test - R" : itemSetTitle;
+            string displayName = (itemSetTitle == null) ? "Progress test - R" : itemSetTitle;
 
             var verticalNode = xml.CreateElement("vertical");
             verticalNode.SetAttribute("display_name", displayName);
