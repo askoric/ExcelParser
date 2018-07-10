@@ -71,21 +71,15 @@ namespace ExcelParser
 			if ( columnName != null )
 			{
 				switch ( columnName.ToLower().Trim() ) {
-                    case "t-ref":
+                    case "topicref":
                         return new LosExcelColumn(columnName, LosExcelColumnType.TopicRef, index);
-                    case "s-ref":
+                    case "sessionref":
                         return new LosExcelColumn(columnName, LosExcelColumnType.SessionRef, index);
-                    case "r-ref":
+                    case "readingref":
                         return new LosExcelColumn(columnName, LosExcelColumnType.ReadingRef, index);
-                    case "topictitle":
-						return new LosExcelColumn( columnName, LosExcelColumnType.TopicTitle, index );
-					case "sessiontitle":
-						return new LosExcelColumn( columnName, LosExcelColumnType.SessionTitle, index );
-					case "readingtitle":
-						return new LosExcelColumn( columnName, LosExcelColumnType.ReadingTitle, index );
-					case "cfa_alpha":
+					case "cfaalpha":
 						return new LosExcelColumn( columnName, LosExcelColumnType.CfaAlpha, index );
-					case "los text":
+					case "lodescription":
 						return new LosExcelColumn( columnName, LosExcelColumnType.LosText, index );
 				}
 			}
@@ -99,9 +93,6 @@ namespace ExcelParser
         TopicRef,
         SessionRef,
         ReadingRef,
-		TopicTitle,
-		SessionTitle,
-		ReadingTitle,
 		CfaAlpha,
 		LosText,
 	}
@@ -182,7 +173,7 @@ namespace ExcelParser
 				switch ( columnName.ToLower().Trim() ) {
 					case "lo1":
 						return new AcceptanceCriteriaExcelColumn( columnName, AcceptanceCriteriaColumnType.Lo1, index );
-					case "target score":
+					case "targetscore":
 						return new AcceptanceCriteriaExcelColumn( columnName, AcceptanceCriteriaColumnType.TargetScore, index );
 				}
 			}
