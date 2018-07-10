@@ -89,10 +89,15 @@ namespace ExcelParser
                 chapterNode.SetAttribute("exam_type", "essay");
                 chapterNode.SetAttribute("test_duration", "01:00");
 
+                string essaysAnswersPdf = essayRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.PdfAnswers) != null ? essayRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.PdfAnswers).Value : "";
+                string essaysQuestionsPdf = essayRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.PdfQuestions) != null ? essayRows.First().FirstOrDefault(c => c.Type == ExamExcelColumnType.PdfQuestions).Value : "";
+
                 var sequentialNode = xml.CreateElement("sequential");
                 sequentialNode.SetAttribute("display_name", "Progress Test Essays");
                 sequentialNode.SetAttribute("url_name", CourseConverterHelper.getGuid(String.Format("{0}--essays", progressTestId), CourseTypes.StudySession));
                 sequentialNode.SetAttribute("cfa_type", "essay");
+                sequentialNode.SetAttribute("pdf_answers", essaysAnswersPdf);
+                sequentialNode.SetAttribute("pdf_questions", essaysQuestionsPdf);
 
                 foreach (var row in essayRows)
                 {
