@@ -109,7 +109,9 @@ namespace ExcelParser
                     var colorColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Color );
 					var cfaTypeColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.CfaType );
 					locked = lockedColumn != null && lockedColumn.HaveValue() ? lockedColumn.Value : "";
-                    var demo = demoColumn != null && demoColumn.HaveValue() ? demoColumn.Value : "no";
+                    locked = locked.ToLower() == "true" ? "yes" : "no";
+                    var demo = demoColumn != null && demoColumn.HaveValue() ? demoColumn.Value : "";
+                    demo = demo.ToLower() == "true" ? "yes" : "no";
 
                     var description = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Description );
 					chapterNode = xml.CreateElement( "chapter" );
@@ -179,6 +181,7 @@ namespace ExcelParser
 					var readingIdColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ReadingId );
                     var readingLockedColumn = row.FirstOrDefault(c => c.Type == MainStructureColumnType.Locked);
                     var readingLocked = readingLockedColumn != null && readingLockedColumn.HaveValue() ? readingLockedColumn.Value : "";
+                    readingLocked = readingLocked.ToLower() == "true" ? "yes" : "no";
                     verticalNode = xml.CreateElement( "vertical" );
 					verticalNode.SetAttribute( "display_name", readingNameColumn != null && readingNameColumn.HaveValue() ? readingNameColumn.Value : "" );
 					verticalNode.SetAttribute( "url_name", CourseConverterHelper.getGuid( readingIdColumn.Value, CourseTypes.Reading ) );

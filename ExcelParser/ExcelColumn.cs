@@ -218,7 +218,7 @@ namespace ExcelParser
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ReadingName, index );
 					case "readingref":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ReadingId, index );
-					case "band":
+					case "bandnum":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Band, index );
 					case "bandid":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.BandId, index );
@@ -248,7 +248,7 @@ namespace ExcelParser
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.ExamPercentage, index );
                     case "cfai_topicweight":
                         return new MainStructureExcelColumn(columnName, MainStructureColumnType.CfaTopicWeight, index);
-                    case "description":
+                    case "topicdescription":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Description, index );
 					case "downloads_1":
 						return new MainStructureExcelColumn( columnName, MainStructureColumnType.Downloads1, index );
