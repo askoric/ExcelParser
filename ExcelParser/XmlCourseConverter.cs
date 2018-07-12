@@ -419,7 +419,7 @@ namespace ExcelParser
             if ( progressTestExcel != null ) {
 				var progressTestChapterNode = ProgressTestExcelConverter.Convert( xml, progressTestExcel );
                 // Insert Progress Test after Equity
-                var equityTopicNode = courseNode.SelectSingleNode("chapter[@display_name = 'Equity']");
+                var equityTopicNode = courseNode.SelectSingleNode("chapter[@cfa_short_name = 'EQ']");
                 courseNode.InsertAfter(progressTestChapterNode, equityTopicNode);
             }
 
