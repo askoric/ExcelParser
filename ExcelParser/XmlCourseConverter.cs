@@ -64,8 +64,6 @@ namespace ExcelParser
 
 			IExcelColumn<MainStructureColumnType> previousStudySessionId = null;
             IExcelColumn<MainStructureColumnType> previousTopicId = null;
-            string previousStudySessionLocked = "";
-			string locked = "";
 
             foreach ( var row in mainStructureExcel.Rows ) {
 
@@ -108,7 +106,7 @@ namespace ExcelParser
                     var demoColumn = row.FirstOrDefault(c => c.Type == MainStructureColumnType.Demo);
                     var colorColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.Color );
 					var cfaTypeColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.CfaType );
-					locked = lockedColumn != null && lockedColumn.HaveValue() ? lockedColumn.Value : "";
+					var locked = lockedColumn != null && lockedColumn.HaveValue() ? lockedColumn.Value : "";
                     locked = locked.ToLower() == "true" ? "yes" : "no";
                     var demo = demoColumn != null && demoColumn.HaveValue() ? demoColumn.Value : "";
                     demo = demo.ToLower() == "true" ? "yes" : "no";
@@ -157,13 +155,12 @@ namespace ExcelParser
 					chapterNode.AppendChild( sequentialNode );
 
 					//ADD TEST TO THE BOTTOM OF LAST SESSION NAME NODE
-					if ( ssTestExcel != null && previousSequentialNode != null && previousStudySessionId != null && previousStudySessionLocked != "yes" ) {
+					if ( ssTestExcel != null && previousSequentialNode != null && previousStudySessionId != null) {
                         AppendStudySessionTestQuestions( xml, previousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 					}
 
 					previousSequentialNode = sequentialNode;
 					previousStudySessionId = studySessionId;
-					previousStudySessionLocked = locked;
 				}
 
 				var readingNameColumn = row.FirstOrDefault( c => c.Type == MainStructureColumnType.ReadingName );
@@ -412,7 +409,7 @@ namespace ExcelParser
 				skip = true;
 			}
 
-			if ( ssTestExcel != null && previousStudySessionLocked != "yes" ) {
+			if ( ssTestExcel != null) {
                 AppendStudySessionTestQuestions( xml, previousSequentialNode, previousStudySessionId.Value, ssTestExcel );
 			}
 
