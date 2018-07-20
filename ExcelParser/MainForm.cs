@@ -184,7 +184,7 @@ namespace ExcelParser
             {
                 var excel = new Excel<ExamExcelColumn, ExamExcelColumnType>();
                 TopicWorkshopExcel = excel.ReadExcell(OpenFileDialog.FileName, XmlValueParser.Instance);
-                if ((TopicWorkshopExcel.Header.Count() == Enum.GetNames(typeof(ExamExcelColumnType)).Length - 8))
+                if ((TopicWorkshopExcel.Header.Count() == Enum.GetNames(typeof(ExamExcelColumnType)).Length - 7))
                 {
                     uploadTopicWorkshopCheckIcon.Visible = true;
                 }
